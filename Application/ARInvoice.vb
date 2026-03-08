@@ -73,7 +73,7 @@ Public Class ARInvoice
             oItem = frmARInvoice.Items.Add("XmlGen", SAPbouiCOM.BoFormItemTypes.it_STATIC)
             oItem.Left = frmARInvoice.Items.Item("20").Left + frmARInvoice.Items.Item("20").Width + 50
             oItem.Width = frmARInvoice.Items.Item("20").Width
-            oItem.Height = frmARInvoice.Items.Ite("20").Height
+            oItem.Height = frmARInvoice.Items.Item("20").Height
             oItem.Top = frmARInvoice.Items.Item("20").Top
             oItem.Visible = True
             oLabel = oItem.Specific
@@ -81,7 +81,7 @@ Public Class ARInvoice
 
             oItem = frmARInvoice.Items.Add("t_XmlGen", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
             oItem.Left = frmARInvoice.Items.Item("XmlGen").Left + frmARInvoice.Items.Item("XmlGen").Width + 20
-            oItem.Width = frmARInvoice.Items.Ite("XmlGen").Width
+            oItem.Width = frmARInvoice.Items.Item("XmlGen").Width
             oItem.Height = frmARInvoice.Items.Item("XmlGen").Height
             oItem.Top = frmARInvoice.Items.Item("XmlGen").Top
             oItem.Enabled = False
@@ -92,7 +92,7 @@ Public Class ARInvoice
             frmARInvoice.Items.Item("t_XmlGen").LinkTo = "20"
 
             oItem = frmARInvoice.Items.Add("GenUName", SAPbouiCOM.BoFormItemTypes.it_STATIC)
-            oItem.Left = frmARInvoice.Items.Ite("XmlGen").Left
+            oItem.Left = frmARInvoice.Items.Item("XmlGen").Left
             oItem.Width = frmARInvoice.Items.Item("XmlGen").Width
             oItem.Height = frmARInvoice.Items.Item("XmlGen").Height
             oItem.Top = frmARInvoice.Items.Item("XmlGen").Top + 16
@@ -102,15 +102,15 @@ Public Class ARInvoice
 
             oItem = frmARInvoice.Items.Add("t_GenUName", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
             oItem.Left = frmARInvoice.Items.Item("t_XmlGen").Left
-            oItem.Width = frmARInvoice.Items.Ite("t_XmlGen").Width
-            oItem.Height = frmARInvoice.Items.Ite("t_XmlGen").Height
+            oItem.Width = frmARInvoice.Items.Item("t_XmlGen").Width
+            oItem.Height = frmARInvoice.Items.Item("t_XmlGen").Height
             oItem.Top = frmARInvoice.Items.Item("t_XmlGen").Top + 16
             oItem.Enabled = False
             oItem.DisplayDesc = 1
             oEditText = oItem.Specific
             oEditText.DataBind.SetBound(True, "OINV", "U_GenUName")
             frmARInvoice.Items.Item("GenUName").LinkTo = "t_GenUName"
-            frmARInvoice.Items.Ite("t_GenUName").LinkTo = "t_XmlGen"
+            frmARInvoice.Items.Item("t_GenUName").LinkTo = "t_XmlGen"
 
             oItem = frmARInvoice.Items.Add("GenDate", SAPbouiCOM.BoFormItemTypes.it_STATIC)
             oItem.Left = frmARInvoice.Items.Item("GenUName").Left
@@ -122,7 +122,7 @@ Public Class ARInvoice
             oLabel.Caption = "E-Invoice Generated On"
 
             oItem = frmARInvoice.Items.Add("t_GenDate", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
-            oItem.Left = frmARInvoice.Items.Ite("t_GenUName").Left
+            oItem.Left = frmARInvoice.Items.Item("t_GenUName").Left
             oItem.Width = frmARInvoice.Items.Item("t_GenUName").Width
             oItem.Height = frmARInvoice.Items.Item("t_GenUName").Height
             oItem.Top = frmARInvoice.Items.Item("t_GenUName").Top + 16
@@ -130,19 +130,19 @@ Public Class ARInvoice
             oItem.DisplayDesc = 1
             oEditText = oItem.Specific
             oEditText.DataBind.SetBound(True, "OINV", "U_GenDate")
-            frmARInvoice.Items.Itemm("GenDate").LinkTo = "t_GenDate"
-            frmARInvoice.Items.Ite("t_GenDate").LinkTo = "t_GenUName"
+            frmARInvoice.Items.Item("GenDate").LinkTo = "t_GenDate"
+            frmARInvoice.Items.Item("t_GenDate").LinkTo = "t_GenUName"
 
             oItem = frmARInvoice.Items.Add("CStatus", SAPbouiCOM.BoFormItemTypes.it_STATIC)
             oItem.Left = frmARInvoice.Items.Item("GenDate").Left
             oItem.Width = frmARInvoice.Items.Item("GenDate").Width
-            oItem.Height = frmARInvoice.Items.Ite("GenDate").Height
+            oItem.Height = frmARInvoice.Items.Item("GenDate").Height
             oItem.Top = frmARInvoice.Items.Item("GenDate").Top + 16
             oItem.Visible = True
             oLabel = oItem.Specific
             oLabel.Caption = "Clearance Status"
             oItem = frmARInvoice.Items.Add("t_CStatus", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
-            oItem.Left = frmARInvoice.Items.Ite("t_GenDate").Left
+            oItem.Left = frmARInvoice.Items.Item("t_GenDate").Left
             oItem.Width = frmARInvoice.Items.Item("t_GenDate").Width
             oItem.Height = frmARInvoice.Items.Item("t_GenDate").Height
             oItem.Top = frmARInvoice.Items.Item("t_GenDate").Top + 16
@@ -151,7 +151,7 @@ Public Class ARInvoice
             oEditText = oItem.Specific
             oEditText.DataBind.SetBound(True, "OINV", "U_CLEARANCESTATUS")
             frmARInvoice.Items.Item("CStatus").LinkTo = "t_CStatus"
-            frmARInvoice.Items.Ite("t_CStatus").LinkTo = "t_GenDate"
+            frmARInvoice.Items.Item("t_CStatus").LinkTo = "t_GenDate"
 
             oItem = frmARInvoice.Items.Add("AStatus", SAPbouiCOM.BoFormItemTypes.it_STATIC)
             oItem.Left = frmARInvoice.Items.Item("CStatus").Left
@@ -163,8 +163,8 @@ Public Class ARInvoice
             oLabel.Caption = "Clearance Status Details"
 
             oItem = frmARInvoice.Items.Add("t_AStatus", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
-            oItem.Left = frmARInvoice.Items.Ite("t_CStatus").Left
-            oItem.Width = frmARInvoice.Items.Ite("t_CStatus").Width
+            oItem.Left = frmARInvoice.Items.Item("t_CStatus").Left
+            oItem.Width = frmARInvoice.Items.Item("t_CStatus").Width
             oItem.Height = frmARInvoice.Items.Item("t_CStatus").Height
             oItem.Top = frmARInvoice.Items.Item("t_CStatus").Top + 16
             oItem.Enabled = False
@@ -172,13 +172,13 @@ Public Class ARInvoice
             oEditText = oItem.Specific
             oEditText.DataBind.SetBound(True, "OINV", "U_APIStatus")
             frmARInvoice.Items.Item("AStatus").LinkTo = "t_AStatus"
-            frmARInvoice.Items.Ite("t_AStatus").LinkTo = "t_CStatus"
+            frmARInvoice.Items.Item("t_AStatus").LinkTo = "t_CStatus"
 
             ''Electronic tab
 
             oItem = frmARInvoice.Items.Add("APIPOST", SAPbouiCOM.BoFormItemTypes.it_STATIC)
-            oItem.Left = frmARInvoice.Items.Ite("TaxType").Left - 30
-            oItem.Width = frmARInvoice.Items.Ite("TaxType").Width
+            oItem.Left = frmARInvoice.Items.Item("TaxType").Left - 30
+            oItem.Width = frmARInvoice.Items.Item("TaxType").Width
             oItem.Height = frmARInvoice.Items.Item("TaxType").Height
             oItem.Top = frmARInvoice.Items.Item("TaxType").Top + 60
             oItem.Visible = True
@@ -222,7 +222,7 @@ Public Class ARInvoice
             oItem.ToPane = 60
             oEditText = oItem.Specific
             oEditText.DataBind.SetBound(True, "OINV", "U_CERTIFICATE")
-            frmARInvoice.Items.Ite("Cert").LinkTo = "t_Cert"
+            frmARInvoice.Items.Item("Cert").LinkTo = "t_Cert"
 
             oItem = frmARInvoice.Items.Add("XMLGen1", SAPbouiCOM.BoFormItemTypes.it_STATIC)
             oItem.Left = frmARInvoice.Items.Item("Cert").Left
@@ -236,9 +236,9 @@ Public Class ARInvoice
             oLabel.Caption = "XML Generated"
 
             oItem = frmARInvoice.Items.Add("t_XMLGen1", SAPbouiCOM.BoFormItemTypes.it_COMBO_BOX)
-            oItem.Left = frmARInvoice.Items.Ite("t_Cert").Left
+            oItem.Left = frmARInvoice.Items.Item("t_Cert").Left
             oItem.Width = frmARInvoice.Items.Item("t_Cert").Width
-            oItem.Height = frmARInvoice.Items.Ite("t_Cert").Height
+            oItem.Height = frmARInvoice.Items.Item("t_Cert").Height
             oItem.Top = frmARInvoice.Items.Item("t_Cert").Top + 16
             oItem.Enabled = False
             oItem.DisplayDesc = 1
@@ -246,13 +246,13 @@ Public Class ARInvoice
             oItem.ToPane = 60
             oCombobox = oItem.Specific
             oCombobox.DataBind.SetBound(True, "OINV", "U_XMLGen")
-            frmARInvoice.Items.Ite("XMLGen1").LinkTo = "t_XMLGen1"
+            frmARInvoice.Items.Item("XMLGen1").LinkTo = "t_XMLGen1"
 
             oItem = frmARInvoice.Items.Add("GenUID", SAPbouiCOM.BoFormItemTypes.it_STATIC)
             oItem.Left = frmARInvoice.Items.Item("XMLGen1").Left
             oItem.Width = frmARInvoice.Items.Item("XMLGen1").Width
             oItem.Height = frmARInvoice.Items.Item("XMLGen1").Height
-            oItem.Top = frmARInvoice.Items.Ite("XMLGen1").Top + 16
+            oItem.Top = frmARInvoice.Items.Item("XMLGen1").Top + 16
             oItem.Visible = True
             oItem.FromPane = 60
             oItem.ToPane = 60
@@ -262,7 +262,7 @@ Public Class ARInvoice
             oItem = frmARInvoice.Items.Add("t_GenUID", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
             oItem.Left = frmARInvoice.Items.Item("t_XMLGen1").Left
             oItem.Width = frmARInvoice.Items.Item("t_XMLGen1").Width
-            oItem.Height = frmARInvoice.Items.Ite("t_XMLGen1").Height
+            oItem.Height = frmARInvoice.Items.Item("t_XMLGen1").Height
             oItem.Top = frmARInvoice.Items.Item("t_XMLGen1").Top + 16
             oItem.Enabled = False
             oItem.DisplayDesc = 1
@@ -276,7 +276,7 @@ Public Class ARInvoice
             oItem.Left = frmARInvoice.Items.Item("GenUID").Left
             oItem.Width = frmARInvoice.Items.Item("GenUID").Width
             oItem.Height = frmARInvoice.Items.Item("GenUID").Height
-            oItem.Top = frmARInvoice.Items.Ite("GenUID").Top + 16
+            oItem.Top = frmARInvoice.Items.Item("GenUID").Top + 16
             oItem.Visible = True
             oItem.FromPane = 60
             oItem.ToPane = 60
@@ -293,11 +293,11 @@ Public Class ARInvoice
             oItem.FromPane = 60
             oItem.ToPane = 60
             oEditText = oItem.Specific
-            oEditText.DataBind.SetBound(True, "OINV", "U CSID")
+            oEditText.DataBind.SetBound(True, "OINV", "U_CSID")
             frmARInvoice.Items.Item("CSID").LinkTo = "t_CSID"
 
             oItem = frmARInvoice.Items.Add("APITime", SAPbouiCOM.BoFormItemTypes.it_STATIC)
-            oItem.Left = frmARInvoice.Items.Ite("CSID").Left
+            oItem.Left = frmARInvoice.Items.Item("CSID").Left
             oItem.Width = frmARInvoice.Items.Item("CSID").Width
             oItem.Height = frmARInvoice.Items.Item("CSID").Height
             oItem.Top = frmARInvoice.Items.Item("CSID").Top + 16
@@ -308,9 +308,9 @@ Public Class ARInvoice
             oLabel.Caption = "API Time"
 
             oItem = frmARInvoice.Items.Add("t_APITime", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
-            oItem.Left = frmARInvoice.Items.Ite("t_CSID").Left
+            oItem.Left = frmARInvoice.Items.Item("t_CSID").Left
             oItem.Width = frmARInvoice.Items.Item("t_CSID").Width
-            oItem.Height = frmARInvoice.Items.Ite("t_CSID").Height
+            oItem.Height = frmARInvoice.Items.Item("t_CSID").Height
             oItem.Top = frmARInvoice.Items.Item("t_CSID").Top + 16
             oItem.Enabled = False
             oItem.DisplayDesc = 1
@@ -357,7 +357,7 @@ Public Class ARInvoice
             oItem = frmARInvoice.Items.Add("t_QRCode", SAPbouiCOM.BoFormItemTypes.it_EXTEDIT)
             oItem.Left = frmARInvoice.Items.Item("t_HASH").Left
             oItem.Width = frmARInvoice.Items.Item("t_HASH").Width
-            oItem.Height = frmARInvoice.Items.Ite("t_HASH").Height
+            oItem.Height = frmARInvoice.Items.Item("t_HASH").Height
             oItem.Top = frmARInvoice.Items.Item("t_HASH").Top + frmARInvoice.Items.Item("t_HASH").Height + 1
             oItem.Enabled = False
             oItem.DisplayDesc = 1
@@ -365,8 +365,8 @@ Public Class ARInvoice
             oItem.ToPane = 60
             oEditText = oItem.Specific
             oEditText.DataBind.SetBound(True, "OINV", "U_QRCode")
-            frmARInvoice.Items.Ite("QRCode").LinkTo = "t_QRCode"
-            frmARInvoice.Items.Ite("t_QRCode").LinkTo = "t_HASH"
+            frmARInvoice.Items.Item("QRCode").LinkTo = "t_QRCode"
+            frmARInvoice.Items.Item("t_QRCode").LinkTo = "t_HASH"
 
             oItem = frmARInvoice.Items.Add("PIH", SAPbouiCOM.BoFormItemTypes.it_STATIC)
             oItem.Left = frmARInvoice.Items.Item("QRCode").Left
@@ -383,7 +383,7 @@ Public Class ARInvoice
             oItem.Left = frmARInvoice.Items.Item("t_QRCode").Left
             oItem.Width = frmARInvoice.Items.Item("t_QRCode").Width
             oItem.Height = frmARInvoice.Items.Item("t_QRCode").Height
-            oItem.Top = frmARInvoice.Items.Ite("PIH").Top
+            oItem.Top = frmARInvoice.Items.Item("PIH").Top
             oItem.Enabled = False
             oItem.DisplayDesc = 1
             oItem.FromPane = 60
@@ -430,34 +430,34 @@ Public Class ARInvoice
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-            oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC [ TaxType] ''")
-
+            'oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC [ TaxType] ''")
+            oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
             frmARInvoice.Items.Item("t_HASH").Enabled = False
-            frmARInvoice.Items.Ite("t_QRCode").Enabled = False
+            frmARInvoice.Items.Item("t_QRCode").Enabled = False
             frmARInvoice.Items.Item("t_PIH").Enabled = False
             frmARInvoice.Items.Item("t_APIPOST").Enabled = False
             frmARInvoice.Items.Item("t_AStatus").Enabled = False
             frmARInvoice.Items.Item("t_CStatus").Enabled = False
-            frmARInvoice.Items.Ite("t_XmlGen").Enabled = False
-            frmARInvoice.Items.Ite("t_XMLGen1").Enabled = False
+            frmARInvoice.Items.Item("t_XmlGen").Enabled = False
+            frmARInvoice.Items.Item("t_XMLGen1").Enabled = False
             frmARInvoice.Items.Item("t_GenUID").Enabled = False
             frmARInvoice.Items.Item("t_GenUName").Enabled = False
             frmARInvoice.Items.Item("t_Cert").Enabled = False
             frmARInvoice.Items.Item("t_GenDate").Enabled = False
-            frmARInvoice.Items.Ite("t_CSID").Enabled = False
-            frmARInvoice.Items.Ite("t_APITime").Enabled = False
+            frmARInvoice.Items.Item("t_CSID").Enabled = False
+            frmARInvoice.Items.Item("t_APITime").Enabled = False
 
-            frmARInvoice.Items.Ite("t_HASH").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_QRCode").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_PIH").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_APIPOST").Specific.Value = ""
+            frmARInvoice.Items.Item("t_HASH").Specific.Value = ""
+            frmARInvoice.Items.Item("t_QRCode").Specific.Value = ""
+            frmARInvoice.Items.Item("t_PIH").Specific.Value = ""
+            frmARInvoice.Items.Item("t_APIPOST").Specific.Value = ""
             frmARInvoice.Items.Item("t_AStatus").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_CStatus").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_XmlGen").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_GenUID").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_GenUName").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_Cert").Specific.Value = ""
-            frmARInvoice.Items.Ite("t_GenDate").Specific.Value = ""
+            frmARInvoice.Items.Item("t_CStatus").Specific.Value = ""
+            frmARInvoice.Items.Item("t_XmlGen").Specific.Value = ""
+            frmARInvoice.Items.Item("t_GenUID").Specific.Value = ""
+            frmARInvoice.Items.Item("t_GenUName").Specific.Value = ""
+            frmARInvoice.Items.Item("t_Cert").Specific.Value = ""
+            frmARInvoice.Items.Item("t_GenDate").Specific.Value = ""
             frmARInvoice.Items.Item("t_CSID").Specific.Value = ""
             frmARInvoice.Items.Item("t_APITime").Specific.Value = ""
             frmARInvoice.Freeze(False)
@@ -591,7 +591,8 @@ Public Class ARInvoice
                                     If pVal.BeforeAction = False Then
                                         Dim type As SAPbouiCOM.ComboBox = oMatrix.Columns.Item("18").Cells.Item(1).Specific
                                         Dim tax As String = type.Selected.Value
-                                        oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "Exec [TaxType]'" & tax & "'")
+                                        'oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "Exec [TaxType]'" & tax & "'")
+                                        oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
                                     End If
                             End Select
                         Catch ex As Exception
@@ -680,7 +681,7 @@ Public Class ARInvoice
                                                 Me.InitForm()
 
                                             End If
-                                            Dim str As String = "select Isnull(Max(DocNum),0) from OINV a inner join OUSR b on a. UserSign=b. USERID where a. UserSign='" & oCompany.UserSignature & "' and isnull(b. U_XMLGen, 'N')='Y'"
+                                            Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
                                             Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                             If rset.RecordCount > 0 And rset.Fields.Item(0).Value <> 0 Then
                                                 frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_FIND_MODE
@@ -776,7 +777,8 @@ Public Class ARInvoice
         Try
             'frmARInvoice. Freeze( True)
             write_log("XML creation Started")
-            Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
@@ -1009,7 +1011,8 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
-                Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
@@ -1063,7 +1066,7 @@ Public Class ARInvoice
                 End If
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
-                Dim STRr1 As String = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DOCNUM='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
                 Return xmlstring
             End If
@@ -1078,7 +1081,9 @@ Public Class ARInvoice
         Try
             'frmARInvoice. Freeze( True)
             write_log("XML creation Started")
-            Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
@@ -1311,7 +1316,8 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
-                Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
@@ -1365,7 +1371,7 @@ Public Class ARInvoice
                 End If
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
-                Dim STRr1 As String = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DOCNUM='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
                 Return xmlstring
             End If
@@ -1381,7 +1387,9 @@ Public Class ARInvoice
         Try
             'frmARInvoice. Freeze( True)
             write_log("XML creation Started")
-            Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
@@ -1614,7 +1622,8 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
-                Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
@@ -1668,7 +1677,7 @@ Public Class ARInvoice
                 End If
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
-                Dim STRr1 As String = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DOCNUM='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
                 Return xmlstring
             End If
@@ -1698,7 +1707,7 @@ Public Class ARInvoice
             If Value <> "" Then
 
                 If Value <> "--" Then
-                    Dim sty As String = " select U_I_Tax_Ex_Type_Code from [@I_ZATCA_TAXCODE] where U_I_Tax_Ex_Code='" & Value & "'"
+                    Dim sty As String = " select ""U_I_Tax_Ex_Type_Code"" from ""@I_ZATCA_TAXCODE"" where ""U_I_Tax_Ex_Code""='" & Value & "'"
                     Dim rsy As SAPbobsCOM.Recordset = oGfun.DoQuery(sty)
                     If rsy.RecordCount > 0 Then
                         If rsy.Fields.Item(0).Value = "Z" Then
@@ -1739,7 +1748,8 @@ Public Class ARInvoice
                 oApplication.StatusBar.SetSystemMessage("E-Invoice XML generated successfully", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
                 frmARInvoice.Items.Item("b_Load").Enabled = False
                 'frmARInvoice. Items. Item("b_delete"). Enabled = False
-                Dim Str As String = "Update OINV set U_XMLGen='Y' , U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName=(Select top 1 U_Name from OUSR where USERID='" & oCompany.UserSignature.ToString().Trim() & "' ) , U_GenDate=getdate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                'Dim Str As String = "Update OINV set U_XMLGen='Y' , U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName=(Select top 1 U_Name from OUSR where USERID='" & oCompany.UserSignature.ToString().Trim() & "' ) , U_GenDate=getdate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                Dim Str As String = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_Name"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
                 oGfun.DoQuery(Str)
                 'Dim psi As ProcessStartInfo = New ProcessStartInfo()
                 'psi. WorkingDirectory = "\\agoc-u-EINV01\D$\E-Invoice Addon\Debug - 20221109.03"
@@ -1754,7 +1764,7 @@ Public Class ARInvoice
         Catch ex As Exception
             frmARInvoice.Freeze(False)
             oApplication.StatusBar.SetText("GenerateXML Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
-            Dim str As String = "Update OINV set U_XMLGen='N' ,""U_APIStatus""='" & ex.Message & "' ,""U_APIPOST""='0' where ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            Dim str As String = "Update OINV set ""U_XMLGen""='N' ,""U_APIStatus""='" & ex.Message & "' ,""U_APIPOST""='0' where ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
             Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
         End Try
     End Sub
@@ -1834,7 +1844,7 @@ Public Class ARInvoice
 
                             ''Me. Jsonstring( )
                             If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
-                                Dim str As String = "Update OINV set U_APIStatus='', U_APIPOST=' ' , U_PIH=' ' , U_HASH='' , U_CERTIFICATE=' ' , U_XMLGENERATION=' ' , U_CLEARANCESTATUS=' ' , U_CSID=' ' , U_Barcode=' ' , U_QRCode=' ' , U_XMLGen=' ' , U_GenUId=' ' , U_GenUName=' ', U_GenDate='' where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                                Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
                                 Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                             End If
 
@@ -1862,13 +1872,13 @@ Public Class ARInvoice
                             frmARInvoice.Items.Item("t_QRCode").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_QRCode").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             'frmARInvoice. Items. Item("t_PIH"). Enabled = False
-                            frmARInvoice.Items.Ite("t_PIH").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                            frmARInvoice.Items.Item("t_PIH").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_PIH").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_PIH").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_APIPOST").Enabled = False
                             frmARInvoice.Items.Item("t_APIPOST").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_APIPOST").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                            frmARInvoice.Items.Ite("t_APIPOST").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                            frmARInvoice.Items.Item("t_APIPOST").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             'frmARInvoice. Items. Ite("t_AStatus"). Enabled = False
                             frmARInvoice.Items.Item("t_AStatus").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_AStatus").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
@@ -1906,7 +1916,8 @@ Public Class ARInvoice
                             frmARInvoice.Items.Item("t_APITime").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_APITime").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_APITime").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                            Dim Strprj As String = "Select isnull(U_XMLGen, 'N') XMLAproved from OUSR where USERID='" & oCompany.UserSignature & "'"
+                            'Dim Strprj As String = "Select isnull(U_XMLGen, 'N') XMLAproved from OUSR where USERID='" & oCompany.UserSignature & "'"
+                            Dim Strprj As String = "SELECT IFNULL(""U_XMLGen"", 'N') ""XMLAproved"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature
                             Dim rsetPrjt1 As SAPbobsCOM.Recordset = oGfun.DoQuery(Strprj)
                             If (rsetPrjt1.Fields.Item("XMLAproved").Value = "Y") Then
 
@@ -1926,7 +1937,7 @@ Public Class ARInvoice
                                         frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                         frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                     Else
-                                        Dim str As String = "Select U_XMLGENERATION from OINV where DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and U_XMLGen='Y'"
+                                        Dim str As String = "Select ""U_XMLGENERATION"" from OINV where ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and ""U_XMLGen""='Y'"
                                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                         If rset.RecordCount > 0 Then
                                             Dim val As String = rset.Fields.Item(0).Value
@@ -1937,7 +1948,7 @@ Public Class ARInvoice
                                             Else
                                                 frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                                 frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                                frmARInvoice.Items.Ite("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                                frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
                                             End If
                                         Else
                                             frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
@@ -1955,7 +1966,7 @@ Public Class ARInvoice
                                     Else
                                         frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                         frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                        frmARInvoice.Items.Ite("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
                                     End If
 
                                 End If
