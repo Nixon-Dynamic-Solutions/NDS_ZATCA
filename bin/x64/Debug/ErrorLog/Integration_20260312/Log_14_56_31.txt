@@ -1,0 +1,14 @@
+12.03.2026 14:58:06  Integration Start
+12.03.2026 14:58:06  NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==
+12.03.2026 14:58:06  18
+12.03.2026 14:58:06  XML creation Started
+12.03.2026 14:58:06  Conversion from string "</xades:Cert>" to type 'Double' is not valid.
+12.03.2026 14:58:32  Integration Start
+12.03.2026 14:58:32  NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==
+12.03.2026 14:58:32  18
+12.03.2026 14:58:36  XML creation Started
+12.03.2026 14:58:48  Conversion from string "</xades:Cert>" to type 'Double' is not valid.
+12.03.2026 14:58:55  Integration Start
+12.03.2026 14:58:55  NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==
+12.03.2026 14:58:55  18
+12.03.2026 14:58:58  XML creation Started

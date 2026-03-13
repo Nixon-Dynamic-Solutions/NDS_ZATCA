@@ -1,6 +1,9 @@
-﻿Imports System.Security.Cryptography
-Imports System.IO
+﻿Imports System.IO
+Imports System.Security.Cryptography
+Imports System.Security.Policy
 Imports System.Text
+Imports System.Threading
+Imports System.Xml
 
 
 Public Class ARInvoice
@@ -427,9 +430,9 @@ Public Class ARInvoice
             frmARInvoice.Freeze(True)
             frmARInvoice.Items.Item("b_Load").Visible = False
             frmARInvoice.Items.Item("b_Load1").Visible = False
-            frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-            frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-            frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+            frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+            frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+            frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
             'oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC [ TaxType] ''")
             oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
             frmARInvoice.Items.Item("t_HASH").Enabled = False
@@ -635,13 +638,13 @@ Public Class ARInvoice
                                                 Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                                 Dim Rate As Integer = rset.Fields.Item("Rate").Value
                                                 If Rate <> 0.0 Then
-                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
                                                 Else
                                                     frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                                    frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
                                                 End If
                                             End If
                                     End Select
@@ -674,7 +677,7 @@ Public Class ARInvoice
                             Select Case pVal.ItemUID
                                 Case "1"
                                     If pVal.ActionSuccess Then
-                                        If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
+                                        If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_OK_MODE Then
                                             If Me.ValidationAll = False Then
                                                 BubbleEvent = False
                                             Else
@@ -684,10 +687,14 @@ Public Class ARInvoice
                                             Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
                                             Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                             If rset.RecordCount > 0 And rset.Fields.Item(0).Value <> 0 Then
-                                                frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_FIND_MODE
-                                                frmARInvoice.Items.Item("8").Specific.value = rset.Fields.Item(0).Value
-                                                frmARInvoice.Items.Item("1").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
-                                                frmARInvoice.Items.Item("b_Load").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
+                                                'frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_FIND_MODE
+                                                'frmARInvoice.Items.Item("8").Specific.value = rset.Fields.Item(0).Value
+                                                'frmARInvoice.Items.Item("1").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
+                                                'frmARInvoice.Items.Item("b_Load").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
+                                                Dim Post As String = oDBDSHeader.GetValue("U_APIPOST", 0).Trim
+                                                If Post <> "1" Then
+                                                    Me.xml()
+                                                End If
                                             End If
                                         End If
 
@@ -728,7 +735,7 @@ Public Class ARInvoice
     End Function
     Function StringtoDouble1(Value As String) As String
         Try
-
+            'Value = Value.Replace(".", "").Replace(",", ".")
             Dim a1 As String() = Value.Split(New Char() {"."c})
             If a1.Length = 1 Then
                 If a1(0) <> 0 Then
@@ -744,13 +751,14 @@ Public Class ARInvoice
                 End If
             End If
 
-            Return Value
+            Return Value '.Replace(".", "").Replace(",", ".")
         Catch ex As Exception
             oApplication.SetStatusBarMessage(ex.Message)
         End Try
     End Function
     Function StringtoDouble(Value As String) As String
         Try
+            'Value = Value.Replace(".", "").Replace(",", ".")
             Dim a1 As String() = Value.Split(New Char() {"."c})
             If a1.Length = 1 Then
                 If a1(0) <> 0 Then
@@ -766,14 +774,14 @@ Public Class ARInvoice
                 End If
             End If
 
-            Return Value
+            Return Value '.Replace(".", "").Replace(",", ".")
         Catch ex As Exception
             oApplication.SetStatusBarMessage(ex.Message)
         End Try
     End Function
 
 
-    Function XMLCreation12(PIH As String, ICV As String)
+    Function XMLCreationTST(PIH As String, ICV As String)
         Try
             'frmARInvoice. Freeze( True)
             write_log("XML creation Started")
@@ -782,32 +790,32 @@ Public Class ARInvoice
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
-                xmlstring += " <? xml version=""1.0"" encoding=""UTF-8""?>"
-                xmlstring += vbCrLf & "<Invoice xmlns=""urn: oasis: names: specification: ubl : schema:xsd: Invoice-2"" xmlns:cac=""urn: oasis: names: specification: ubl : schea:xsd: CommonAggregateComponents-2"" xmlns: cbc=""urn: oasis: names: specification:ubl:schema:xsd:CommonExtensionComponents-2""><ext:UBLExtensions>"
+                xmlstring += "<?xml version=""1.0"" encoding=""UTF-8""?>"
+                xmlstring += vbCrLf & "<Invoice xmlns=""urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"" xmlns:cac=""urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"" xmlns:cbc=""urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"" xmlns:ext=""urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2""><ext:UBLExtensions>"
                 xmlstring += vbCrLf & "<ext:UBLExtension>"
-                xmlstring += vbCrLf & "<ext:ExtensionURI>urn: oasis: names: specification: ubl:dsig: enveloped:xades</ext : ExtensionURI>"
+                xmlstring += vbCrLf & "<ext:ExtensionURI>urn:oasis:names:specification:ubl:dsig:enveloped:xades</ext:ExtensionURI>"
                 xmlstring += vbCrLf & "<ext:ExtensionContent>"
-                xmlstring += vbCrLf & "<sig: UBLDocumentSignatures xmlns:sig=""urn: oasis: names: specification: ubl : schema:xsd: CormonSignatureComponents-2"" xmlns:sac=""urn: oasis: names: specification: ubl : schema:xsd: SignatureAggregateComponents-2"" xmlns:sbc=""urn:oasis:names:specification:ubl:schema:xsd:signatureBasicComponents-2"">"
+                xmlstring += vbCrLf & "<sig:UBLDocumentSignatures xmlns:sig=""urn:oasis:names:specification:ubl:schema:xsd:CormonSignatureComponents-2"" xmlns:sac=""urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2"" xmlns:sbc=""urn:oasis:names:specification:ubl:schema:xsd:signatureBasicComponents-2"">"
                 xmlstring += vbCrLf & "<sac:SignatureInformation>"
-                xmlstring += vbCrLf & "<cbc: ID>urn: oasis: names:specification: ubl: signature:1</cbc: ID>"
-                xmlstring += vbCrLf & "<sbc: ReferencedSignatureID>urn: oasis: names: specification: ubl: signature: Invoicesadas</sbc: ReferencedSignatureID>"
+                xmlstring += vbCrLf & "<cbc:ID>urn:oasis:names:specification:ubl:signature:1</cbc:ID>"
+                xmlstring += vbCrLf & "<sbc:ReferencedSignatureID>urn:oasis:names:specification:ubl:signature:Invoices</sbc:ReferencedSignatureID>"
                 xmlstring += vbCrLf & "<ds:Signature xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"" Id=""signature"">"
                 xmlstring += vbCrLf & "<ds:SignedInfo>"
                 xmlstring += vbCrLf & "<ds:CanonicalizationMethod Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
-                xmlstring += vbCrLf & "<ds:SignatureMethod Algorithm=""http://www. w3. org/2001/04/xmldsig-more#rsa-sha256""/>"
+                xmlstring += vbCrLf & "<ds:SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256""/>"
                 xmlstring += vbCrLf & "<ds:Reference Id=""invoiceSignedData"" URI="""">"
-                xmlstring += vbCrLf & "<ds: Transforms>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
-                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: ext:UBLExtensions) </ds:XPath>"
+                xmlstring += vbCrLf & "<ds:Transforms>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self::ext:UBLExtensions) </ds:XPath>"
                 xmlstring += vbCrLf & "</ds:Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
-                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:Signature) </ds:XPath>"
-                xmlstring += vbCrLf & "</ds: Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
-                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:AdditionalDocumentReference[ cbc: ID='QR' ])</ds:XPath>"
-                xmlstring += vbCrLf & "</ds: Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
-                xmlstring += vbCrLf & "</ds: Transforms>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self::cac:Signature) </ds:XPath>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self::cac:AdditionalDocumentReference[ cbc:ID='QR' ])</ds:XPath>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
+                xmlstring += vbCrLf & "</ds:Transforms>"
                 xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256""/>"
                 xmlstring += vbCrLf & "<ds:DigestValue />"
                 xmlstring += vbCrLf & "</ds:Reference>"
@@ -825,17 +833,17 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</ds:X509Data>"
                 xmlstring += vbCrLf & "</ds:KeyInfo>"
                 xmlstring += vbCrLf & "<ds:Object>"
-                xmlstring += vbCrLf & "<xades:QualifyingProperties xmlns:xades=""http://uri. etsi. org/01903/v1.3.2#"" Target=""signature"">"
+                xmlstring += vbCrLf & "<xades:QualifyingProperties xmlns:xades=""http://uri.etsi.org/01903/v1.3.2#"" Target=""signature"">"
                 xmlstring += vbCrLf & "<xades:SignedProperties Id=""xadesSignedProperties"">"
                 xmlstring += vbCrLf & "<xades:SignedSignatureProperties>"
                 xmlstring += vbCrLf & "<xades:SigningTime>2022-03-18T14:13:54Z</xades:SigningTime>"
                 xmlstring += vbCrLf & "<xades:SigningCertificate>"
                 xmlstring += vbCrLf & "<xades:Cert>"
                 xmlstring += vbCrLf & "<xades:CertDigest>"
-                xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3. org/2001/04/xmlenc#sha256""/>"
-                xmlstring += vbCrLf & "<ds:DigestValue>MmZhNzliYWRhMTZjYTQwMWRiMDk4NzIwYjFlMmFhNzBlYzM4NmFhODk1YjYyNTgxNmMzMWQzNDE5ZGF1MGQ30Q ==< /ds:DigestValue>"
+                xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256""/>"
+                xmlstring += vbCrLf & "<ds:DigestValue>MmZhNzliYWRhMTZjYTQwMWRiMDk4NzIwYjFlMmFhNzBlYzM4NmFhODk1YjYyNTgxNmMzMWQzNDE5ZGF1MGQ30Q ==</ds:DigestValue>"
                 xmlstring += vbCrLf & "</xades:CertDigest>"
-                xmlstring += vbCrLf & "<xades: IssuerSerial>"
+                xmlstring += vbCrLf & "<xades:IssuerSerial>"
                 xmlstring += vbCrLf & "<ds:X509IssuerName>CN=TSZEINVOICE-SubCA-1, DC=extgazt, DC=gov, DC=local</ds:X509IssuerName>"
                 xmlstring += vbCrLf & "<ds:X509SerialNumber>2475382878760965694489209096382389797821381034</ds:X509SerialNumber>"
                 xmlstring += vbCrLf & "</xades:IssuerSerial>"
@@ -851,9 +859,9 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</ext:ExtensionContent>"
                 xmlstring += vbCrLf & "</ext:UBLExtension>"
                 xmlstring += vbCrLf & "</ext:UBLExtensions>"
-                xmlstring += vbCrLf & "<cbc:ProfileID>reporting:1. 0</cbc:ProfileID>"
-                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("DocNum").Value & "</cbc: ID>"
-                xmlstring += vbCrLf & "<cbc:UUID>" & rset11.Fields.Ite("UUID").Value & "</cbc:UUID>"
+                xmlstring += vbCrLf & "<cbc:ProfileID>reporting:1.0</cbc:ProfileID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("DocNum").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:UUID>" & rset11.Fields.Item("UUID").Value & "</cbc:UUID>"
                 Dim Datel As Date = Date.ParseExact(frmARInvoice.Items.Item("10").Specific.value, "yyyyMMdd", Nothing)
                 Dim newdate As String = Datel.ToString("yyyy-MM-dd")
                 Dim Date2 As Date = Date.ParseExact(frmARInvoice.Items.Item("12").Specific.value, "yyyyMMdd", Nothing)
@@ -862,89 +870,89 @@ Public Class ARInvoice
                 Dim ActDelDate As String = Date3.ToString("yyyy-MM-dd")
                 Dim Currency As String = "SAR" '' "" & rset11. Fields. Item("DocCur"). Value & "" ''oDBDSHeader.GetValue("DocCur", 0)
                 Dim rATEE As Double = rset11.Fields.Item("Rate").Value
-                xmlstring += vbCrLf & "<cbc: IssueDate>" & newdate & "</cbc: IssueDate>"
-                xmlstring += vbCrLf & "<cbc: IssueTime>14:40:40</cbc: IssueTime>"
-                xmlstring += vbCrLf & "<cbc: InvoiceTypeCode name=""0100000"">388</cbc: InvoiceTypeCode>"
-                xmlstring += vbCrLf & "<cbc:Note>" & rset11.Fields.Item("Corrments").Value & "</cbc: Note>"
+                xmlstring += vbCrLf & "<cbc:IssueDate>" & newdate & "</cbc:IssueDate>"
+                xmlstring += vbCrLf & "<cbc:IssueTime>14:40:40</cbc:IssueTime>"
+                xmlstring += vbCrLf & "<cbc:InvoiceTypeCode name=""0100000"">388</cbc:InvoiceTypeCode>"
+                xmlstring += vbCrLf & "<cbc:Note>" & rset11.Fields.Item("Comments").Value & "</cbc:Note>"
                 xmlstring += vbCrLf & "<cbc:DocumentCurrencyCode>" & Currency & "</cbc:DocumentCurrencyCode>"
-                xmlstring += vbCrLf & "<cbc: TaxCurrencyCode>" & Currency & "</cbc: TaxCurrencyCode>"
+                xmlstring += vbCrLf & "<cbc:TaxCurrencyCode>" & Currency & "</cbc:TaxCurrencyCode>"
                 xmlstring += vbCrLf & "<cbc:LineCountNumeric>" & rset11.Fields.Item("Count").Value & "</cbc:LineCountNumeric>"
                 xmlstring += vbCrLf & "<cac:OrderReference>"
-                xmlstring += vbCrLf & "<cbc: ID>" & rset11.Fields.Item("NumAtCard").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("NumAtCard").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:OrderReference>"
                 xmlstring += vbCrLf & "<cac:ContractDocumentReference>"
-                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("U_CustRef").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("U_CustRef").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:ContractDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
-                xmlstring += vbCrLf & "<cbc: ID>ICV</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>ICV</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:UUID>" & ICV & "</cbc:UUID>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cbc:ID>PIH</cbc:ID>"
                 xmlstring += vbCrLf & "<cac:Attachment>"
-                xmlstring += vbCrLf & "<cbc: EmbeddedDocumentBinaryObject mimeCode=""text/plain"">" & PIH & "</cbc: EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">" & PIH & "</cbc:EmbeddedDocumentBinaryObject>"
                 xmlstring += vbCrLf & "</cac:Attachment>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
-                xmlstring += vbCrLf & "<cbc: ID>QR</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>QR</cbc:ID>"
                 xmlstring += vbCrLf & "<cac:Attachment>"
-                xmlstring += vbCrLf & "<cbc: EmbeddedDocumentBinaryObject mimeCode=""text/plain"">AR1BbCBTYWxhbSBTdXBwbGllcyBDby4gTFREAg8zMDAwNTUxODQOMDAwMDMDFDIwMjEtMDQtMjVUMTU6MzA6MDBaBAcxMDM1LjAwBQYxMzUuMDAGLG1mVkNpcHlaUG1IZzFpU3QreWJSY1JMaFAreGZuSDVmZnNMYXdkaXU2UEk9B1gwVjAQBgcqhkjoPQIBBgUrgQQACgNCAATTAK91rTVko9rkq6ZYcc9HDRZP4b954zA4Km7YXJ+snTVhLkzU@HsmSX9Un8jDhRTOHDKaft8C/uuUY934vuMNCCEAnHTyqYXeVhBdCU09gq4nX73oEgVZCjZ8STz9QY7Sy1sJIBkN9Q56qQGMZ1y02uwNYqXPAagxEF1tqxImEczcDbK2</cbc:EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">AR1BbCBTYWxhbSBTdXBwbGllcyBDby4gTFREAg8zMDAwNTUxODQOMDAwMDMDFDIwMjEtMDQtMjVUMTU6MzA6MDBaBAcxMDM1LjAwBQYxMzUuMDAGLG1mVkNpcHlaUG1IZzFpU3QreWJSY1JMaFAreGZuSDVmZnNMYXdkaXU2UEk9B1gwVjAQBgcqhkjoPQIBBgUrgQQACgNCAATTAK91rTVko9rkq6ZYcc9HDRZP4b954zA4Km7YXJ+snTVhLkzU@HsmSX9Un8jDhRTOHDKaft8C/uuUY934vuMNCCEAnHTyqYXeVhBdCU09gq4nX73oEgVZCjZ8STz9QY7Sy1sJIBkN9Q56qQGMZ1y02uwNYqXPAagxEF1tqxImEczcDbK2</cbc:EmbeddedDocumentBinaryObject>"
                 xmlstring += vbCrLf & "</cac:Attachment>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 'xmlstring += vbCrLf & "<cac:Signature>"
-                'xmlstring += vbCrLf & "<cbc: ID>urn: oasis: names: specification: ubl: signature: Invoice</cbc : ID>"
-                'xmlstring += vbCrLf & "<cbc:SignatureMethod>urn: oasis: names: specification: ubl:dsig: enveloped:xades</cbc: SignatureMethod>"
+                'xmlstring += vbCrLf & "<cbc:ID>urn: oasis: names: specification: ubl: signature: Invoice</cbc:ID>"
+                'xmlstring += vbCrLf & "<cbc:SignatureMethod>urn: oasis: names: specification: ubl:dsig:enveloped:xades</cbc:SignatureMethod>"
                 'xmlstring += vbCrLf & "</cac:Signature>"
                 xmlstring += vbCrLf & "<cac:AccountingSupplierParty>"
                 xmlstring += vbCrLf & "<cac:Party>"
                 xmlstring += vbCrLf & "<cac:PartyIdentification>"
-                xmlstring += vbCrLf & "<cbc: ID schemeID=""CRN"">" & rset11.Fields.Item("TaxIDNum3").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""CRN"">" & rset11.Fields.Item("TaxIDNum3").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:PartyIdentification>"
                 xmlstring += vbCrLf & "<cac:PostalAddress>"
-                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("Street").Value & "</cbc: StreetName>"
-                xmlstring += vbCrLf & "<cbc: BuildingNumber>" & rset11.Fields.Item("Building").Value & "</cbc: BuildingNumber>"
-                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("Building").Value & "</cbc: PlotIdentification>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("Street").Value & "</cbc:StreetName>"
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Item("Building").Value & "</cbc:BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("Building").Value & "</cbc:PlotIdentification>"
                 xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("County").Value & "</cbc:CitySubdivisionName>"
                 xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("City").Value & "</cbc:CityName>"
                 xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("ZipCode").Value & "</cbc:PostalZone>"
                 xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("Country").Value & "</cbc:CountrySubentity>"
                 xmlstring += vbCrLf & "<cac:Country>"
-                xmlstring += vbCrLf & "<cbc: IdentificationCode>" & rset11.Fields.Item("Country").Value & "</cbc: IdentificationCode>"
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("Country").Value & "</cbc:IdentificationCode>"
                 xmlstring += vbCrLf & "</cac:Country>"
                 xmlstring += vbCrLf & "</cac:PostalAddress>"
                 xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cbc:CompanyID>" & rset11.Fields.Item("TaxPayerRf").Value & "</cbc:CompanyID>"
-                xmlstring += vbCrLf & "<cac: TaxScheme>"
-                xmlstring += vbCrLf & "<cbc: ID>VAT</cbc: ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
-                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CompnyName").Value & "</cbc: RegistrationName>"
+                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CompnyName").Value & "</cbc:RegistrationName>"
                 xmlstring += vbCrLf & "</cac:PartyLegalEntity>"
                 xmlstring += vbCrLf & "</cac:Party>"
                 xmlstring += vbCrLf & "</cac:AccountingSupplierParty>"
                 xmlstring += vbCrLf & "<cac:AccountingCustomerParty>"
                 xmlstring += vbCrLf & "<cac:Party>"
                 xmlstring += vbCrLf & "<cac:PartyIdentification>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""SAG"">" & rset11.Fields.Item("RegNum").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""SAG"">" & rset11.Fields.Item("RegNum").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:PartyIdentification>"
                 xmlstring += vbCrLf & "<cac:PostalAddress>"
-                xmlstring += vbCrLf & "<cbc: StreetName>" & rset11.Fields.Item("CStreet").Value & "</cbc:StreetName>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("CStreet").Value & "</cbc:StreetName>"
                 Dim bul As String = rset11.Fields.Item("CBuilding").Value
-                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Ite("CBuilding").Value & "</cbc: BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Item("CBuilding").Value & "</cbc:BuildingNumber>"
                 xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("CBuilding").Value & "</cbc:PlotIdentification>"
                 xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("U_District").Value & "</cbc:CitySubdivisionName>"
-                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("CCity").Value & "</cbc: CityName>"
+                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("CCity").Value & "</cbc:CityName>"
                 xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("CZipCode").Value & "</cbc:PostalZone>"
-                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("CState").Value & "</cbc: CountrySubentity>"
+                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("CState").Value & "</cbc:CountrySubentity>"
                 xmlstring += vbCrLf & "<cac:Country>"
-                xmlstring += vbCrLf & "<cbc: IdentificationCode>" & rset11.Fields.Item("CCountry").Value & "</cbc: IdentificationCode>"
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("CCountry").Value & "</cbc:IdentificationCode>"
                 xmlstring += vbCrLf & "</cac:Country>"
                 xmlstring += vbCrLf & "</cac:PostalAddress>"
                 xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
-                xmlstring += vbCrLf & "<cac: TaxScheme>"
-                xmlstring += vbCrLf & "<cbc: ID>VAT</cbc: ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
                 xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CardName").Value & "</cbc:RegistrationName>"
@@ -952,11 +960,324 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</cac:Party>"
                 xmlstring += vbCrLf & "</cac:AccountingCustomerParty>"
                 xmlstring += vbCrLf & "<cac:Delivery>"
-                xmlstring += vbCrLf & "<cbc: ActualDeliveryDate>" & DelDate & "</cbc: ActualDeliveryDate>"
-                xmlstring += vbCrLf & "<cbc:LatestDeliveryDate>" & ActDelDate & "</cbc:LatestDeliveryDate>"
+                xmlstring += vbCrLf & "<cbc:ActualDeliveryDate>" & DelDate & "</cbc:ActualDeliveryDate>"
+                xmlstring += vbCrLf & "<cbc:LatestDeliveryDate>" & DelDate & "</cbc:LatestDeliveryDate>"
+                'xmlstring += vbCrLf & "<cbc:LatestDeliveryDate>" & ActDelDate & "</cbc:LatestDeliveryDate>"
                 xmlstring += vbCrLf & "</cac:Delivery>"
                 xmlstring += vbCrLf & "<cac:PaymentMeans>"
-                xmlstring += vbCrLf & "<cbc:PaymentMeansCode>10</cbc: PaymentMeansCode>"
+                xmlstring += vbCrLf & "<cbc:PaymentMeansCode>10</cbc:PaymentMeansCode>"
+                xmlstring += vbCrLf & "</cac:PaymentMeans>"
+                Dim Discsum As String = Me.StringtoDouble(rset11.Fields.Item("DiscSum").Value).Replace(",", "")
+                Dim Vatsum As String = Me.StringtoDouble(rset11.Fields.Item("VatSum").Value).Replace(",", "")
+                Dim Total As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("Total1").Value)).Replace(",", "")
+                Dim DocTotal As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("DocTotal").Value)).Replace(",", "")
+                Dim LineAmnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("LineAmnt").Value)).Replace(",", "")
+                Dim BaseAmnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("BaseAmount").Value)).Replace(",", "")
+                Dim TaxexAmnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("Taxexamnt").Value)).Replace(",", "")
+                Dim TaxinAmnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("Taxinamnt").Value)).Replace(",", "")
+                Dim DiscPrncnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("DiscPrcnt").Value)).Replace(",", "")
+                xmlstring += vbCrLf & "<cac:AllowanceCharge>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
+                xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
+                'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & rset11. Fields. Item("DiscPrcnt"). Value & "</cbc:MultiplierFactorNumeric>"
+                xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & Discsum & "</cbc:Amount>"
+                'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:BaseAmount>"
+                xmlstring += vbCrLf & "<cac:TaxCategory>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">E</cbc:ID>"
+                xmlstring += vbCrLf & " <cbc:Percent>0.00</cbc:Percent>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
+                xmlstring += vbCrLf & "</cac:TaxCategory>"
+                xmlstring += vbCrLf & "</cac:AllowanceCharge>"
+
+                xmlstring += vbCrLf & "<cac:TaxTotal>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0</cbc:TaxAmount>"
+                xmlstring += vbCrLf & "<cac:TaxSubtotal>"
+                xmlstring += vbCrLf & "<cbc:TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc:TaxableAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID= """ & Currency & """>0.0</cbc:TaxAmount>"
+                xmlstring += vbCrLf & "<cac:TaxCategory>"
+                xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
+                xmlstring += vbCrLf & "<cbc:TaxExemptionReasonCode>" & rset11.Fields.Item("TaxReasonCode").Value & "</cbc:TaxExemptionReasonCode>"
+                xmlstring += vbCrLf & "<cbc:TaxExemptionReason>" & rset11.Fields.Item("TaxReason").Value & "</cbc:TaxExemptionReason>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
+                xmlstring += vbCrLf & "</cac:TaxCategory>"
+                xmlstring += vbCrLf & "</cac:TaxSubtotal>"
+                xmlstring += vbCrLf & "</cac:TaxTotal>"
+                xmlstring += vbCrLf & "<cac:TaxTotal>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0</cbc:TaxAmount>"
+                xmlstring += vbCrLf & "</cac:TaxTotal>"
+                xmlstring += vbCrLf & "<cac:LegalMonetaryTotal>"
+                xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:LineExtensionAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc:TaxExclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:TaxInclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc:AllowanceTotalAmount>"
+                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc:PrepaidAmount>"
+                xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
+                xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
+
+                'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
+                If rset112.RecordCount > 0 Then
+                    rset112.MoveFirst()
+                    For j As Integer = 1 To rset112.RecordCount
+                        Dim Qty As String = Me.StringtoDouble1(rset112.Fields.Item("Quantity").Value)
+                        Dim UnitPrice As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("Price").Value)).Replace(",", "")
+                        Dim valk As Double = CDbl(Qty) * CDbl(rset112.Fields.Item("Price").Value)
+                        Dim LTotal As String = Me.StringtoDouble(valk)
+                        Dim LVatSum As String = Me.StringtoDouble(CDbl((rset112.Fields.Item("vat").Value))).Replace(",", "")
+                        Dim DsSum As String = Me.StringtoDouble(CDbl((rset112.Fields.Item("Discount").Value))).Replace(",", "")
+                        Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value)).Replace(",", "")
+                        Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value)).Replace(",", "")
+                        Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value)).Replace(",", "")
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value))).Replace(",", "")
+                        Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
+                        Dim Rate As Integer = rset.Fields.Item("Rate").Value
+                        xmlstring += vbCrLf & "<cac:InvoiceLine>"
+                        xmlstring += vbCrLf & "<cbc:ID>" & j & "</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:InvoicedQuantity unitCode=""PCE"">" & Qty & "</cbc:InvoicedQuantity>"
+                        xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineTotal & "</cbc:LineExtensionAmount>"
+                        xmlstring += vbCrLf & "<cac:TaxTotal>"
+                        xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0.00</cbc:TaxAmount>"
+                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>" & RoundAmnt & "</cbc:RoundingAmount>"
+                        xmlstring += vbCrLf & "</cac:TaxTotal>"
+                        xmlstring += vbCrLf & "<cac:Item>"
+                        xmlstring += vbCrLf & "<cbc:Name>" & rset112.Fields.Item("Dscription").Value & "</cbc:Name>"
+                        xmlstring += vbCrLf & "<cac:ClassifiedTaxCategory>"
+                        xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
+                        xmlstring += vbCrLf & "<cac:TaxScheme>"
+                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                        xmlstring += vbCrLf & "</cac:TaxScheme>"
+                        xmlstring += vbCrLf & "</cac:ClassifiedTaxCategory>"
+                        xmlstring += vbCrLf & "</cac:Item>"
+                        xmlstring += vbCrLf & "<cac:Price>"
+                        xmlstring += vbCrLf & "<cbc:PriceAmount currencyID=""" & Currency & """>" & UnitPrice & "</cbc:PriceAmount>"
+                        xmlstring += vbCrLf & "<cbc:BaseQuantity unitCode=""" & rset112.Fields.Item("Unitmsr").Value & """>1</cbc:BaseQuantity>"
+                        xmlstring += vbCrLf & "<cac:AllowanceCharge>"
+                        xmlstring += vbCrLf & "<cbc:ID>1</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
+                        'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & disc & "</cbc:MultiplierFactorNumeric>"
+                        xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
+                        xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & DsSum & "</cbc:Amount>"
+                        'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & BaseAmount & "</cbc:BaseAmount>"
+                        xmlstring += vbCrLf & "</cac:AllowanceCharge>"
+                        xmlstring += vbCrLf & "</cac:Price>"
+                        xmlstring += vbCrLf & "</cac:InvoiceLine>"
+                        rset112.MoveNext()
+                    Next
+                End If
+                xmlstring += vbCrLf & "</Invoice>"
+                write_log("XML creation finished")
+                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
+                Return xmlstring
+            End If
+
+
+
+        Catch ex As Exception
+            write_log(ex.Message)
+        End Try
+    End Function
+
+    Function XMLCreation12(PIH As String, ICV As String)
+        Try
+            'frmARInvoice. Freeze( True)
+            write_log("XML creation Started")
+            'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
+            If rset11.RecordCount > 0 Then
+                Dim xmlstring As String = ""
+                xmlstring += vbCrLf & "<Invoice xmlns=""urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"" xmlns:cac=""urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"" xmlns:cbc=""urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"" xmlns:ext=""urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2""><ext:UBLExtensions>"
+                xmlstring += vbCrLf & "<ext:UBLExtension>"
+                xmlstring += vbCrLf & "<ext:ExtensionURI>urn:oasis:names:specification:ubl:dsig:enveloped:xades</ext:ExtensionURI>"
+                xmlstring += vbCrLf & "<ext:ExtensionContent>"
+                xmlstring += vbCrLf & "<sig:UBLDocumentSignatures xmlns:sig=""urn:oasis:names:specification:ubl:schema:xsd:CormonSignatureComponents-2"" xmlns:sac=""urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2"" xmlns:sbc=""urn:oasis:names:specification:ubl:schema:xsd:signatureBasicComponents-2"">"
+
+                xmlstring += vbCrLf & "<sac:SignatureInformation>"
+                xmlstring += vbCrLf & "<cbc:ID>urn:oasis:names:specification:ubl:signature:1</cbc:ID>"
+                xmlstring += vbCrLf & "<sbc:ReferencedSignatureID>urn:oasis:names:specification:ubl:signature: Invoicesadas</sbc:ReferencedSignatureID>"
+                xmlstring += vbCrLf & "<ds:Signature xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"" Id=""signature"">"
+                xmlstring += vbCrLf & "<ds:SignedInfo>"
+                xmlstring += vbCrLf & "<ds:CanonicalizationMethod Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
+                xmlstring += vbCrLf & "<ds:SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256""/>"
+                xmlstring += vbCrLf & "<ds:Reference Id=""invoiceSignedData"" URI="""">"
+                xmlstring += vbCrLf & "<ds:Transforms>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self::ext:UBLExtensions)</ds:XPath>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self::cac:Signature)</ds:XPath>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self::cac:AdditionalDocumentReference[cbc:ID='QR'])</ds:XPath>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
+                xmlstring += vbCrLf & "</ds:Transforms>"
+                xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256""/>"
+                xmlstring += vbCrLf & "<ds:DigestValue />"
+                xmlstring += vbCrLf & "</ds:Reference>"
+                xmlstring += vbCrLf & "<ds:Reference Type=""http://www.w3.org/2000/09/xmldsig#SignatureProperties"" URI=""#xadesSignedProperties"">"
+                xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256""/>"
+                xmlstring += vbCrLf & "<ds:DigestValue>M2ZkZWViYTg30GYwNGQ3ZjhkOGJiNWUyZjlhODViMTc1YTg0MmE4MDFmNjU1MWJhYmYyYWF1MDc4MjRmMGV10Q ==</ds:DigestValue>"
+                xmlstring += vbCrLf & "</ds:Reference>"
+                xmlstring += vbCrLf & "</ds:SignedInfo>"
+                xmlstring += vbCrLf & "<ds:SignatureValue>MEQCIGAQj78/dlFj31AZBDK79GKTvZJh5sD9fMEYeeE8azwcAiBYL+n143jKkL0fjV0D0S/HQxxUtT/NM/K5r92pZ24VwA ==</ds:SignatureValue>"
+                xmlstring += vbCrLf & "<ds:KeyInfo>"
+                xmlstring += vbCrLf & "<ds:X509Data>"
+                xmlstring += vbCrLf & "<ds:X509Certificate>MIIEZDCCBAqgAwIBAgITEQAAAZxzdAg2KR1uXgABAAABnDAKBggqhkjOPQQDAjBiMRUwEwYKCZImiZPyLGQBGRYFbG9jYWwxEzARBgoJkiaJk/ IsZAEZFgNnb3YxF </ds:X509Certificate>"
+                xmlstring += vbCrLf & "</ds:X509Data>"
+                ''"\\agoc-u-einv01\d$\E-Invoice\Certifiate. pem"
+                ''Dim filename As String = File. ReadLines("")
+                xmlstring += vbCrLf & "</ds:KeyInfo>"
+                xmlstring += vbCrLf & "<ds:Object>"
+                xmlstring += vbCrLf & "<xades:QualifyingProperties xmlns:xades=""http://uri.etsi.org/01903/v1.3.2#"" Target=""signature"">"
+                xmlstring += vbCrLf & "<xades:SignedProperties Id=""xadesSignedProperties"">"
+                xmlstring += vbCrLf & "<xades:SignedSignatureProperties>"
+                xmlstring += vbCrLf & "<xades:SigningTime>2022-03-18T14:13:54Z</xades:SigningTime>"
+                xmlstring += vbCrLf & "<xades:SigningCertificate>"
+                xmlstring += vbCrLf & "<xades:Cert>"
+                xmlstring += vbCrLf & "<xades:CertDigest>"
+                xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256""/>"
+                xmlstring += vbCrLf & "<ds:DigestValue>MmZhNzliYWRhMTZjYTQwMWRiMDk4NzIwYjF1MmFhNzB1YzM4NmFhODk1YjYyNTgxNmMzMWQzNDE5ZGF1MGQ30Q ==</ds:DigestValue>"
+                xmlstring += vbCrLf & "</xades:CertDigest>"
+                xmlstring += vbCrLf & "<xades:IssuerSerial>"
+                xmlstring += vbCrLf & "<ds:X509IssuerName>CN=TSZEINVOICE-SubCA-1, DC=extgazt, DC=gov, DC=local</ds:X509IssuerName>"
+                xmlstring += vbCrLf & "<ds:X509SerialNumber>2475382878760965694489209096382389797821381034</ds:X509SerialNumber>"
+                xmlstring += vbCrLf & "</xades:IssuerSerial>"
+                xmlstring += vbCrLf & "</xades:Cert>"
+                xmlstring += vbCrLf & "</xades:SigningCertificate>"
+                xmlstring += vbCrLf & "</xades:SignedSignatureProperties>"
+                xmlstring += vbCrLf & "</xades:SignedProperties>"
+                xmlstring += vbCrLf & "</xades:QualifyingProperties>"
+                xmlstring += vbCrLf & "</ds:Object>"
+                xmlstring += vbCrLf & "</ds:Signature>"
+                xmlstring += vbCrLf & "</sac:SignatureInformation>"
+                xmlstring += vbCrLf & "</sig:UBLDocumentSignatures>"
+                xmlstring += vbCrLf & "</ext:ExtensionContent>"
+                xmlstring += vbCrLf & "</ext:UBLExtension>"
+                xmlstring += vbCrLf & "</ext:UBLExtensions>"
+                xmlstring += vbCrLf & "<cbc:ProfileID>reporting:1.0</cbc:ProfileID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("DocNum").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:UUID>" & rset11.Fields.Item("UUID").Value & "</cbc:UUID>"
+                Dim Date1 As Date = Date.ParseExact(frmARInvoice.Items.Item("10").Specific.value, "yyyyMMdd", Nothing)
+                Dim newdate As String = Date1.ToString("yyyy-MM-dd")
+                Dim Date2 As Date = Date.ParseExact(frmARInvoice.Items.Item("12").Specific.value, "yyyyMMdd", Nothing)
+                Dim DelDate As String = Date2.ToString("yyyy-MM-dd")
+                Dim Date3 As Date = rset11.Fields.Item("U_PS_SDate").Value
+                Dim ActDelDate As String = Date3.ToString("yyyy-MM-dd")
+                Dim Currency As String = rset11.Fields.Item("DocCur").Value ''oDBDSHeader.GetValue("DocCur", 0)
+                Dim TaxCurrency As String = rset11.Fields.Item("TaxCur").Value
+                Dim rATEE As Double = rset11.Fields.Item("Rate").Value
+
+                xmlstring += vbCrLf & "<cbc:IssueDate>" & newdate & "</cbc:IssueDate>"
+                xmlstring += vbCrLf & "<cbc:IssueTime>14:40:40</cbc:IssueTime>"
+                xmlstring += vbCrLf & "<cbc:InvoiceTypeCode name=""0100000"">388</cbc:InvoiceTypeCode>"
+                xmlstring += vbCrLf & "<cbc:Note>" & rset11.Fields.Item("Comments").Value & "</cbc:Note>"
+                xmlstring += vbCrLf & "<cbc:DocumentCurrencyCode>" & Currency & "</cbc:DocumentCurrencyCode>"
+                xmlstring += vbCrLf & "<cbc:TaxCurrencyCode>" & Currency & "</cbc:TaxCurrencyCode>"
+                xmlstring += vbCrLf & "<cbc:LineCountNumeric>" & rset11.Fields.Item("Count").Value & "</cbc:LineCountNumeric>"
+                xmlstring += vbCrLf & "<cac:OrderReference>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("NumAtCard").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:OrderReference>"
+                xmlstring += vbCrLf & "<cac:ContractDocumentReference>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("U_CustRef").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:ContractDocumentReference>"
+                xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
+                xmlstring += vbCrLf & "<cbc:ID>ICV</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:UUID>" & ICV & "</cbc:UUID>"
+                xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
+                xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
+                xmlstring += vbCrLf & "<cbc:ID>PIH</cbc:ID>"
+                xmlstring += vbCrLf & "<cac:Attachment>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">" & PIH & "</cbc:EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "</cac:Attachment>"
+                xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
+                xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
+                xmlstring += vbCrLf & "<cbc:ID>QR</cbc:ID>"
+                xmlstring += vbCrLf & "<cac:Attachment>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">AR1BbCBTYWxhbSBTdXBwbGllcyBDby4gTFREAg8zMDAwNTUxODQ0MDAwMDMDFDIwMjEtMDQtMjVUMTU6MzA6MDBaBA</cbc:EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "</cac:Attachment>"
+                xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
+                'xmlstring += vbCrLf & "<cac:Signature>"
+                'xmlstring += vbCrLf & "<cbc:ID>urn:oasis:names:specification:ubl:signature: Invoice</cbc:ID>"
+                'xmlstring += vbCrLf & "<cbc:SignatureMethod>urn:oasis:names:specification:ubl:dsig:enveloped:xades</cbc:SignatureMethod>"
+                'xmlstring += vbCrLf & "</cac:Signature>"
+                xmlstring += vbCrLf & "<cac:AccountingSupplierParty>"
+                xmlstring += vbCrLf & "<cac:Party>"
+                xmlstring += vbCrLf & "<cac:PartyIdentification>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""CRN"">" & rset11.Fields.Item("TaxIDNum3").Value & "</cbc:ID>"
+
+                xmlstring += vbCrLf & "</cac:PartyIdentification>"
+                xmlstring += vbCrLf & "<cac:PostalAddress>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("Street").Value & "</cbc:StreetName>"
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Item("Building").Value & "</cbc:BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("Building").Value & "</cbc:PlotIdentification>"
+                xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("County").Value & "</cbc:CitySubdivisionName>"
+                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("City").Value & "</cbc:CityName>"
+                xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("ZipCode").Value & "</cbc:PostalZone>"
+                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("Country").Value & "</cbc:CountrySubentity>"
+                xmlstring += vbCrLf & "<cac:Country>"
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("Country").Value & "</cbc:IdentificationCode>"
+                xmlstring += vbCrLf & "</cac:Country>"
+                xmlstring += vbCrLf & "</cac:PostalAddress>"
+                xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
+                xmlstring += vbCrLf & "<cbc:CompanyID>" & rset11.Fields.Item("TaxPayerRf").Value & "</cbc:CompanyID>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
+                xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
+                xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
+                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CompnyName").Value & "</cbc:RegistrationName>"
+                xmlstring += vbCrLf & "</cac:PartyLegalEntity>"
+                xmlstring += vbCrLf & "</cac:Party>"
+                xmlstring += vbCrLf & "</cac:AccountingSupplierParty>"
+                xmlstring += vbCrLf & "<cac:AccountingCustomerParty>"
+                xmlstring += vbCrLf & "<cac:Party>"
+                xmlstring += vbCrLf & "<cac:PartyIdentification>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""SAG"">" & rset11.Fields.Item("RegNum").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:PartyIdentification>"
+                xmlstring += vbCrLf & "<cac:PostalAddress>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("CStreet").Value & "</cbc:StreetName>"
+                Dim bul As String = rset11.Fields.Item("CBuilding").Value
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Item("CBuilding").Value & "</cbc:BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("CBuilding").Value & "</cbc:PlotIdentification>"
+                xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("U_District").Value & "</cbc:CitySubdivisionName>"
+                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("CCity").Value & "</cbc:CityName>"
+                xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("CZipCode").Value & "</cbc:PostalZone>"
+                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("CState").Value & "</cbc:CountrySubentity>"
+                xmlstring += vbCrLf & "<cac:Country>"
+
+
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("CCountry").Value & "</cbc:IdentificationCode>"
+                xmlstring += vbCrLf & "</cac:Country>"
+                xmlstring += vbCrLf & "</cac:PostalAddress>"
+                xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
+                xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
+                xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
+                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CardName").Value & "</cbc:RegistrationName>"
+                xmlstring += vbCrLf & "</cac:PartyLegalEntity>"
+                xmlstring += vbCrLf & "</cac:Party>"
+
+                xmlstring += vbCrLf & "</cac:AccountingCustomerParty>"
+                xmlstring += vbCrLf & "<cac:Delivery>"
+                xmlstring += vbCrLf & "<cbc:ActualDeliveryDate>" & DelDate & "</cbc:ActualDeliveryDate>"
+                xmlstring += vbCrLf & "<cbc:LatestDeliveryDate>" & DelDate & "</cbc:LatestDeliveryDate>"
+                xmlstring += vbCrLf & "</cac:Delivery>"
+                xmlstring += vbCrLf & "<cac:PaymentMeans>"
+
+                xmlstring += vbCrLf & "<cbc:PaymentMeansCode>10</cbc:PaymentMeansCode>"
                 xmlstring += vbCrLf & "</cac:PaymentMeans>"
                 Dim Discsum As String = Me.StringtoDouble(rset11.Fields.Item("DiscSum").Value)
                 Dim Vatsum As String = Me.StringtoDouble(rset11.Fields.Item("VatSum").Value)
@@ -970,44 +1291,42 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cac:AllowanceCharge>"
                 xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
-                xmlstring += vbCrLf & "<cbc: AllowanceChargeReason>discount</cbc: AllowanceChargeReason>"
-                'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & rset11. Fields. Item("DiscPrcnt"). Value & "</cbc:MultiplierFactorNumeric>"
-                xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & Discsum & "</cbc: Amount>"
-                'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc: BaseAmount>"
+                xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
+                xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & Discsum & "</cbc:Amount>"
+
+                'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:BaseAmount>"
                 xmlstring += vbCrLf & "<cac:TaxCategory>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">E</cbc: ID>"
-                xmlstring += vbCrLf & " <cbc:Percent>0.00</cbc:Percent>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">S</cbc:ID>"
+                xmlstring += vbCrLf & " <cbc:Percent>" & rATEE & "</cbc:Percent>"
                 xmlstring += vbCrLf & "<cac:TaxScheme>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc : ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:TaxCategory>"
                 xmlstring += vbCrLf & "</cac:AllowanceCharge>"
 
                 xmlstring += vbCrLf & "<cac:TaxTotal>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & TaxCurrency & """>" & Vatsum & "</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxSubtotal>"
-                xmlstring += vbCrLf & "<cbc: TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc: TaxableAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID= """ & Currency & """>0. 0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc:TaxableAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID= """ & TaxCurrency & """>" & Vatsum & "</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxCategory>"
-                xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
-                xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
-                xmlstring += vbCrLf & "<cbc: TaxExemptionReasonCode>" & rset11.Fields.Ite("TaxReasonCode").Value & "</cbc: TaxExemptionReasonCode>"
-                xmlstring += vbCrLf & "<cbc: TaxExemptionReason>" & rset11.Fields.Item("TaxReason").Value & "</cbc: TaxExemptionReason>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">S</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:Percent>" & rATEE & "</cbc:Percent>"
                 xmlstring += vbCrLf & "<cac:TaxScheme>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc :ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:TaxCategory>"
                 xmlstring += vbCrLf & "</cac:TaxSubtotal>"
                 xmlstring += vbCrLf & "</cac:TaxTotal>"
                 xmlstring += vbCrLf & "<cac:TaxTotal>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & TaxCurrency & """>" & Vatsum & "</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "</cac:TaxTotal>"
                 xmlstring += vbCrLf & "<cac:LegalMonetaryTotal>"
                 xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:LineExtensionAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc: TaxExclusiveAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc: TaxInclusiveAmount>"
-                xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc: AllowanceTotalAmount>"
-                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc: PrepaidAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc:TaxExclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:TaxInclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc:AllowanceTotalAmount>"
+                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc:PrepaidAmount>"
                 xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
@@ -1019,8 +1338,7 @@ Public Class ARInvoice
                     For j As Integer = 1 To rset112.RecordCount
                         Dim Qty As String = Me.StringtoDouble1(rset112.Fields.Item("Quantity").Value)
                         Dim UnitPrice As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("Price").Value))
-                        Dim valk As Double = CDbl(Qty) * CDbl(rset112.Fields.Item("Price").Value)
-                        Dim LTotal As String = Me.StringtoDouble(valk)
+
                         Dim LVatSum As String = Me.StringtoDouble(CDbl((rset112.Fields.Item("vat").Value)))
                         Dim DsSum As String = Me.StringtoDouble(CDbl((rset112.Fields.Item("Discount").Value)))
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
@@ -1031,33 +1349,33 @@ Public Class ARInvoice
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
                         xmlstring += vbCrLf & "<cac:InvoiceLine>"
-                        xmlstring += vbCrLf & "<cbc:ID>" & j & "</cbc: ID>"
-                        xmlstring += vbCrLf & "<cbc: InvoicedQuantity unitCode=""PCE"">" & Qty & "</cbc: InvoicedQuantity>"
+                        xmlstring += vbCrLf & "<cbc:ID>" & j & "</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:InvoicedQuantity unitCode=""PCE"">" & Qty & "</cbc:InvoicedQuantity>"
                         xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineTotal & "</cbc:LineExtensionAmount>"
                         xmlstring += vbCrLf & "<cac:TaxTotal>"
-                        xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0. 00</cbc: TaxAmount>"
-                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>" & RoundAmnt & "</cbc: RoundingAmount>"
+                        xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & TaxCurrency & """>" & LVatSum & "</cbc:TaxAmount>"
+                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>" & RoundAmnt & "</cbc:RoundingAmount>"
                         xmlstring += vbCrLf & "</cac:TaxTotal>"
                         xmlstring += vbCrLf & "<cac:Item>"
-                        xmlstring += vbCrLf & "<cbc:Name>" & rset112.Fields.Item("Dscription").Value & "</cbc: Name>"
+                        xmlstring += vbCrLf & "<cbc:Name>" & rset112.Fields.Item("Dscription").Value & "</cbc:Name>"
                         xmlstring += vbCrLf & "<cac:ClassifiedTaxCategory>"
-                        xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
-                        xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
+                        xmlstring += vbCrLf & "<cbc:ID>S</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:Percent>" & Rate & "</cbc:Percent>"
                         xmlstring += vbCrLf & "<cac:TaxScheme>"
-                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc: ID>"
+                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
                         xmlstring += vbCrLf & "</cac:TaxScheme>"
                         xmlstring += vbCrLf & "</cac:ClassifiedTaxCategory>"
                         xmlstring += vbCrLf & "</cac:Item>"
                         xmlstring += vbCrLf & "<cac:Price>"
                         xmlstring += vbCrLf & "<cbc:PriceAmount currencyID=""" & Currency & """>" & UnitPrice & "</cbc:PriceAmount>"
-                        xmlstring += vbCrLf & "<cbc:BaseQuantity unitCode=""" & rset112.Fields.Item("Unitmsr").Value & """>1</cbc: BaseQuantity>"
+                        xmlstring += vbCrLf & "<cbc:BaseQuantity unitCode=""" & rset112.Fields.Item("Unitmsr").Value & """>1</cbc:BaseQuantity>"
                         xmlstring += vbCrLf & "<cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "<cbc:ID>1</cbc:ID>"
                         xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
                         'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & disc & "</cbc:MultiplierFactorNumeric>"
-                        xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc: AllowanceChargeReason>"
-                        xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & DsSum & "</cbc: Amount>"
-                        'xmlstring += vbCrLf & "<cbc: BaseAmount currencyID=""" & Currency & """>" & BaseAmount & "</cbc: BaseAmount>"
+                        xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
+                        ' xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & disc & "</cbc:MultiplierFactorNumeric>"
+                        xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & DsSum & "</cbc:Amount>"
                         xmlstring += vbCrLf & "</cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "</cac:Price>"
                         xmlstring += vbCrLf & "</cac:InvoiceLine>"
@@ -1090,29 +1408,29 @@ Public Class ARInvoice
                 xmlstring += " <? xml version=""1.0"" encoding=""UTF-8""?>"
                 xmlstring += vbCrLf & "<Invoice xmlns=""urn: oasis: names: specification: ubl : schema:xsd: Invoice-2"" xmlns:cac=""urn: oasis: names: specification: ubl : schea:xsd: CommonAggregateComponents-2"" xmlns: cbc=""urn: oasis: names: specification:ubl:schema:xsd:CommonExtensionComponents-2""><ext:UBLExtensions>"
                 xmlstring += vbCrLf & "<ext:UBLExtension>"
-                xmlstring += vbCrLf & "<ext:ExtensionURI>urn: oasis: names: specification: ubl:dsig: enveloped:xades</ext : ExtensionURI>"
+                xmlstring += vbCrLf & "<ext:ExtensionURI>urn: oasis: names: specification: ubl:dsig:enveloped:xades</ext : ExtensionURI>"
                 xmlstring += vbCrLf & "<ext:ExtensionContent>"
-                xmlstring += vbCrLf & "<sig: UBLDocumentSignatures xmlns:sig=""urn: oasis: names: specification: ubl : schema:xsd: CormonSignatureComponents-2"" xmlns:sac=""urn: oasis: names: specification: ubl : schema:xsd: SignatureAggregateComponents-2"" xmlns:sbc=""urn:oasis:names:specification:ubl:schema:xsd:signatureBasicComponents-2"">"
+                xmlstring += vbCrLf & "<sig:UBLDocumentSignatures xmlns:sig=""urn: oasis: names: specification: ubl : schema:xsd: CormonSignatureComponents-2"" xmlns:sac=""urn: oasis: names: specification: ubl : schema:xsd: SignatureAggregateComponents-2"" xmlns:sbc=""urn:oasis:names:specification:ubl:schema:xsd:signatureBasicComponents-2"">"
                 xmlstring += vbCrLf & "<sac:SignatureInformation>"
-                xmlstring += vbCrLf & "<cbc: ID>urn: oasis: names:specification: ubl: signature:1</cbc: ID>"
-                xmlstring += vbCrLf & "<sbc: ReferencedSignatureID>urn: oasis: names: specification: ubl: signature: Invoicesadas</sbc: ReferencedSignatureID>"
+                xmlstring += vbCrLf & "<cbc:ID>urn: oasis: names:specification: ubl: signature:1</cbc:ID>"
+                xmlstring += vbCrLf & "<sbc:ReferencedSignatureID>urn: oasis: names: specification: ubl: signature: Invoicesadas</sbc:ReferencedSignatureID>"
                 xmlstring += vbCrLf & "<ds:Signature xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"" Id=""signature"">"
                 xmlstring += vbCrLf & "<ds:SignedInfo>"
                 xmlstring += vbCrLf & "<ds:CanonicalizationMethod Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
                 xmlstring += vbCrLf & "<ds:SignatureMethod Algorithm=""http://www. w3. org/2001/04/xmldsig-more#rsa-sha256""/>"
                 xmlstring += vbCrLf & "<ds:Reference Id=""invoiceSignedData"" URI="""">"
-                xmlstring += vbCrLf & "<ds: Transforms>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:Transforms>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
                 xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: ext:UBLExtensions) </ds:XPath>"
                 xmlstring += vbCrLf & "</ds:Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
                 xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:Signature) </ds:XPath>"
-                xmlstring += vbCrLf & "</ds: Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
-                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:AdditionalDocumentReference[ cbc: ID='QR' ])</ds:XPath>"
-                xmlstring += vbCrLf & "</ds: Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
-                xmlstring += vbCrLf & "</ds: Transforms>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:AdditionalDocumentReference[ cbc:ID='QR' ])</ds:XPath>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
+                xmlstring += vbCrLf & "</ds:Transforms>"
                 xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256""/>"
                 xmlstring += vbCrLf & "<ds:DigestValue />"
                 xmlstring += vbCrLf & "</ds:Reference>"
@@ -1138,9 +1456,9 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<xades:Cert>"
                 xmlstring += vbCrLf & "<xades:CertDigest>"
                 xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3. org/2001/04/xmlenc#sha256""/>"
-                xmlstring += vbCrLf & "<ds:DigestValue>MmZhNzliYWRhMTZjYTQwMWRiMDk4NzIwYjFlMmFhNzBlYzM4NmFhODk1YjYyNTgxNmMzMWQzNDE5ZGF1MGQ30Q ==< /ds:DigestValue>"
+                xmlstring += vbCrLf & "<ds:DigestValue>MmZhNzliYWRhMTZjYTQwMWRiMDk4NzIwYjFlMmFhNzBlYzM4NmFhODk1YjYyNTgxNmMzMWQzNDE5ZGF1MGQ30Q ==</ds:DigestValue>"
                 xmlstring += vbCrLf & "</xades:CertDigest>"
-                xmlstring += vbCrLf & "<xades: IssuerSerial>"
+                xmlstring += vbCrLf & "<xades:IssuerSerial>"
                 xmlstring += vbCrLf & "<ds:X509IssuerName>CN=TSZEINVOICE-SubCA-1, DC=extgazt, DC=gov, DC=local</ds:X509IssuerName>"
                 xmlstring += vbCrLf & "<ds:X509SerialNumber>2475382878760965694489209096382389797821381034</ds:X509SerialNumber>"
                 xmlstring += vbCrLf & "</xades:IssuerSerial>"
@@ -1157,7 +1475,7 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</ext:UBLExtension>"
                 xmlstring += vbCrLf & "</ext:UBLExtensions>"
                 xmlstring += vbCrLf & "<cbc:ProfileID>reporting:1. 0</cbc:ProfileID>"
-                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("DocNum").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("DocNum").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:UUID>" & rset11.Fields.Ite("UUID").Value & "</cbc:UUID>"
                 Dim Datel As Date = Date.ParseExact(frmARInvoice.Items.Item("10").Specific.value, "yyyyMMdd", Nothing)
                 Dim newdate As String = Datel.ToString("yyyy-MM-dd")
@@ -1167,89 +1485,89 @@ Public Class ARInvoice
                 Dim ActDelDate As String = Date3.ToString("yyyy-MM-dd")
                 Dim Currency As String = "SAR" '' "" & rset11. Fields. Item("DocCur"). Value & "" ''oDBDSHeader.GetValue("DocCur", 0)
                 Dim rATEE As Double = rset11.Fields.Item("Rate").Value
-                xmlstring += vbCrLf & "<cbc: IssueDate>" & newdate & "</cbc: IssueDate>"
-                xmlstring += vbCrLf & "<cbc: IssueTime>14:40:40</cbc: IssueTime>"
-                xmlstring += vbCrLf & "<cbc: InvoiceTypeCode name=""0100000"">388</cbc: InvoiceTypeCode>"
-                xmlstring += vbCrLf & "<cbc:Note>" & rset11.Fields.Item("Corrments").Value & "</cbc: Note>"
+                xmlstring += vbCrLf & "<cbc:IssueDate>" & newdate & "</cbc:IssueDate>"
+                xmlstring += vbCrLf & "<cbc:IssueTime>14:40:40</cbc:IssueTime>"
+                xmlstring += vbCrLf & "<cbc:InvoiceTypeCode name=""0100000"">388</cbc:InvoiceTypeCode>"
+                xmlstring += vbCrLf & "<cbc:Note>" & rset11.Fields.Item("Corrments").Value & "</cbc:Note>"
                 xmlstring += vbCrLf & "<cbc:DocumentCurrencyCode>" & Currency & "</cbc:DocumentCurrencyCode>"
-                xmlstring += vbCrLf & "<cbc: TaxCurrencyCode>" & Currency & "</cbc: TaxCurrencyCode>"
+                xmlstring += vbCrLf & "<cbc:TaxCurrencyCode>" & Currency & "</cbc:TaxCurrencyCode>"
                 xmlstring += vbCrLf & "<cbc:LineCountNumeric>" & rset11.Fields.Item("Count").Value & "</cbc:LineCountNumeric>"
                 xmlstring += vbCrLf & "<cac:OrderReference>"
-                xmlstring += vbCrLf & "<cbc: ID>" & rset11.Fields.Item("NumAtCard").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("NumAtCard").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:OrderReference>"
                 xmlstring += vbCrLf & "<cac:ContractDocumentReference>"
-                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("U_CustRef").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("U_CustRef").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:ContractDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
-                xmlstring += vbCrLf & "<cbc: ID>ICV</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>ICV</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:UUID>" & ICV & "</cbc:UUID>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cbc:ID>PIH</cbc:ID>"
                 xmlstring += vbCrLf & "<cac:Attachment>"
-                xmlstring += vbCrLf & "<cbc: EmbeddedDocumentBinaryObject mimeCode=""text/plain"">" & PIH & "</cbc: EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">" & PIH & "</cbc:EmbeddedDocumentBinaryObject>"
                 xmlstring += vbCrLf & "</cac:Attachment>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
-                xmlstring += vbCrLf & "<cbc: ID>QR</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>QR</cbc:ID>"
                 xmlstring += vbCrLf & "<cac:Attachment>"
-                xmlstring += vbCrLf & "<cbc: EmbeddedDocumentBinaryObject mimeCode=""text/plain"">AR1BbCBTYWxhbSBTdXBwbGllcyBDby4gTFREAg8zMDAwNTUxODQOMDAwMDMDFDIwMjEtMDQtMjVUMTU6MzA6MDBaBAcxMDM1LjAwBQYxMzUuMDAGLG1mVkNpcHlaUG1IZzFpU3QreWJSY1JMaFAreGZuSDVmZnNMYXdkaXU2UEk9B1gwVjAQBgcqhkjoPQIBBgUrgQQACgNCAATTAK91rTVko9rkq6ZYcc9HDRZP4b954zA4Km7YXJ+snTVhLkzU@HsmSX9Un8jDhRTOHDKaft8C/uuUY934vuMNCCEAnHTyqYXeVhBdCU09gq4nX73oEgVZCjZ8STz9QY7Sy1sJIBkN9Q56qQGMZ1y02uwNYqXPAagxEF1tqxImEczcDbK2</cbc:EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">AR1BbCBTYWxhbSBTdXBwbGllcyBDby4gTFREAg8zMDAwNTUxODQOMDAwMDMDFDIwMjEtMDQtMjVUMTU6MzA6MDBaBAcxMDM1LjAwBQYxMzUuMDAGLG1mVkNpcHlaUG1IZzFpU3QreWJSY1JMaFAreGZuSDVmZnNMYXdkaXU2UEk9B1gwVjAQBgcqhkjoPQIBBgUrgQQACgNCAATTAK91rTVko9rkq6ZYcc9HDRZP4b954zA4Km7YXJ+snTVhLkzU@HsmSX9Un8jDhRTOHDKaft8C/uuUY934vuMNCCEAnHTyqYXeVhBdCU09gq4nX73oEgVZCjZ8STz9QY7Sy1sJIBkN9Q56qQGMZ1y02uwNYqXPAagxEF1tqxImEczcDbK2</cbc:EmbeddedDocumentBinaryObject>"
                 xmlstring += vbCrLf & "</cac:Attachment>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 'xmlstring += vbCrLf & "<cac:Signature>"
-                'xmlstring += vbCrLf & "<cbc: ID>urn: oasis: names: specification: ubl: signature: Invoice</cbc : ID>"
-                'xmlstring += vbCrLf & "<cbc:SignatureMethod>urn: oasis: names: specification: ubl:dsig: enveloped:xades</cbc: SignatureMethod>"
+                'xmlstring += vbCrLf & "<cbc:ID>urn: oasis: names: specification: ubl: signature: Invoice</cbc:ID>"
+                'xmlstring += vbCrLf & "<cbc:SignatureMethod>urn: oasis: names: specification: ubl:dsig:enveloped:xades</cbc:SignatureMethod>"
                 'xmlstring += vbCrLf & "</cac:Signature>"
                 xmlstring += vbCrLf & "<cac:AccountingSupplierParty>"
                 xmlstring += vbCrLf & "<cac:Party>"
                 xmlstring += vbCrLf & "<cac:PartyIdentification>"
-                xmlstring += vbCrLf & "<cbc: ID schemeID=""CRN"">" & rset11.Fields.Item("TaxIDNum3").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""CRN"">" & rset11.Fields.Item("TaxIDNum3").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:PartyIdentification>"
                 xmlstring += vbCrLf & "<cac:PostalAddress>"
-                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("Street").Value & "</cbc: StreetName>"
-                xmlstring += vbCrLf & "<cbc: BuildingNumber>" & rset11.Fields.Item("Building").Value & "</cbc: BuildingNumber>"
-                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("Building").Value & "</cbc: PlotIdentification>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("Street").Value & "</cbc:StreetName>"
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Item("Building").Value & "</cbc:BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("Building").Value & "</cbc:PlotIdentification>"
                 xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("County").Value & "</cbc:CitySubdivisionName>"
                 xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("City").Value & "</cbc:CityName>"
                 xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("ZipCode").Value & "</cbc:PostalZone>"
                 xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("Country").Value & "</cbc:CountrySubentity>"
                 xmlstring += vbCrLf & "<cac:Country>"
-                xmlstring += vbCrLf & "<cbc: IdentificationCode>" & rset11.Fields.Item("Country").Value & "</cbc: IdentificationCode>"
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("Country").Value & "</cbc:IdentificationCode>"
                 xmlstring += vbCrLf & "</cac:Country>"
                 xmlstring += vbCrLf & "</cac:PostalAddress>"
                 xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cbc:CompanyID>" & rset11.Fields.Item("TaxPayerRf").Value & "</cbc:CompanyID>"
-                xmlstring += vbCrLf & "<cac: TaxScheme>"
-                xmlstring += vbCrLf & "<cbc: ID>VAT</cbc: ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
-                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CompnyName").Value & "</cbc: RegistrationName>"
+                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CompnyName").Value & "</cbc:RegistrationName>"
                 xmlstring += vbCrLf & "</cac:PartyLegalEntity>"
                 xmlstring += vbCrLf & "</cac:Party>"
                 xmlstring += vbCrLf & "</cac:AccountingSupplierParty>"
                 xmlstring += vbCrLf & "<cac:AccountingCustomerParty>"
                 xmlstring += vbCrLf & "<cac:Party>"
                 xmlstring += vbCrLf & "<cac:PartyIdentification>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""SAG"">" & rset11.Fields.Item("RegNum").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""SAG"">" & rset11.Fields.Item("RegNum").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:PartyIdentification>"
                 xmlstring += vbCrLf & "<cac:PostalAddress>"
-                xmlstring += vbCrLf & "<cbc: StreetName>" & rset11.Fields.Item("CStreet").Value & "</cbc:StreetName>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("CStreet").Value & "</cbc:StreetName>"
                 Dim bul As String = rset11.Fields.Item("CBuilding").Value
-                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Ite("CBuilding").Value & "</cbc: BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Ite("CBuilding").Value & "</cbc:BuildingNumber>"
                 xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("CBuilding").Value & "</cbc:PlotIdentification>"
                 xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("U_District").Value & "</cbc:CitySubdivisionName>"
-                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("CCity").Value & "</cbc: CityName>"
+                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("CCity").Value & "</cbc:CityName>"
                 xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("CZipCode").Value & "</cbc:PostalZone>"
-                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("CState").Value & "</cbc: CountrySubentity>"
+                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("CState").Value & "</cbc:CountrySubentity>"
                 xmlstring += vbCrLf & "<cac:Country>"
-                xmlstring += vbCrLf & "<cbc: IdentificationCode>" & rset11.Fields.Item("CCountry").Value & "</cbc: IdentificationCode>"
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("CCountry").Value & "</cbc:IdentificationCode>"
                 xmlstring += vbCrLf & "</cac:Country>"
                 xmlstring += vbCrLf & "</cac:PostalAddress>"
                 xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
-                xmlstring += vbCrLf & "<cac: TaxScheme>"
-                xmlstring += vbCrLf & "<cbc: ID>VAT</cbc: ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
                 xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CardName").Value & "</cbc:RegistrationName>"
@@ -1257,11 +1575,11 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</cac:Party>"
                 xmlstring += vbCrLf & "</cac:AccountingCustomerParty>"
                 xmlstring += vbCrLf & "<cac:Delivery>"
-                xmlstring += vbCrLf & "<cbc: ActualDeliveryDate>" & DelDate & "</cbc: ActualDeliveryDate>"
+                xmlstring += vbCrLf & "<cbc:ActualDeliveryDate>" & DelDate & "</cbc:ActualDeliveryDate>"
                 xmlstring += vbCrLf & "<cbc:LatestDeliveryDate>" & ActDelDate & "</cbc:LatestDeliveryDate>"
                 xmlstring += vbCrLf & "</cac:Delivery>"
                 xmlstring += vbCrLf & "<cac:PaymentMeans>"
-                xmlstring += vbCrLf & "<cbc:PaymentMeansCode>10</cbc: PaymentMeansCode>"
+                xmlstring += vbCrLf & "<cbc:PaymentMeansCode>10</cbc:PaymentMeansCode>"
                 xmlstring += vbCrLf & "</cac:PaymentMeans>"
                 Dim Discsum As String = Me.StringtoDouble(rset11.Fields.Item("DiscSum").Value)
                 Dim Vatsum As String = Me.StringtoDouble(rset11.Fields.Item("VatSum").Value)
@@ -1275,44 +1593,44 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cac:AllowanceCharge>"
                 xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
-                xmlstring += vbCrLf & "<cbc: AllowanceChargeReason>discount</cbc: AllowanceChargeReason>"
+                xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
                 'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & rset11. Fields. Item("DiscPrcnt"). Value & "</cbc:MultiplierFactorNumeric>"
-                xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & Discsum & "</cbc: Amount>"
-                'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc: BaseAmount>"
+                xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & Discsum & "</cbc:Amount>"
+                'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:BaseAmount>"
                 xmlstring += vbCrLf & "<cac:TaxCategory>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">E</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">E</cbc:ID>"
                 xmlstring += vbCrLf & " <cbc:Percent>0.00</cbc:Percent>"
                 xmlstring += vbCrLf & "<cac:TaxScheme>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc : ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:TaxCategory>"
                 xmlstring += vbCrLf & "</cac:AllowanceCharge>"
 
                 xmlstring += vbCrLf & "<cac:TaxTotal>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxSubtotal>"
-                xmlstring += vbCrLf & "<cbc: TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc: TaxableAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID= """ & Currency & """>0. 0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc:TaxableAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID= """ & Currency & """>0.0</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxCategory>"
                 xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
-                xmlstring += vbCrLf & "<cbc: TaxExemptionReasonCode>" & rset11.Fields.Ite("TaxReasonCode").Value & "</cbc: TaxExemptionReasonCode>"
-                xmlstring += vbCrLf & "<cbc: TaxExemptionReason>" & rset11.Fields.Item("TaxReason").Value & "</cbc: TaxExemptionReason>"
+                xmlstring += vbCrLf & "<cbc:TaxExemptionReasonCode>" & rset11.Fields.Ite("TaxReasonCode").Value & "</cbc:TaxExemptionReasonCode>"
+                xmlstring += vbCrLf & "<cbc:TaxExemptionReason>" & rset11.Fields.Item("TaxReason").Value & "</cbc:TaxExemptionReason>"
                 xmlstring += vbCrLf & "<cac:TaxScheme>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc :ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:TaxCategory>"
                 xmlstring += vbCrLf & "</cac:TaxSubtotal>"
                 xmlstring += vbCrLf & "</cac:TaxTotal>"
                 xmlstring += vbCrLf & "<cac:TaxTotal>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "</cac:TaxTotal>"
                 xmlstring += vbCrLf & "<cac:LegalMonetaryTotal>"
                 xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:LineExtensionAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc: TaxExclusiveAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc: TaxInclusiveAmount>"
-                xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc: AllowanceTotalAmount>"
-                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc: PrepaidAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc:TaxExclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:TaxInclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc:AllowanceTotalAmount>"
+                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc:PrepaidAmount>"
                 xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
@@ -1336,33 +1654,33 @@ Public Class ARInvoice
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
                         xmlstring += vbCrLf & "<cac:InvoiceLine>"
-                        xmlstring += vbCrLf & "<cbc:ID>" & j & "</cbc: ID>"
-                        xmlstring += vbCrLf & "<cbc: InvoicedQuantity unitCode=""PCE"">" & Qty & "</cbc: InvoicedQuantity>"
+                        xmlstring += vbCrLf & "<cbc:ID>" & j & "</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:InvoicedQuantity unitCode=""PCE"">" & Qty & "</cbc:InvoicedQuantity>"
                         xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineTotal & "</cbc:LineExtensionAmount>"
                         xmlstring += vbCrLf & "<cac:TaxTotal>"
-                        xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0. 00</cbc: TaxAmount>"
-                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>" & RoundAmnt & "</cbc: RoundingAmount>"
+                        xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0.00</cbc:TaxAmount>"
+                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>" & RoundAmnt & "</cbc:RoundingAmount>"
                         xmlstring += vbCrLf & "</cac:TaxTotal>"
                         xmlstring += vbCrLf & "<cac:Item>"
-                        xmlstring += vbCrLf & "<cbc:Name>" & rset112.Fields.Item("Dscription").Value & "</cbc: Name>"
+                        xmlstring += vbCrLf & "<cbc:Name>" & rset112.Fields.Item("Dscription").Value & "</cbc:Name>"
                         xmlstring += vbCrLf & "<cac:ClassifiedTaxCategory>"
                         xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
                         xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
                         xmlstring += vbCrLf & "<cac:TaxScheme>"
-                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc: ID>"
+                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
                         xmlstring += vbCrLf & "</cac:TaxScheme>"
                         xmlstring += vbCrLf & "</cac:ClassifiedTaxCategory>"
                         xmlstring += vbCrLf & "</cac:Item>"
                         xmlstring += vbCrLf & "<cac:Price>"
                         xmlstring += vbCrLf & "<cbc:PriceAmount currencyID=""" & Currency & """>" & UnitPrice & "</cbc:PriceAmount>"
-                        xmlstring += vbCrLf & "<cbc:BaseQuantity unitCode=""" & rset112.Fields.Item("Unitmsr").Value & """>1</cbc: BaseQuantity>"
+                        xmlstring += vbCrLf & "<cbc:BaseQuantity unitCode=""" & rset112.Fields.Item("Unitmsr").Value & """>1</cbc:BaseQuantity>"
                         xmlstring += vbCrLf & "<cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "<cbc:ID>1</cbc:ID>"
                         xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
                         'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & disc & "</cbc:MultiplierFactorNumeric>"
-                        xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc: AllowanceChargeReason>"
-                        xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & DsSum & "</cbc: Amount>"
-                        'xmlstring += vbCrLf & "<cbc: BaseAmount currencyID=""" & Currency & """>" & BaseAmount & "</cbc: BaseAmount>"
+                        xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
+                        xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & DsSum & "</cbc:Amount>"
+                        'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & BaseAmount & "</cbc:BaseAmount>"
                         xmlstring += vbCrLf & "</cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "</cac:Price>"
                         xmlstring += vbCrLf & "</cac:InvoiceLine>"
@@ -1396,29 +1714,29 @@ Public Class ARInvoice
                 xmlstring += " <? xml version=""1.0"" encoding=""UTF-8""?>"
                 xmlstring += vbCrLf & "<Invoice xmlns=""urn: oasis: names: specification: ubl : schema:xsd: Invoice-2"" xmlns:cac=""urn: oasis: names: specification: ubl : schea:xsd: CommonAggregateComponents-2"" xmlns: cbc=""urn: oasis: names: specification:ubl:schema:xsd:CommonExtensionComponents-2""><ext:UBLExtensions>"
                 xmlstring += vbCrLf & "<ext:UBLExtension>"
-                xmlstring += vbCrLf & "<ext:ExtensionURI>urn: oasis: names: specification: ubl:dsig: enveloped:xades</ext : ExtensionURI>"
+                xmlstring += vbCrLf & "<ext:ExtensionURI>urn: oasis: names: specification: ubl:dsig:enveloped:xades</ext : ExtensionURI>"
                 xmlstring += vbCrLf & "<ext:ExtensionContent>"
-                xmlstring += vbCrLf & "<sig: UBLDocumentSignatures xmlns:sig=""urn: oasis: names: specification: ubl : schema:xsd: CormonSignatureComponents-2"" xmlns:sac=""urn: oasis: names: specification: ubl : schema:xsd: SignatureAggregateComponents-2"" xmlns:sbc=""urn:oasis:names:specification:ubl:schema:xsd:signatureBasicComponents-2"">"
+                xmlstring += vbCrLf & "<sig:UBLDocumentSignatures xmlns:sig=""urn: oasis: names: specification: ubl : schema:xsd: CormonSignatureComponents-2"" xmlns:sac=""urn: oasis: names: specification: ubl : schema:xsd: SignatureAggregateComponents-2"" xmlns:sbc=""urn:oasis:names:specification:ubl:schema:xsd:signatureBasicComponents-2"">"
                 xmlstring += vbCrLf & "<sac:SignatureInformation>"
-                xmlstring += vbCrLf & "<cbc: ID>urn: oasis: names:specification: ubl: signature:1</cbc: ID>"
-                xmlstring += vbCrLf & "<sbc: ReferencedSignatureID>urn: oasis: names: specification: ubl: signature: Invoicesadas</sbc: ReferencedSignatureID>"
+                xmlstring += vbCrLf & "<cbc:ID>urn: oasis: names:specification: ubl: signature:1</cbc:ID>"
+                xmlstring += vbCrLf & "<sbc:ReferencedSignatureID>urn: oasis: names: specification: ubl: signature: Invoicesadas</sbc:ReferencedSignatureID>"
                 xmlstring += vbCrLf & "<ds:Signature xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"" Id=""signature"">"
                 xmlstring += vbCrLf & "<ds:SignedInfo>"
                 xmlstring += vbCrLf & "<ds:CanonicalizationMethod Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
                 xmlstring += vbCrLf & "<ds:SignatureMethod Algorithm=""http://www. w3. org/2001/04/xmldsig-more#rsa-sha256""/>"
                 xmlstring += vbCrLf & "<ds:Reference Id=""invoiceSignedData"" URI="""">"
-                xmlstring += vbCrLf & "<ds: Transforms>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:Transforms>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
                 xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: ext:UBLExtensions) </ds:XPath>"
                 xmlstring += vbCrLf & "</ds:Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
                 xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:Signature) </ds:XPath>"
-                xmlstring += vbCrLf & "</ds: Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
-                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:AdditionalDocumentReference[ cbc: ID='QR' ])</ds:XPath>"
-                xmlstring += vbCrLf & "</ds: Transform>"
-                xmlstring += vbCrLf & "<ds: Transform Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
-                xmlstring += vbCrLf & "</ds: Transforms>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/TR/1999/REC-xpath-19991116"">"
+                xmlstring += vbCrLf & "<ds:XPath>not(//ancestor-or-self :: cac:AdditionalDocumentReference[ cbc:ID='QR' ])</ds:XPath>"
+                xmlstring += vbCrLf & "</ds:Transform>"
+                xmlstring += vbCrLf & "<ds:Transform Algorithm=""http://www.w3.org/2006/12/xml-c14n11""/>"
+                xmlstring += vbCrLf & "</ds:Transforms>"
                 xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256""/>"
                 xmlstring += vbCrLf & "<ds:DigestValue />"
                 xmlstring += vbCrLf & "</ds:Reference>"
@@ -1444,9 +1762,9 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<xades:Cert>"
                 xmlstring += vbCrLf & "<xades:CertDigest>"
                 xmlstring += vbCrLf & "<ds:DigestMethod Algorithm=""http://www.w3. org/2001/04/xmlenc#sha256""/>"
-                xmlstring += vbCrLf & "<ds:DigestValue>MmZhNzliYWRhMTZjYTQwMWRiMDk4NzIwYjFlMmFhNzBlYzM4NmFhODk1YjYyNTgxNmMzMWQzNDE5ZGF1MGQ30Q ==< /ds:DigestValue>"
+                xmlstring += vbCrLf & "<ds:DigestValue>MmZhNzliYWRhMTZjYTQwMWRiMDk4NzIwYjFlMmFhNzBlYzM4NmFhODk1YjYyNTgxNmMzMWQzNDE5ZGF1MGQ30Q ==</ds:DigestValue>"
                 xmlstring += vbCrLf & "</xades:CertDigest>"
-                xmlstring += vbCrLf & "<xades: IssuerSerial>"
+                xmlstring += vbCrLf & "<xades:IssuerSerial>"
                 xmlstring += vbCrLf & "<ds:X509IssuerName>CN=TSZEINVOICE-SubCA-1, DC=extgazt, DC=gov, DC=local</ds:X509IssuerName>"
                 xmlstring += vbCrLf & "<ds:X509SerialNumber>2475382878760965694489209096382389797821381034</ds:X509SerialNumber>"
                 xmlstring += vbCrLf & "</xades:IssuerSerial>"
@@ -1463,7 +1781,7 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</ext:UBLExtension>"
                 xmlstring += vbCrLf & "</ext:UBLExtensions>"
                 xmlstring += vbCrLf & "<cbc:ProfileID>reporting:1. 0</cbc:ProfileID>"
-                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("DocNum").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("DocNum").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:UUID>" & rset11.Fields.Ite("UUID").Value & "</cbc:UUID>"
                 Dim Datel As Date = Date.ParseExact(frmARInvoice.Items.Item("10").Specific.value, "yyyyMMdd", Nothing)
                 Dim newdate As String = Datel.ToString("yyyy-MM-dd")
@@ -1473,89 +1791,89 @@ Public Class ARInvoice
                 Dim ActDelDate As String = Date3.ToString("yyyy-MM-dd")
                 Dim Currency As String = "SAR" '' "" & rset11. Fields. Item("DocCur"). Value & "" ''oDBDSHeader.GetValue("DocCur", 0)
                 Dim rATEE As Double = rset11.Fields.Item("Rate").Value
-                xmlstring += vbCrLf & "<cbc: IssueDate>" & newdate & "</cbc: IssueDate>"
-                xmlstring += vbCrLf & "<cbc: IssueTime>14:40:40</cbc: IssueTime>"
-                xmlstring += vbCrLf & "<cbc: InvoiceTypeCode name=""0100000"">388</cbc: InvoiceTypeCode>"
-                xmlstring += vbCrLf & "<cbc:Note>" & rset11.Fields.Item("Corrments").Value & "</cbc: Note>"
+                xmlstring += vbCrLf & "<cbc:IssueDate>" & newdate & "</cbc:IssueDate>"
+                xmlstring += vbCrLf & "<cbc:IssueTime>14:40:40</cbc:IssueTime>"
+                xmlstring += vbCrLf & "<cbc:InvoiceTypeCode name=""0100000"">388</cbc:InvoiceTypeCode>"
+                xmlstring += vbCrLf & "<cbc:Note>" & rset11.Fields.Item("Corrments").Value & "</cbc:Note>"
                 xmlstring += vbCrLf & "<cbc:DocumentCurrencyCode>" & Currency & "</cbc:DocumentCurrencyCode>"
-                xmlstring += vbCrLf & "<cbc: TaxCurrencyCode>" & Currency & "</cbc: TaxCurrencyCode>"
+                xmlstring += vbCrLf & "<cbc:TaxCurrencyCode>" & Currency & "</cbc:TaxCurrencyCode>"
                 xmlstring += vbCrLf & "<cbc:LineCountNumeric>" & rset11.Fields.Item("Count").Value & "</cbc:LineCountNumeric>"
                 xmlstring += vbCrLf & "<cac:OrderReference>"
-                xmlstring += vbCrLf & "<cbc: ID>" & rset11.Fields.Item("NumAtCard").Value & "</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("NumAtCard").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:OrderReference>"
                 xmlstring += vbCrLf & "<cac:ContractDocumentReference>"
-                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("U_CustRef").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID>" & rset11.Fields.Item("U_CustRef").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:ContractDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
-                xmlstring += vbCrLf & "<cbc: ID>ICV</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>ICV</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:UUID>" & ICV & "</cbc:UUID>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cbc:ID>PIH</cbc:ID>"
                 xmlstring += vbCrLf & "<cac:Attachment>"
-                xmlstring += vbCrLf & "<cbc: EmbeddedDocumentBinaryObject mimeCode=""text/plain"">" & PIH & "</cbc: EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">" & PIH & "</cbc:EmbeddedDocumentBinaryObject>"
                 xmlstring += vbCrLf & "</cac:Attachment>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 xmlstring += vbCrLf & "<cac:AdditionalDocumentReference>"
-                xmlstring += vbCrLf & "<cbc: ID>QR</cbc:ID>"
+                xmlstring += vbCrLf & "<cbc:ID>QR</cbc:ID>"
                 xmlstring += vbCrLf & "<cac:Attachment>"
-                xmlstring += vbCrLf & "<cbc: EmbeddedDocumentBinaryObject mimeCode=""text/plain"">AR1BbCBTYWxhbSBTdXBwbGllcyBDby4gTFREAg8zMDAwNTUxODQOMDAwMDMDFDIwMjEtMDQtMjVUMTU6MzA6MDBaBAcxMDM1LjAwBQYxMzUuMDAGLG1mVkNpcHlaUG1IZzFpU3QreWJSY1JMaFAreGZuSDVmZnNMYXdkaXU2UEk9B1gwVjAQBgcqhkjoPQIBBgUrgQQACgNCAATTAK91rTVko9rkq6ZYcc9HDRZP4b954zA4Km7YXJ+snTVhLkzU@HsmSX9Un8jDhRTOHDKaft8C/uuUY934vuMNCCEAnHTyqYXeVhBdCU09gq4nX73oEgVZCjZ8STz9QY7Sy1sJIBkN9Q56qQGMZ1y02uwNYqXPAagxEF1tqxImEczcDbK2</cbc:EmbeddedDocumentBinaryObject>"
+                xmlstring += vbCrLf & "<cbc:EmbeddedDocumentBinaryObject mimeCode=""text/plain"">AR1BbCBTYWxhbSBTdXBwbGllcyBDby4gTFREAg8zMDAwNTUxODQOMDAwMDMDFDIwMjEtMDQtMjVUMTU6MzA6MDBaBAcxMDM1LjAwBQYxMzUuMDAGLG1mVkNpcHlaUG1IZzFpU3QreWJSY1JMaFAreGZuSDVmZnNMYXdkaXU2UEk9B1gwVjAQBgcqhkjoPQIBBgUrgQQACgNCAATTAK91rTVko9rkq6ZYcc9HDRZP4b954zA4Km7YXJ+snTVhLkzU@HsmSX9Un8jDhRTOHDKaft8C/uuUY934vuMNCCEAnHTyqYXeVhBdCU09gq4nX73oEgVZCjZ8STz9QY7Sy1sJIBkN9Q56qQGMZ1y02uwNYqXPAagxEF1tqxImEczcDbK2</cbc:EmbeddedDocumentBinaryObject>"
                 xmlstring += vbCrLf & "</cac:Attachment>"
                 xmlstring += vbCrLf & "</cac:AdditionalDocumentReference>"
                 'xmlstring += vbCrLf & "<cac:Signature>"
-                'xmlstring += vbCrLf & "<cbc: ID>urn: oasis: names: specification: ubl: signature: Invoice</cbc : ID>"
-                'xmlstring += vbCrLf & "<cbc:SignatureMethod>urn: oasis: names: specification: ubl:dsig: enveloped:xades</cbc: SignatureMethod>"
+                'xmlstring += vbCrLf & "<cbc:ID>urn: oasis: names: specification: ubl: signature: Invoice</cbc:ID>"
+                'xmlstring += vbCrLf & "<cbc:SignatureMethod>urn: oasis: names: specification: ubl:dsig:enveloped:xades</cbc:SignatureMethod>"
                 'xmlstring += vbCrLf & "</cac:Signature>"
                 xmlstring += vbCrLf & "<cac:AccountingSupplierParty>"
                 xmlstring += vbCrLf & "<cac:Party>"
                 xmlstring += vbCrLf & "<cac:PartyIdentification>"
-                xmlstring += vbCrLf & "<cbc: ID schemeID=""CRN"">" & rset11.Fields.Item("TaxIDNum3").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""CRN"">" & rset11.Fields.Item("TaxIDNum3").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:PartyIdentification>"
                 xmlstring += vbCrLf & "<cac:PostalAddress>"
-                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("Street").Value & "</cbc: StreetName>"
-                xmlstring += vbCrLf & "<cbc: BuildingNumber>" & rset11.Fields.Item("Building").Value & "</cbc: BuildingNumber>"
-                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("Building").Value & "</cbc: PlotIdentification>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("Street").Value & "</cbc:StreetName>"
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Item("Building").Value & "</cbc:BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("Building").Value & "</cbc:PlotIdentification>"
                 xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("County").Value & "</cbc:CitySubdivisionName>"
                 xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("City").Value & "</cbc:CityName>"
                 xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("ZipCode").Value & "</cbc:PostalZone>"
                 xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("Country").Value & "</cbc:CountrySubentity>"
                 xmlstring += vbCrLf & "<cac:Country>"
-                xmlstring += vbCrLf & "<cbc: IdentificationCode>" & rset11.Fields.Item("Country").Value & "</cbc: IdentificationCode>"
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("Country").Value & "</cbc:IdentificationCode>"
                 xmlstring += vbCrLf & "</cac:Country>"
                 xmlstring += vbCrLf & "</cac:PostalAddress>"
                 xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cbc:CompanyID>" & rset11.Fields.Item("TaxPayerRf").Value & "</cbc:CompanyID>"
-                xmlstring += vbCrLf & "<cac: TaxScheme>"
-                xmlstring += vbCrLf & "<cbc: ID>VAT</cbc: ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
-                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CompnyName").Value & "</cbc: RegistrationName>"
+                xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CompnyName").Value & "</cbc:RegistrationName>"
                 xmlstring += vbCrLf & "</cac:PartyLegalEntity>"
                 xmlstring += vbCrLf & "</cac:Party>"
                 xmlstring += vbCrLf & "</cac:AccountingSupplierParty>"
                 xmlstring += vbCrLf & "<cac:AccountingCustomerParty>"
                 xmlstring += vbCrLf & "<cac:Party>"
                 xmlstring += vbCrLf & "<cac:PartyIdentification>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""SAG"">" & rset11.Fields.Item("RegNum").Value & "</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""SAG"">" & rset11.Fields.Item("RegNum").Value & "</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:PartyIdentification>"
                 xmlstring += vbCrLf & "<cac:PostalAddress>"
-                xmlstring += vbCrLf & "<cbc: StreetName>" & rset11.Fields.Item("CStreet").Value & "</cbc:StreetName>"
+                xmlstring += vbCrLf & "<cbc:StreetName>" & rset11.Fields.Item("CStreet").Value & "</cbc:StreetName>"
                 Dim bul As String = rset11.Fields.Item("CBuilding").Value
-                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Ite("CBuilding").Value & "</cbc: BuildingNumber>"
+                xmlstring += vbCrLf & "<cbc:BuildingNumber>" & rset11.Fields.Ite("CBuilding").Value & "</cbc:BuildingNumber>"
                 xmlstring += vbCrLf & "<cbc:PlotIdentification>" & rset11.Fields.Item("CBuilding").Value & "</cbc:PlotIdentification>"
                 xmlstring += vbCrLf & "<cbc:CitySubdivisionName>" & rset11.Fields.Item("U_District").Value & "</cbc:CitySubdivisionName>"
-                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("CCity").Value & "</cbc: CityName>"
+                xmlstring += vbCrLf & "<cbc:CityName>" & rset11.Fields.Item("CCity").Value & "</cbc:CityName>"
                 xmlstring += vbCrLf & "<cbc:PostalZone>" & rset11.Fields.Item("CZipCode").Value & "</cbc:PostalZone>"
-                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("CState").Value & "</cbc: CountrySubentity>"
+                xmlstring += vbCrLf & "<cbc:CountrySubentity>" & rset11.Fields.Item("CState").Value & "</cbc:CountrySubentity>"
                 xmlstring += vbCrLf & "<cac:Country>"
-                xmlstring += vbCrLf & "<cbc: IdentificationCode>" & rset11.Fields.Item("CCountry").Value & "</cbc: IdentificationCode>"
+                xmlstring += vbCrLf & "<cbc:IdentificationCode>" & rset11.Fields.Item("CCountry").Value & "</cbc:IdentificationCode>"
                 xmlstring += vbCrLf & "</cac:Country>"
                 xmlstring += vbCrLf & "</cac:PostalAddress>"
                 xmlstring += vbCrLf & "<cac:PartyTaxScheme>"
-                xmlstring += vbCrLf & "<cac: TaxScheme>"
-                xmlstring += vbCrLf & "<cbc: ID>VAT</cbc: ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cac:TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:PartyTaxScheme>"
                 xmlstring += vbCrLf & "<cac:PartyLegalEntity>"
                 xmlstring += vbCrLf & "<cbc:RegistrationName>" & rset11.Fields.Item("CardName").Value & "</cbc:RegistrationName>"
@@ -1563,11 +1881,11 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</cac:Party>"
                 xmlstring += vbCrLf & "</cac:AccountingCustomerParty>"
                 xmlstring += vbCrLf & "<cac:Delivery>"
-                xmlstring += vbCrLf & "<cbc: ActualDeliveryDate>" & DelDate & "</cbc: ActualDeliveryDate>"
+                xmlstring += vbCrLf & "<cbc:ActualDeliveryDate>" & DelDate & "</cbc:ActualDeliveryDate>"
                 xmlstring += vbCrLf & "<cbc:LatestDeliveryDate>" & ActDelDate & "</cbc:LatestDeliveryDate>"
                 xmlstring += vbCrLf & "</cac:Delivery>"
                 xmlstring += vbCrLf & "<cac:PaymentMeans>"
-                xmlstring += vbCrLf & "<cbc:PaymentMeansCode>10</cbc: PaymentMeansCode>"
+                xmlstring += vbCrLf & "<cbc:PaymentMeansCode>10</cbc:PaymentMeansCode>"
                 xmlstring += vbCrLf & "</cac:PaymentMeans>"
                 Dim Discsum As String = Me.StringtoDouble(rset11.Fields.Item("DiscSum").Value)
                 Dim Vatsum As String = Me.StringtoDouble(rset11.Fields.Item("VatSum").Value)
@@ -1581,44 +1899,44 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cac:AllowanceCharge>"
                 xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
-                xmlstring += vbCrLf & "<cbc: AllowanceChargeReason>discount</cbc: AllowanceChargeReason>"
+                xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
                 'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & rset11. Fields. Item("DiscPrcnt"). Value & "</cbc:MultiplierFactorNumeric>"
-                xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & Discsum & "</cbc: Amount>"
-                'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc: BaseAmount>"
+                xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & Discsum & "</cbc:Amount>"
+                'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:BaseAmount>"
                 xmlstring += vbCrLf & "<cac:TaxCategory>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">E</cbc: ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">E</cbc:ID>"
                 xmlstring += vbCrLf & " <cbc:Percent>0.00</cbc:Percent>"
                 xmlstring += vbCrLf & "<cac:TaxScheme>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc : ID>"
-                xmlstring += vbCrLf & "</cac: TaxScheme>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
+                xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:TaxCategory>"
                 xmlstring += vbCrLf & "</cac:AllowanceCharge>"
 
                 xmlstring += vbCrLf & "<cac:TaxTotal>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxSubtotal>"
-                xmlstring += vbCrLf & "<cbc: TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc: TaxableAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID= """ & Currency & """>0. 0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc:TaxableAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID= """ & Currency & """>0.0</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxCategory>"
                 xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
-                xmlstring += vbCrLf & "<cbc: TaxExemptionReasonCode>" & rset11.Fields.Ite("TaxReasonCode").Value & "</cbc: TaxExemptionReasonCode>"
-                xmlstring += vbCrLf & "<cbc: TaxExemptionReason>" & rset11.Fields.Item("TaxReason").Value & "</cbc: TaxExemptionReason>"
+                xmlstring += vbCrLf & "<cbc:TaxExemptionReasonCode>" & rset11.Fields.Ite("TaxReasonCode").Value & "</cbc:TaxExemptionReasonCode>"
+                xmlstring += vbCrLf & "<cbc:TaxExemptionReason>" & rset11.Fields.Item("TaxReason").Value & "</cbc:TaxExemptionReason>"
                 xmlstring += vbCrLf & "<cac:TaxScheme>"
-                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc :ID>"
+                xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5153"" schemeAgencyID=""6"">VAT</cbc:ID>"
                 xmlstring += vbCrLf & "</cac:TaxScheme>"
                 xmlstring += vbCrLf & "</cac:TaxCategory>"
                 xmlstring += vbCrLf & "</cac:TaxSubtotal>"
                 xmlstring += vbCrLf & "</cac:TaxTotal>"
                 xmlstring += vbCrLf & "<cac:TaxTotal>"
-                xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0</cbc: TaxAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "</cac:TaxTotal>"
                 xmlstring += vbCrLf & "<cac:LegalMonetaryTotal>"
                 xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineAmnt & "</cbc:LineExtensionAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc: TaxExclusiveAmount>"
-                xmlstring += vbCrLf & "<cbc: TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc: TaxInclusiveAmount>"
-                xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc: AllowanceTotalAmount>"
-                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc: PrepaidAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc:TaxExclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:TaxInclusiveAmount>"
+                xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc:AllowanceTotalAmount>"
+                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc:PrepaidAmount>"
                 xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
@@ -1642,33 +1960,33 @@ Public Class ARInvoice
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
                         xmlstring += vbCrLf & "<cac:InvoiceLine>"
-                        xmlstring += vbCrLf & "<cbc:ID>" & j & "</cbc: ID>"
-                        xmlstring += vbCrLf & "<cbc: InvoicedQuantity unitCode=""PCE"">" & Qty & "</cbc: InvoicedQuantity>"
+                        xmlstring += vbCrLf & "<cbc:ID>" & j & "</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:InvoicedQuantity unitCode=""PCE"">" & Qty & "</cbc:InvoicedQuantity>"
                         xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>" & LineTotal & "</cbc:LineExtensionAmount>"
                         xmlstring += vbCrLf & "<cac:TaxTotal>"
-                        xmlstring += vbCrLf & "<cbc: TaxAmount currencyID=""" & Currency & """>0. 00</cbc: TaxAmount>"
-                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>" & RoundAmnt & "</cbc: RoundingAmount>"
+                        xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & Currency & """>0.00</cbc:TaxAmount>"
+                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>" & RoundAmnt & "</cbc:RoundingAmount>"
                         xmlstring += vbCrLf & "</cac:TaxTotal>"
                         xmlstring += vbCrLf & "<cac:Item>"
-                        xmlstring += vbCrLf & "<cbc:Name>" & rset112.Fields.Item("Dscription").Value & "</cbc: Name>"
+                        xmlstring += vbCrLf & "<cbc:Name>" & rset112.Fields.Item("Dscription").Value & "</cbc:Name>"
                         xmlstring += vbCrLf & "<cac:ClassifiedTaxCategory>"
                         xmlstring += vbCrLf & "<cbc:ID>E</cbc:ID>"
                         xmlstring += vbCrLf & "<cbc:Percent>0.00</cbc:Percent>"
                         xmlstring += vbCrLf & "<cac:TaxScheme>"
-                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc: ID>"
+                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
                         xmlstring += vbCrLf & "</cac:TaxScheme>"
                         xmlstring += vbCrLf & "</cac:ClassifiedTaxCategory>"
                         xmlstring += vbCrLf & "</cac:Item>"
                         xmlstring += vbCrLf & "<cac:Price>"
                         xmlstring += vbCrLf & "<cbc:PriceAmount currencyID=""" & Currency & """>" & UnitPrice & "</cbc:PriceAmount>"
-                        xmlstring += vbCrLf & "<cbc:BaseQuantity unitCode=""" & rset112.Fields.Item("Unitmsr").Value & """>1</cbc: BaseQuantity>"
+                        xmlstring += vbCrLf & "<cbc:BaseQuantity unitCode=""" & rset112.Fields.Item("Unitmsr").Value & """>1</cbc:BaseQuantity>"
                         xmlstring += vbCrLf & "<cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "<cbc:ID>1</cbc:ID>"
                         xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
                         'xmlstring += vbCrLf & "<cbc:MultiplierFactorNumeric>" & disc & "</cbc:MultiplierFactorNumeric>"
-                        xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc: AllowanceChargeReason>"
-                        xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & DsSum & "</cbc: Amount>"
-                        'xmlstring += vbCrLf & "<cbc: BaseAmount currencyID=""" & Currency & """>" & BaseAmount & "</cbc: BaseAmount>"
+                        xmlstring += vbCrLf & "<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>"
+                        xmlstring += vbCrLf & "<cbc:Amount currencyID=""" & Currency & """>" & DsSum & "</cbc:Amount>"
+                        'xmlstring += vbCrLf & "<cbc:BaseAmount currencyID=""" & Currency & """>" & BaseAmount & "</cbc:BaseAmount>"
                         xmlstring += vbCrLf & "</cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "</cac:Price>"
                         xmlstring += vbCrLf & "</cac:InvoiceLine>"
@@ -1749,8 +2067,13 @@ Public Class ARInvoice
                 frmARInvoice.Items.Item("b_Load").Enabled = False
                 'frmARInvoice. Items. Item("b_delete"). Enabled = False
                 'Dim Str As String = "Update OINV set U_XMLGen='Y' , U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName=(Select top 1 U_Name from OUSR where USERID='" & oCompany.UserSignature.ToString().Trim() & "' ) , U_GenDate=getdate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                Dim Str As String = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_Name"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+                Dim Str As String = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
                 oGfun.DoQuery(Str)
+                Process.Start(System.Configuration.ConfigurationSettings.AppSettings(9))
+                oApplication.StatusBar.SetSystemMessage("Posting E-Invoice too Zatca Please Wait...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
+
+                Threading.Thread.Sleep(5000)
+
                 'Dim psi As ProcessStartInfo = New ProcessStartInfo()
                 'psi. WorkingDirectory = "\\agoc-u-EINV01\D$\E-Invoice Addon\Debug - 20221109.03"
                 'For Each fileName In Directory. EnumerateFiles("\\agoc-u-EINV01\D$\E-Invoice Addon\Debug - 20221109.03", "SDKNETFrameWorkLib *. exe")
@@ -1836,20 +2159,20 @@ Public Class ARInvoice
                         End If
                         If BusinessObjectInfo.ActionSuccess Then
                             'Me.xml()
-                            'Dim Status As String = oDBDSHeader.GetValue("U_APIStatus", 0). Trim
-                            'Dim Post As String = oDBDSHeader. GetValue("U_APIPOST", 0). Trim
-                            'If Status <> "OK" And Post <> "1" Then
-                            'Me.xml()
+                            'Dim Status As String = oDBDSHeader.GetValue("U_APIStatus", 0).Trim
+                            'Dim Post As String = oDBDSHeader.GetValue("U_APIPOST", 0).Trim
+                            'If Post <> "1" Then
+                            '    Me.xml()
                             'End If
 
                             ''Me. Jsonstring( )
                             If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
-                                Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                                Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
+                                    Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                                    Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
+                                End If
+
+
                             End If
-
-
-                        End If
                     Catch ex As Exception
                         oApplication.StatusBar.SetText("Form Data Add ,Update Event Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
                         BubbleEvent = False

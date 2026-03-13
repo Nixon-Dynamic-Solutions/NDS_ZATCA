@@ -32,7 +32,7 @@ Public Class TableCreation
 
             oGFun.CreateUserFieldsComboBox("OINV", "XMLGen", "XMLGen", SAPbobsCOM.BoFieldTypes.db_Alpha, 1,,, ValidValueYesORNo, "N")
             oGFun.CreateUserFieldsComboBox("OUSR", "XMLGen", "XMLGeneration", SAPbobsCOM.BoFieldTypes.db_Alpha, 1,,, ValidValueYesORNo, "N")
-            oGFun.CreateUserFieldsComboBox("OUSR", "Name", "User Name", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
+            oGFun.CreateUserFields("OUSR", "Name", "User Name", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("OINV", "GenUId", "GenerateUId", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("OINV", "GenUName", "GenerateUName", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("OINV", "GenDate", "GenDate", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
