@@ -408,10 +408,10 @@ Public Class ARInvoice
             oButton.Caption = "Generate E-Invoice"
 
             oItem = frmARInvoice.Items.Add("b_Load1", SAPbouiCOM.BoFormItemTypes.it_BUTTON)
-            oItem.Left = frmARInvoice.Items.Item("b_Load").Left + frmARInvoice.Items.Item("b_Load").Width + 10
-            oItem.Width = frmARInvoice.Items.Item("b_Load").Width + 50
-            oItem.Height = frmARInvoice.Items.Item("b_Load").Height
-            oItem.Top = frmARInvoice.Items.Item("b_Load").Top
+            oItem.Left = frmARInvoice.Items.Item("2").Left + frmARInvoice.Items.Item("2").Width + 10
+            oItem.Width = frmARInvoice.Items.Item("2").Width + 50
+            oItem.Height = frmARInvoice.Items.Item("2").Height
+            oItem.Top = frmARInvoice.Items.Item("2").Top
             oItem.Visible = False
             oItem.Enabled = True
             oButton = oItem.Specific
@@ -681,7 +681,7 @@ Public Class ARInvoice
                                             If Me.ValidationAll = False Then
                                                 BubbleEvent = False
                                             Else
-                                                Me.InitForm()
+                                                'Me.InitForm()
 
                                             End If
                                             Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
@@ -2069,18 +2069,46 @@ Public Class ARInvoice
                 'Dim Str As String = "Update OINV set U_XMLGen='Y' , U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName=(Select top 1 U_Name from OUSR where USERID='" & oCompany.UserSignature.ToString().Trim() & "' ) , U_GenDate=getdate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
                 Dim Str As String = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
                 oGfun.DoQuery(Str)
-                Process.Start(System.Configuration.ConfigurationSettings.AppSettings(9))
-                oApplication.StatusBar.SetSystemMessage("Posting E-Invoice too Zatca Please Wait...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
 
-                Threading.Thread.Sleep(5000)
+                Dim psi As New ProcessStartInfo()
+                psi.FileName = System.Configuration.ConfigurationSettings.AppSettings(9)
+                psi.CreateNoWindow = True
+                psi.WindowStyle = ProcessWindowStyle.Hidden
+                psi.UseShellExecute = False
 
-                'Dim psi As ProcessStartInfo = New ProcessStartInfo()
-                'psi. WorkingDirectory = "\\agoc-u-EINV01\D$\E-Invoice Addon\Debug - 20221109.03"
-                'For Each fileName In Directory. EnumerateFiles("\\agoc-u-EINV01\D$\E-Invoice Addon\Debug - 20221109.03", "SDKNETFrameWorkLib *. exe")
-                'psi.FileName = fileName
-                'Process.Start(psi)
+                oApplication.StatusBar.SetSystemMessage("Posting E-Invoice to Zatca Please Wait...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
 
-                'Next
+                Dim p As Process = Process.Start(psi)
+
+                If p IsNot Nothing Then
+                    p.WaitForExit()
+                End If
+                oApplication.StatusBar.SetSystemMessage("E-Invoice Posting Ended...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
+                Dim QrCode As String = $"Select ""U_QRCode"" from OINV where ""DocEntry""={oDBDSHeader.GetValue("DocEntry", 0).Trim()} and cast(ifnull(""U_QRCode"",'') as varchar(254))!=''"
+                'Dim Str As String = "Update ORIN set ""U_XMLGen""='Y',""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(Select top 1 ""U_Name"" from OUSR where ""USERID""='" & oCompany.UserSignature.ToString().Trim() & "' ), U_GenDate=GetDate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & "'"
+                Dim rsetQR As SAPbobsCOM.Recordset = oGfun.DoQuery(QrCode)
+                If rsetQR.RecordCount > 0 Then
+                    Dim oInvoice As SAPbobsCOM.Documents = Nothing
+                    oInvoice = CType(oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oInvoices), SAPbobsCOM.Documents)
+                    If oInvoice.GetByKey(oDBDSHeader.GetValue("DocEntry", 0).Trim()) Then
+                        rsetQR.MoveFirst()
+                        oInvoice.CreateQRCodeFrom = rsetQR.Fields.Item(0).Value
+
+                        Dim ret As Integer = oInvoice.Update()
+
+                        If ret <> 0 Then
+                            Dim errCode As Integer = 0
+                            Dim errMsg As String = ""
+                            oCompany.GetLastError(errCode, errMsg)
+                            oApplication.StatusBar.SetSystemMessage("Update failed. [" & errCode & "] " & errMsg, SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+                        Else
+                            oApplication.StatusBar.SetSystemMessage("AR Invoice updated successfully.", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
+                        End If
+                    Else
+                        'Throw New Exception("AR Credit Note not found for DocEntry = " & docEntry)
+                    End If
+
+                End If
                 oApplication.ActivateMenuItem("1304")
             End If
             frmARInvoice.Freeze(False)
@@ -2167,12 +2195,12 @@ Public Class ARInvoice
 
                             ''Me. Jsonstring( )
                             If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
-                                    Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                                    Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
-                                End If
-
-
+                                Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                                Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                             End If
+
+
+                        End If
                     Catch ex As Exception
                         oApplication.StatusBar.SetText("Form Data Add ,Update Event Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
                         BubbleEvent = False
@@ -2256,23 +2284,43 @@ Public Class ARInvoice
                                 ElseIf oDBDSHeader.GetValue("U_CLEARANCESTATUS", 0).Trim = "" Then
 
                                     If File.Exists(path1) Then
-                                        frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                        frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                        frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+
+                                        frmARInvoice.Items.Item("b_Load1").Visible = True
+                                        frmARInvoice.Items.Item("b_Load").Visible = False
+
+                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 3, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+
+
+                                        'frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                        'frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                        'frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+
                                     Else
                                         Dim str As String = "Select ""U_XMLGENERATION"" from OINV where ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and ""U_XMLGen""='Y'"
                                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                         If rset.RecordCount > 0 Then
                                             Dim val As String = rset.Fields.Item(0).Value
-                                            If val <> "" Then
-                                                frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                            Else
-                                                frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                                frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                            End If
+                                            'If val <> "" Then
+                                            '    frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            '    frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            '    frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            'Else
+                                            frmARInvoice.Items.Item("b_Load1").Visible = True
+                                            frmARInvoice.Items.Item("b_Load").Visible = False
+
+                                            frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 3, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+
+
+                                            'frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            '        frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            '        frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            'End If
                                         Else
                                             frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                             frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
@@ -2282,15 +2330,16 @@ Public Class ARInvoice
                                 ElseIf oDBDSHeader.GetValue("U_CLEARANCESTATUS", 0).Trim = "FAILED" Then
                                     frmARInvoice.Items.Item("b_Load1").Visible = True
                                     frmARInvoice.Items.Item("b_Load").Visible = False
-                                    If File.Exists(path1) Then
-                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                    Else
-                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                        frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                    End If
+                                    'If File.Exists(path1) Then
+                                    '    frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                    '    frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                    '    frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                    'Else
+                                    frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                    frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                    frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                    frmARInvoice.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 3, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                    'End If
 
                                 End If
                             End If

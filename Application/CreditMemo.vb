@@ -419,10 +419,10 @@ Public Class CreditMemo
             oButton.Caption = "Generate E-Credit"
 
             oItem = frmCreditMemo.Items.Add("b_Load1", SAPbouiCOM.BoFormItemTypes.it_BUTTON)
-            oItem.Left = frmCreditMemo.Items.Item("b_Load").Left + frmCreditMemo.Items.Item("b_Load").Width + 10
-            oItem.Width = frmCreditMemo.Items.Item("b_Load").Width + 50
-            oItem.Height = frmCreditMemo.Items.Item("b_Load").Height
-            oItem.Top = frmCreditMemo.Items.Item("b_Load").Top
+            oItem.Left = frmCreditMemo.Items.Item("2").Left + frmCreditMemo.Items.Item("2").Width + 10
+            oItem.Width = frmCreditMemo.Items.Item("2").Width + 50
+            oItem.Height = frmCreditMemo.Items.Item("2").Height
+            oItem.Top = frmCreditMemo.Items.Item("2").Top
             oItem.Visible = False
             oItem.Enabled = False
             oButton = oItem.Specific
@@ -2097,20 +2097,57 @@ Public Class CreditMemo
                 Dim Str As String = "UPDATE ""ORIN"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim()
                 'Dim Str As String = "Update ORIN set ""U_XMLGen""='Y',""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(Select top 1 ""U_Name"" from OUSR where ""USERID""='" & oCompany.UserSignature.ToString().Trim() & "' ), U_GenDate=GetDate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & "'"
                 oGfun.DoQuery(Str)
-                Process.Start(System.Configuration.ConfigurationSettings.AppSettings(9))
+                Dim psi As New ProcessStartInfo()
+                psi.FileName = System.Configuration.ConfigurationSettings.AppSettings(9)
+                psi.CreateNoWindow = True
+                psi.WindowStyle = ProcessWindowStyle.Hidden
+                psi.UseShellExecute = False
+
                 oApplication.StatusBar.SetSystemMessage("Posting E-Invoice to Zatca Please Wait...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
 
-                Threading.Thread.Sleep(5000)
+                Dim p As Process = Process.Start(psi)
+
+                If p IsNot Nothing Then
+                    p.WaitForExit()
+                End If
+                oApplication.StatusBar.SetSystemMessage("E-Invoice Posting Ended...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
+                Dim QrCode As String = $"Select ""U_QRCode"" from ORIN where ""DocEntry""={oDBDSHeader.GetValue("DocEntry", 0).Trim()} and cast(ifnull(""U_QRCode"",'') as varchar(254))!=''"
+                'Dim Str As String = "Update ORIN set ""U_XMLGen""='Y',""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(Select top 1 ""U_Name"" from OUSR where ""USERID""='" & oCompany.UserSignature.ToString().Trim() & "' ), U_GenDate=GetDate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & "'"
+                Dim rsetQR As SAPbobsCOM.Recordset = oGfun.DoQuery(QrCode)
+                If rsetQR.RecordCount > 0 Then
+                    Dim oCreditNote As SAPbobsCOM.Documents = Nothing
+                    oCreditNote = CType(oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oCreditNotes), SAPbobsCOM.Documents)
+                    If oCreditNote.GetByKey(oDBDSHeader.GetValue("DocEntry", 0).Trim()) Then
+                        rsetQR.MoveFirst()
+                        oCreditNote.CreateQRCodeFrom = rsetQR.Fields.Item(0).Value
+
+                        Dim ret As Integer = oCreditNote.Update()
+
+                        If ret <> 0 Then
+                            Dim errCode As Integer = 0
+                            Dim errMsg As String = ""
+                            oCompany.GetLastError(errCode, errMsg)
+                            oApplication.StatusBar.SetSystemMessage("Update failed. [" & errCode & "] " & errMsg,, SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+                        Else
+                            Console.WriteLine("AR Credit Note  updated successfully.")
+                        End If
+                    Else
+                        'Throw New Exception("AR Credit Note not found for DocEntry = " & docEntry)
+                    End If
+
+                End If
+                'Threading.Thread.Sleep(5000)
                 oApplication.ActivateMenuItem("1304")
-            End If
-            frmCreditMemo.Freeze(False)
+
+                End If
+                frmCreditMemo.Freeze(False)
         Catch ex As Exception
             frmCreditMemo.Freeze(False)
             oApplication.StatusBar.SetText("GenerateXML Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
             'Dim str As String = "Update ORIN set U_XMLGen='N',""U_APIStatus""='" & ex.Message & "',""U_APIPOST""='0' where ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
             Dim str As String = "UPDATE ""ORIN"" SET ""U_XMLGen""='N', ""U_APIStatus""='" & ex.Message & "', ""U_APIPOST""='0' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
             Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
-            Process.Start(System.Configuration.ConfigurationSettings.AppSettings(9))
+            'Process.Start(System.Configuration.ConfigurationSettings.AppSettings(9))
 
         End Try
     End Sub
@@ -2388,23 +2425,41 @@ Public Class CreditMemo
                                 ElseIf oDBDSHeader.GetValue("U_CLEARANCESTATUS", 0).Trim = "" Then
 
                                     If File.Exists(path1) Then
-                                        frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                        frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                        frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+
+                                        frmCreditMemo.Items.Item("b_Load1").Visible = True
+                                        frmCreditMemo.Items.Item("b_Load").Visible = False
+
+                                        frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                        frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                        frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                        frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 3, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+
+
+                                        'frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                        'frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                        'frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                     Else
                                         Dim str As String = "Select ""U_XMLGENERATION"" from ORIN where ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and ""U_XMLGen""='Y'"
                                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                         If rset.RecordCount > 0 Then
                                             Dim val As String = rset.Fields.Item(0).Value
-                                            If val <> "" Then
-                                                frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                            Else
-                                                frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
-                                                frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                                frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
-                                            End If
+                                            'If val <> "" Then
+                                            '    frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            '    frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            '    frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            'Else
+                                            '    frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            '    frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            '    frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            'End If
+                                            frmCreditMemo.Items.Item("b_Load1").Visible = True
+                                            frmCreditMemo.Items.Item("b_Load").Visible = False
+
+                                            frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
+                                            frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+                                            frmCreditMemo.Items.Item("b_Load1").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 3, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
+
                                         Else
                                             frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                             frmCreditMemo.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
