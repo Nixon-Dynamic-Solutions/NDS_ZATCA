@@ -47,9 +47,17 @@
                                     oARInvoice.MenuEvent(pVal, BubbleEvent)
                              'CreditMemo
                                 Case CreditMemoFormID
-                                    oCreditMemo.MenuEvent(pVal, BubbleEvent)
+                                oCreditMemo.MenuEvent(pVal, BubbleEvent)
 
-                            End Select
+                                     'ARInvoiceReserve
+                            Case ArInvoiceReserveFormID
+                                oArInvoiceReserve.MenuEvent(pVal, BubbleEvent)
+
+                                'ARInvoicePayment
+                            Case ArInvoicePaymentFormID
+                                oArInvoicePayment.MenuEvent(pVal, BubbleEvent)
+
+                        End Select
                     End Select
                     Select Case pVal.MenuUID
                         Case "1282", "1281", "1292", "1293", "1287", "519", "1284", "1286"
@@ -111,6 +119,15 @@
                 Case CreditMemoFormID
                     oCreditMemo.ItemEvent(FormUID, pVal, BubbleEvent)
 
+                        'ARInvoicereserve
+                Case ArInvoiceReserveFormID
+                    oArInvoiceReserve.ItemEvent(FormUID, pVal, BubbleEvent)
+
+                    'ARInvoicePayment
+                Case ArInvoicePaymentFormID
+                    oArInvoicePayment.ItemEvent(FormUID, pVal, BubbleEvent)
+
+
             End Select
             Catch ex As Exception
             oApplication.StatusBar.SetText("Gate in Ward ItemEvent Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
@@ -129,6 +146,14 @@
                      'Creditmemo
                 Case CreditMemoFormID
                     oCreditMemo.FormDataEvent(BusinessObjectInfo, BubbleEvent)
+
+                         'ARInvoiceReserve
+                Case ArInvoiceReserveFormID
+                    oArInvoiceReserve.FormDataEvent(BusinessObjectInfo, BubbleEvent)
+
+                    'ARInvoicePayment
+                Case ArInvoicePaymentFormID
+                    oArInvoicePayment.FormDataEvent(BusinessObjectInfo, BubbleEvent)
 
             End Select
 

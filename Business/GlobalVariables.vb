@@ -31,6 +31,15 @@ Module GolabalVariables
     Public ARInvoiceFormID As String = "133"
     Public oARInvoice As New ARInvoice
 
+
+    'ARreserveInvoice
+    Public ArInvoiceReserveFormID As String = "60091"
+    Public oArInvoiceReserve As New ArInvoiceReserve
+
+    'ARInvoicePayment
+    Public ArInvoicePaymentFormID As String = "60090"
+    Public oArInvoicePayment As New ArInvoicePayment
+
     'CreditMemo
     Public CreditMemoFormID As String = "179"
     Public oCreditMemo As New CreditMemo

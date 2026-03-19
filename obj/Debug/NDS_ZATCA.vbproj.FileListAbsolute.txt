@@ -26,3 +26,14 @@ C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.CoreCompileInp
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.exe
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.xml
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.pdb
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\bin\Debug\NDS_ZATCA.exe.config
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\bin\Debug\NDS_ZATCA.exe
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\bin\Debug\NDS_ZATCA.pdb
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\bin\Debug\NDS_ZATCA.xml
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.AssemblyReference.cache
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\obj\Debug\NDS_ZATCA.Resources.resources
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.GenerateResource.cache
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.CoreCompileInputs.cache
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\obj\Debug\NDS_ZATCA.exe
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\obj\Debug\NDS_ZATCA.xml
+C:\Users\ShubhamKumar\OneDrive - Nixon Dynamic Solutions LLP\Documents\Github\NDS_ZATCA\obj\Debug\NDS_ZATCA.pdb
