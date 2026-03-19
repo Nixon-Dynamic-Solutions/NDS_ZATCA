@@ -47,9 +47,16 @@
                                     oARInvoice.MenuEvent(pVal, BubbleEvent)
                              'CreditMemo
                                 Case CreditMemoFormID
-                                    oCreditMemo.MenuEvent(pVal, BubbleEvent)
+                                oCreditMemo.MenuEvent(pVal, BubbleEvent)
 
-                            End Select
+                                'ARInvoiceReserve
+                            Case ArInvoiceReserveFormID
+                                oArInvoiceReserve.MenuEvent(pVal, BubbleEvent)
+
+                                'ARInvoicePayment
+                            Case ArInvoicePaymentFormID
+                                oArInvoicePayment.MenuEvent(pVal, BubbleEvent)
+                        End Select
                     End Select
                     Select Case pVal.MenuUID
                         Case "1282", "1281", "1292", "1293", "1287", "519", "1284", "1286"
@@ -103,11 +110,19 @@
 
                 Select Case pVal.FormTypeEx
 
-'ARInvoice
+                    'ARInvoice
                 Case ARInvoiceFormID
                     oARInvoice.ItemEvent(FormUID, pVal, BubbleEvent)
 
-'CreditMemo
+                    'ARInvoicereserve
+                Case ArInvoiceReserveFormID
+                    oArInvoiceReserve.ItemEvent(FormUID, pVal, BubbleEvent)
+
+                    'ARInvoicePayment
+                Case ArInvoicePaymentFormID
+                    oArInvoicePayment.ItemEvent(FormUID, pVal, BubbleEvent)
+
+                    'CreditMemo
                 Case CreditMemoFormID
                     oCreditMemo.ItemEvent(FormUID, pVal, BubbleEvent)
 
@@ -126,6 +141,16 @@
                     'ARInvoice
                 Case ARInvoiceFormID
                     oARInvoice.FormDataEvent(BusinessObjectInfo, BubbleEvent)
+
+
+                    'ARInvoiceReserve
+                Case ArInvoiceReserveFormID
+                    oArInvoiceReserve.FormDataEvent(BusinessObjectInfo, BubbleEvent)
+
+                    'ARInvoicePayment
+                Case ArInvoicePaymentFormID
+                    oArInvoicePayment.FormDataEvent(BusinessObjectInfo, BubbleEvent)
+
                      'Creditmemo
                 Case CreditMemoFormID
                     oCreditMemo.FormDataEvent(BusinessObjectInfo, BubbleEvent)
