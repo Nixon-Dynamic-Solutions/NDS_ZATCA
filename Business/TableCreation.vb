@@ -32,7 +32,7 @@ Public Class TableCreation
 
             oGFun.CreateUserFieldsComboBox("OINV", "XMLGen", "XMLGen", SAPbobsCOM.BoFieldTypes.db_Alpha, 1,,, ValidValueYesORNo, "N")
             oGFun.CreateUserFieldsComboBox("OUSR", "XMLGen", "XMLGeneration", SAPbobsCOM.BoFieldTypes.db_Alpha, 1,,, ValidValueYesORNo, "N")
-            oGFun.CreateUserFields("OUSR", "Name", "User Name", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
+            'oGFun.CreateUserFields("OUSR", "NAME", "User Name", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("OINV", "GenUId", "GenerateUId", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("OINV", "GenUName", "GenerateUName", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("OINV", "GenDate", "GenDate", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
@@ -54,10 +54,10 @@ Public Class TableCreation
             oGFun.CreateUserFields("CRD1", "AddNo", "Address No", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
 
             oGFun.CreateTable("I_ZATCA_TAXCODE", "Zatca Tax Codes", SAPbobsCOM.BoUTBTableType.bott_NoObject)
-            oGFun.CreateUserFields("I_ZATCA_TAXCODE", "I_Tax_Ex_Code", "I_Tax_Ex_Code", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
-            oGFun.CreateUserFields("I_ZATCA_TAXCODE", "I_Tax_Ex_Desc", "I_Tax_Ex_Desc", SAPbobsCOM.BoFieldTypes.db_Alpha, 254)
-            oGFun.CreateUserFields("I_ZATCA_TAXCODE", "I_Tax_Ex_Type", "I_Tax_Ex_Type", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
-            oGFun.CreateUserFields("I_ZATCA_TAXCODE", "I_Tax_Ex_Type_Code", "I_Tax_Ex_Type_Code", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
+            oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Code", "I_Tax_Ex_Code", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
+            oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Desc", "I_Tax_Ex_Desc", SAPbobsCOM.BoFieldTypes.db_Alpha, 254)
+            oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Type", "I_Tax_Ex_Type", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
+            oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Type_Code", "I_Tax_Ex_Type_Code", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
 
         Catch ex As Exception
             oApplication.StatusBar.SetText("UDF Creation Failed: " & ex.Message)
