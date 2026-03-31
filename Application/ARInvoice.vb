@@ -2358,7 +2358,7 @@ Public Class ARInvoice
     Sub MenuEvent(ByRef pVal As SAPbouiCOM.MenuEvent, ByRef BubbleEvent As Boolean)
         Try
             If pVal.BeforeAction = False Then
-                Me.CreateARInvoiceForm(oApplication.Forms.ActiveForm.Items)
+                'Me.CreateARInvoiceForm(oApplication.Forms.ActiveForm.UniqueID)
 
                 Select Case pVal.MenuUID
                     Case "1282"

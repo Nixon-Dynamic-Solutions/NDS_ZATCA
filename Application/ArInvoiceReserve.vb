@@ -563,7 +563,7 @@ Public Class ArInvoiceReserve
     Sub ItemEvent(ByVal FormUID As String, ByRef pVal As SAPbouiCOM.ItemEvent, ByRef BubbleEvent As Boolean)
         Try
 
-            If pVal.FormTypeEx = ARInvoiceFormID Then
+            If pVal.FormTypeEx = ArInvoiceReserveFormID Then
                 Select Case pVal.EventType
                     Case SAPbouiCOM.BoEventTypes.et_CHOOSE_FROM_LIST
                         Try
@@ -2358,7 +2358,7 @@ Public Class ArInvoiceReserve
     Sub MenuEvent(ByRef pVal As SAPbouiCOM.MenuEvent, ByRef BubbleEvent As Boolean)
         Try
             If pVal.BeforeAction = False Then
-                Me.CreateARInvoiceForm(oApplication.Forms.ActiveForm.Items)
+                'Me.CreateARInvoiceForm(oApplication.Forms.ActiveForm.Items)
 
                 Select Case pVal.MenuUID
                     Case "1282"

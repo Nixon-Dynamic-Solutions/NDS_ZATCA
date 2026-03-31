@@ -3,9 +3,6 @@ C:\Nixon Dynamic\New Project\NDS_ZATCA\bin\x64\Debug\NDS_ZATCA.exe
 C:\Nixon Dynamic\New Project\NDS_ZATCA\bin\x64\Debug\NDS_ZATCA.pdb
 C:\Nixon Dynamic\New Project\NDS_ZATCA\bin\x64\Debug\NDS_ZATCA.xml
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\x64\Debug\NDS_ZATCA.vbproj.AssemblyReference.cache
-C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\x64\Debug\Interop.SAPbobsCOM.dll
-C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\x64\Debug\Interop.SAPbouiCOM.dll
-C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\x64\Debug\NDS_ZATCA.vbproj.ResolveComReference.cache
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\x64\Debug\NDS_ZATCA.Resources.resources
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\x64\Debug\NDS_ZATCA.vbproj.GenerateResource.cache
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\x64\Debug\NDS_ZATCA.vbproj.CoreCompileInputs.cache
