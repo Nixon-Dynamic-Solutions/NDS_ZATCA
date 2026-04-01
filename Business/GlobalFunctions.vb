@@ -1,6 +1,7 @@
-﻿Imports System.IO
+﻿Imports System.Drawing.Drawing2D
+Imports System.IO
+Imports SAPbobsCOM
 Imports SAPbouiCOM
-Imports System.Drawing.Drawing2D
 
 ' <summary>
 ''' Globally whatever Function and method do you want define here
@@ -150,7 +151,16 @@ Public Class GlobalFunctions
         Try
             Dim rs As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
             Dim oFlag As Boolean = True
-            rs.DoQuery("Select 1 from ""CUFD"" Where ""TableID""='" & Trim(TableName) & "' and ""AliasID""='" & Trim(FieldID) & "'")
+            'rs.DoQuery("Select 1 from ""CUFD"" Where ""TableID""='" & Trim(TableName) & "' and ""AliasID""='" & Trim(FieldID) & "'")
+            Dim strSQL As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strSQL = "SELECT 1 FROM ""CUFD"" WHERE ""TableID"" = '" & Trim(TableName) & "' AND ""AliasID"" = '" & Trim(FieldID) & "'"
+            Else
+                strSQL = "SELECT 1 FROM CUFD WHERE TableID = '" & Trim(TableName) & "' AND AliasID = '" & Trim(FieldID) & "'"
+            End If
+
+            rs.DoQuery(strSQL)
             If rs.EoF Then oFlag = False
             System.Runtime.InteropServices.Marshal.ReleaseComObject(rs)
             rs = Nothing
@@ -165,7 +175,17 @@ Public Class GlobalFunctions
             Dim rs As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
             Dim oFlag As Boolean = True
             Dim aa = "Select 1 from ""CUFD"" Where ""TableID""='" & Trim(TableName) & "' and ""AliasID""='" & Trim(FieldID) & "'"
-            rs.DoQuery("Select 1 from ""CUFD"" Where ""TableID""='" & Trim(TableName) & "' and ""AliasID""='" & Trim(FieldID) & "'")
+            'rs.DoQuery("Select 1 from ""CUFD"" Where ""TableID""='" & Trim(TableName) & "' and ""AliasID""='" & Trim(FieldID) & "'")
+
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                rs.DoQuery("SELECT 1 FROM ""CUFD"" WHERE ""TableID""='" & Trim(TableName) & "' AND ""AliasID""='" & Trim(FieldID) & "'")
+            Else
+                rs.DoQuery("SELECT 1 FROM CUFD WHERE TableID='" & Trim(TableName) & "' AND AliasID='" & Trim(FieldID) & "'")
+            End If
+
+
+
             If rs.EoF Then oFlag = False
             System.Runtime.InteropServices.Marshal.ReleaseComObject(rs)
             rs = Nothing
@@ -524,7 +544,12 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                 Return False
             End If
 
-            strQuery = "SELECT * FROM " & strTableName & " WHERE UPPER(" & strFildName & ")=UPPER('" & oEditText.Value & "')"
+            'strQuery = "SELECT * FROM " & strTableName & " WHERE UPPER(" & strFildName & ")=UPPER('" & oEditText.Value & "')"
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strQuery = "SELECT * FROM """ & strTableName & """ WHERE UPPER(" & strFildName & ") = UPPER('" & oEditText.Value & "')"
+            Else
+                strQuery = "SELECT * FROM " & strTableName & " WHERE UPPER(" & strFildName & ") = UPPER('" & oEditText.Value & "')"
+            End If
             rsetPayMethod.DoQuery(strQuery)
 
             If rsetPayMethod.RecordCount > 0 Then
@@ -612,20 +637,20 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
         Try
 
-                If oEditFromDate.Value.Equals("") = False And oEditToDate.Value.Equals("") = False Then
-                    Dim dtFromDate As Date = DateTime.ParseExact(oEditFromDate.Value, "yyyyMMdd", Nothing)
-                    Dim dtToDate As Date = DateTime.ParseExact(oEditToDate.Value, "yyyyMMdd", Nothing)
-                    If dtFromDate > dtToDate Then
-                        oApplication.StatusBar.SetText(ErrorMsg & " ... ", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error)
-                        Return False
-                    End If
+            If oEditFromDate.Value.Equals("") = False And oEditToDate.Value.Equals("") = False Then
+                Dim dtFromDate As Date = DateTime.ParseExact(oEditFromDate.Value, "yyyyMMdd", Nothing)
+                Dim dtToDate As Date = DateTime.ParseExact(oEditToDate.Value, "yyyyMMdd", Nothing)
+                If dtFromDate > dtToDate Then
+                    oApplication.StatusBar.SetText(ErrorMsg & " ... ", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error)
+                    Return False
                 End If
-                Return True
-            Catch ex As Exception
-                oApplication.StatusBar.SetText("DateValidate Function Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
-                Return False
-            Finally
-            End Try
+            End If
+            Return True
+        Catch ex As Exception
+            oApplication.StatusBar.SetText("DateValidate Function Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+            Return False
+        Finally
+        End Try
 
     End Function
     Function LoadComboBoxSeries(ByVal oComboBox As SAPbouiCOM.ComboBox, ByVal UDOID As String) As Boolean
@@ -696,9 +721,18 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
             If oComboBox.ValidValues.Count = 0 Then
                 Dim rsetValidValue As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
-                Dim query As String = "SELECT ""Code"" , ""Name"" FROM OUDP"
+                'Dim query As String = "SELECT ""Code"" , ""Name"" FROM OUDP"
+                'rsetValidValue.DoQuery(query)
 
-                rsetValidValue.DoQuery(query)
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    Dim query As String = "SELECT ""Code"", ""Name"" FROM ""OUDP"""
+                    rsetValidValue.DoQuery(query)
+                Else
+                    Dim query As String = "SELECT Code, Name FROM OUDP"
+                    rsetValidValue.DoQuery(query)
+                End If
+
+
                 rsetValidValue.MoveFirst()
                 For j As Integer = 0 To rsetValidValue.RecordCount - 1
                     oComboBox.ValidValues.Add(rsetValidValue.Fields.Item(0).Value, rsetValidValue.Fields.Item(1).Value)
@@ -719,9 +753,19 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
             If oComboBox.ValidValues.Count = 0 Then
                 Dim rsetValidValue As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
-                Dim strQry As String = "SELECT ""Code"" , ""Location"" FROM OLCT"
+                'Dim strQry As String = "SELECT ""Code"" , ""Location"" FROM OLCT"
+
+                Dim strQry As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    strQry = "SELECT ""Code"", ""Location"" FROM ""OLCT"""
+                Else
+                    strQry = "SELECT Code, Location FROM OLCT"
+                End If
 
                 rsetValidValue.DoQuery(strQry)
+
+
                 rsetValidValue.MoveFirst()
                 For j As Integer = 0 To rsetValidValue.RecordCount - 1
                     oComboBox.ValidValues.Add(rsetValidValue.Fields.Item(0).Value, rsetValidValue.Fields.Item(1).Value)
@@ -740,9 +784,18 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
             If oComboBox.ValidValues.Count = 0 Then
                 Dim rsetValidValue As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
-                Dim strQry As String = "SELECT ""Code"" , ""Name"" FROM OCRY"
+                'Dim strQry As String = "SELECT ""Code"" , ""Name"" FROM OCRY"
+
+                Dim strQry As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    strQry = "SELECT ""Code"", ""Name"" FROM ""OCRY"""
+                Else
+                    strQry = "SELECT Code, Name FROM OCRY"
+                End If
 
                 rsetValidValue.DoQuery(strQry)
+
                 rsetValidValue.MoveFirst()
                 For j As Integer = 0 To rsetValidValue.RecordCount - 1
                     oComboBox.ValidValues.Add(rsetValidValue.Fields.Item(0).Value, rsetValidValue.Fields.Item(1).Value)
@@ -762,7 +815,15 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
             Dim rsetCode As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
             'Dim strCode As String = "Select ISNULL(Max(ISNULL(DocEntry,0)),0) + 1 Code From " & Trim(TableName) & ""
-            Dim strCode As String = "Select IFNULL(Max(IFNULL(""DocEntry"",0)),0) + 1 ""Code"" From " & Trim(TableName) & ""
+            'Dim strCode As String = "Select IFNULL(Max(IFNULL(""DocEntry"",0)),0) + 1 ""Code"" From " & Trim(TableName) & ""
+            Dim strCode As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strCode = "SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),0) + 1 ""Code"" FROM """ & Trim(TableName) & """"
+            Else
+                strCode = "SELECT ISNULL(MAX(ISNULL(DocEntry,0)),0) + 1 AS Code FROM " & Trim(TableName)
+            End If
+
             rsetCode.DoQuery(strCode)
             Return CInt(rsetCode.Fields.Item("Code").Value)
         Catch ex As Exception
@@ -776,9 +837,48 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
         Try
 
             Dim rsetCode As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
-            Dim strCode As String = "Select ISNULL(Max(ISNULL(DocEntry,0)),0) + 1 Code From " & Trim(TableName) & ""
+            'Dim strCode As String = "Select ISNULL(Max(ISNULL(DocEntry,0)),0) + 1 Code From " & Trim(TableName) & ""
 
-            strCode = "IF EXISTS (SELECT * FROM ONNM a ,NNM1 b WHERE a.ObjectCode =b.ObjectCode AND a.AutoKey <> b.NextNumber AND a.ObjectCode = '" & UDOName & "' ) " _
+            'strCode = "IF EXISTS (SELECT * FROM ONNM a ,NNM1 b WHERE a.ObjectCode =b.ObjectCode AND a.AutoKey <> b.NextNumber AND a.ObjectCode = '" & UDOName & "' ) " _
+            '    & " BEGIN " _
+            '    & " UPDATE ONNM SET AutoKey =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM ONNM WHERE ObjectCode = '" & UDOName & "'" _
+            '    & " UPDATE NNM1 SET NextNumber =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM NNM1 WHERE ObjectCode = '" & UDOName & "' " _
+            '    & " END " _
+            '    & " ELSE IF EXISTS (SELECT * FROM ONNM a ,NNM1 b WHERE a.ObjectCode =b.ObjectCode AND a.AutoKey <> (SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) Code From " & Trim(TableName) & ") AND a.ObjectCode = '" & UDOName & "' ) " _
+            '    & " BEGIN " _
+            '    & " UPDATE ONNM SET AutoKey =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM ONNM WHERE ObjectCode = '" & UDOName & "' " _
+            '    & " UPDATE NNM1 SET NextNumber =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM NNM1 WHERE ObjectCode = '" & UDOName & "' " _
+            '    & " END " _
+            '    & " ELSE IF EXISTS (SELECT * FROM ONNM a ,NNM1 b WHERE a.ObjectCode =b.ObjectCode AND (SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) Code From " & Trim(TableName) & ") <> b.NextNumber AND a.ObjectCode = '" & UDOName & "') " _
+            '    & " BEGIN " _
+            '    & " UPDATE ONNM SET AultoKey =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM ONNM WHERE ObjectCode = '" & UDOName & "' " _
+            '    & " UPDATE NNM1 SET NextNumber =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM NNM1 WHERE ObjectCode = '" & UDOName & "' " _
+            '    & " END "
+            'rsetCode.DoQuery(strCode)
+
+
+
+            Dim strCode As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strCode = "Select IFNULL(Max(IFNULL(""DocEntry"",0)),0) + 1 ""Code"" From """ & Trim(TableName) & """"
+
+                strCode = "DO BEGIN " _
+                & "IF EXISTS (SELECT 1 FROM ""ONNM"" a , ""NNM1"" b WHERE a.""ObjectCode"" = b.""ObjectCode"" AND a.""AutoKey"" <> b.""NextNumber"" AND a.""ObjectCode"" = '" & UDOName & "' ) THEN " _
+                & " UPDATE ""ONNM"" SET ""AutoKey"" =(SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) +1 ""Code"" From """ & Trim(TableName) & """) WHERE ""ObjectCode"" = '" & UDOName & "'; " _
+                & " UPDATE ""NNM1"" SET ""NextNumber"" =(SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) +1 ""Code"" From """ & Trim(TableName) & """) WHERE ""ObjectCode"" = '" & UDOName & "'; " _
+                & "ELSEIF EXISTS (SELECT 1 FROM ""ONNM"" a , ""NNM1"" b WHERE a.""ObjectCode"" = b.""ObjectCode"" AND a.""AutoKey"" <> (SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) ""Code"" From """ & Trim(TableName) & """) AND a.""ObjectCode"" = '" & UDOName & "' ) THEN " _
+                & " UPDATE ""ONNM"" SET ""AutoKey"" =(SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) +1 ""Code"" From """ & Trim(TableName) & """) WHERE ""ObjectCode"" = '" & UDOName & "'; " _
+                & " UPDATE ""NNM1"" SET ""NextNumber"" =(SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) +1 ""Code"" From """ & Trim(TableName) & """) WHERE ""ObjectCode"" = '" & UDOName & "'; " _
+                & "ELSEIF EXISTS (SELECT 1 FROM ""ONNM"" a , ""NNM1"" b WHERE a.""ObjectCode"" = b.""ObjectCode"" AND (SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) ""Code"" From """ & Trim(TableName) & """) <> b.""NextNumber"" AND a.""ObjectCode"" = '" & UDOName & "') THEN " _
+                & " UPDATE ""ONNM"" SET ""AultoKey"" =(SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) +1 ""Code"" From """ & Trim(TableName) & """) WHERE ""ObjectCode"" = '" & UDOName & "'; " _
+                & " UPDATE ""NNM1"" SET ""NextNumber"" =(SELECT IFNULL(MAX(IFNULL(""DocEntry"",0)),1) +1 ""Code"" From """ & Trim(TableName) & """) WHERE ""ObjectCode"" = '" & UDOName & "'; " _
+                & "END IF; " _
+                & "END"
+            Else
+                strCode = "Select ISNULL(Max(ISNULL(DocEntry,0)),0) + 1 Code From " & Trim(TableName) & ""
+
+                strCode = "IF EXISTS (SELECT * FROM ONNM a ,NNM1 b WHERE a.ObjectCode =b.ObjectCode AND a.AutoKey <> b.NextNumber AND a.ObjectCode = '" & UDOName & "' ) " _
                 & " BEGIN " _
                 & " UPDATE ONNM SET AutoKey =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM ONNM WHERE ObjectCode = '" & UDOName & "'" _
                 & " UPDATE NNM1 SET NextNumber =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM NNM1 WHERE ObjectCode = '" & UDOName & "' " _
@@ -793,6 +893,8 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                 & " UPDATE ONNM SET AultoKey =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM ONNM WHERE ObjectCode = '" & UDOName & "' " _
                 & " UPDATE NNM1 SET NextNumber =(SELECT ISNULL(MAX(ISNULL(DocEntry,0)),1) +1 Code From " & Trim(TableName) & ") FROM NNM1 WHERE ObjectCode = '" & UDOName & "' " _
                 & " END "
+            End If
+
             rsetCode.DoQuery(strCode)
             Return True
         Catch ex As Exception
@@ -905,7 +1007,16 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
             Dim strReturnVal As String = "0"
             Dim strQuery As String
             'strQuery = "SELECT IfNULL(ONHAND,0) ONHAND FROM OITW WHERE ITEMCODE='" & ItemCode & "' AND WHSCODE='" & whrCode & "'"
-            strQuery = "SELECT COALESCE(""OnHand"",0) AS ""ONHAND"" FROM ""OITW"" WHERE ""ItemCode"" = '" & ItemCode & "' AND ""WhsCode"" = '" & whrCode & "'"
+
+            'strQuery = "SELECT COALESCE(""OnHand"",0) AS ""ONHAND"" FROM ""OITW"" WHERE ""ItemCode"" = '" & ItemCode & "' AND ""WhsCode"" = '" & whrCode & "'"
+            'rset.DoQuery(strQuery)
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strQuery = "SELECT COALESCE(""OnHand"",0) AS ""ONHAND"" FROM ""OITW"" WHERE ""ItemCode"" = '" & ItemCode & "' AND ""WhsCode"" = '" & whrCode & "'"
+            Else
+                strQuery = "SELECT ISNULL(OnHand,0) AS ONHAND FROM OITW WHERE ItemCode = '" & ItemCode & "' AND WhsCode = '" & whrCode & "'"
+            End If
+
             rset.DoQuery(strQuery)
             If rset.RecordCount > 0 Then strReturnVal = rset.Fields.Item("ONHAND").Value.ToString()
             Return strReturnVal
@@ -1005,8 +1116,19 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
         Try
             Dim rset As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
             Dim strReturnVal As String = ""
-            Dim strQuery = "SELECT " & ValFldNa & " FROM " & TblName & IIf(Conditions.Trim() = "", "", " WHERE ") & Conditions
+            'Dim strQuery = "SELECT " & ValFldNa & " FROM " & TblName & IIf(Conditions.Trim() = "", "", " WHERE ") & Conditions
+            'rset.DoQuery(strQuery)
+
+            Dim strQuery As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strQuery = "SELECT " & ValFldNa & " FROM " & TblName & IIf(Conditions.Trim() = "", "", " WHERE ") & Conditions
+            Else
+                strQuery = "SELECT " & ValFldNa & " FROM " & TblName & IIf(Conditions.Trim() = "", "", " WHERE ") & Conditions
+            End If
+
             rset.DoQuery(strQuery)
+
             Return IIf(rset.RecordCount > 0, rset.Fields.Item(0).Value.ToString(), "")
         Catch ex As Exception
             oApplication.StatusBar.SetText(" Get Single Value Function Failed : ", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
@@ -1017,8 +1139,16 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
         Try
             Dim rset As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
             'Dim strQuery = "Select case when convert(datetime,'" & FrDate & "') <= convert(datetime,'" & ToDate & "') Then 'True' else 'False' End"
-            Dim strQuery = "Select case when TO_DATE('" & FrDate & "','YYYYMMDD') <= TO_DATE('" & ToDate & "','YYYYMMDD') Then 'True' else 'False' End From DUMMY"
+            'Dim strQuery = "Select case when TO_DATE('" & FrDate & "','YYYYMMDD') <= TO_DATE('" & ToDate & "','YYYYMMDD') Then 'True' else 'False' End From DUMMY"
+            Dim strQuery As String = ""
 
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strQuery = "SELECT CASE WHEN TO_DATE('" & FrDate & "','YYYYMMDD') <= TO_DATE('" & ToDate & "','YYYYMMDD') THEN 'True' ELSE 'False' END FROM DUMMY"
+            Else
+                strQuery = "SELECT CASE WHEN CONVERT(DATE,'" & FrDate & "',112) <= CONVERT(DATE,'" & ToDate & "',112) THEN 'True' ELSE 'False' END"
+            End If
+
+            rset.DoQuery(strQuery)
             rset.DoQuery(strQuery)
             Return Convert.ToBoolean(rset.Fields.Item(0).Value)
         Catch ex As Exception
@@ -1031,8 +1161,19 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
             Dim rset As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
 
-            Dim strQuery = "Select case when TO_TIME('" & FrTime & "') <= TO_TIME('" & ToTime & "') Then 'True' else 'False' End From DUMMY"
+
             'Dim strQuery = "Select case when convert(TimeStamp,'" & FrTime & "') <= convert(TimeStamp,'" & ToTime & "') Then 'True' else 'False' End"
+            ' Dim strQuery = "Select case when TO_TIME('" & FrTime & "') <= TO_TIME('" & ToTime & "') Then 'True' else 'False' End From DUMMY"
+
+            Dim strQuery As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strQuery = "SELECT CASE WHEN TO_TIME('" & FrTime & "') <= TO_TIME('" & ToTime & "') THEN 'True' ELSE 'False' END FROM DUMMY"
+            Else
+                strQuery = "SELECT CASE WHEN CAST('" & FrTime & "' AS TIME) <= CAST('" & ToTime & "' AS TIME) THEN 'True' ELSE 'False' END"
+            End If
+
+
             rset.DoQuery(strQuery)
             Return Convert.ToBoolean(rset.Fields.Item(0).Value)
         Catch ex As Exception
@@ -1062,8 +1203,18 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
             Dim rsetQry As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
             ' Dim strQry As String = "select top 1 * from CSHS where FormID='" & formUID & "' and ItemID='" & itemUID & "' and COLID='" & colUID & ""
-            Dim strQry As String = "select * from ""CSHS"" where ""FormID""='{0}' and ""ItemID""='{1}' and ""COLID""='{2}' LIMIT 1"
             'Dim strQry As String = "select top 1 * from CSHS where FormID='{0}' and ItemID='{1}' and COLID='{2}'"
+            ' Dim strQry As String = "select * from ""CSHS"" where ""FormID""='{0}' and ""ItemID""='{1}' and ""COLID""='{2}' LIMIT 1"
+
+            Dim strQry As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strQry = "SELECT * FROM ""CSHS"" WHERE ""FormID""='{0}' AND ""ItemID""='{1}' AND ""COLID""='{2}' LIMIT 1"
+            Else
+                strQry = "SELECT TOP 1 * FROM CSHS WHERE FormID='{0}' AND ItemID='{1}' AND COLID='{2}'"
+            End If
+
+
             If colUID = "" Then colUID = "-1"
             strQry = String.Format(strQry, formUID, itemUID, colUID)
             rsetQry.DoQuery(strQry)
@@ -1073,9 +1224,6 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
         End Try
     End Function
-
-
-
     Public Sub SetDocumentStatus(ByVal oDBDSHeader As SAPbouiCOM.DBDataSource, ByVal oForm As SAPbouiCOM.Form)
         Try
             If oDBDSHeader.GetValue("Canceled", 0).Trim.Equals("Y") Then
@@ -1104,12 +1252,27 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
             Dim DocEntry As String = ""
             If oCompany.InTransaction = False Then oCompany.StartTransaction()
             Dim oPurOrd As SAPbobsCOM.Documents = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oPurchaseOrders)
-            sQuery = "SELECT ""CardCode"" FROM ""OCRD"" WHERE ""CardType"" = 'S' LIMIT 1"
+
             'sQuery = "SELECT TOP 1 CardCode FROM OCRD WHERE CardType = 'S'"
+            ' sQuery = "SELECT ""CardCode"" FROM ""OCRD"" WHERE ""CardType"" = 'S' LIMIT 1"
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                sQuery = "SELECT ""CardCode"" FROM ""OCRD"" WHERE ""CardType"" = 'S' LIMIT 1"
+            Else
+                sQuery = "SELECT TOP 1 CardCode FROM OCRD WHERE CardType = 'S'"
+            End If
             Dim rsetQry As SAPbobsCOM.Recordset = oGfun.DoQuery(sQuery)
             If rsetQry.RecordCount > 0 Then CardCode = Trim(rsetQry.Fields.Item("CardCode").Value)
-            sQuery = "SELECT ""Code"" FROM ""OLCT"" "
+
             'sQuery = "SELECT Code FROM OLCT "
+            'sQuery = "SELECT ""Code"" FROM ""OLCT"" "
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                sQuery = "SELECT ""Code"" FROM ""OLCT"""
+            Else
+                sQuery = "SELECT Code FROM OLCT"
+            End If
+
             rsetQry = oGfun.DoQuery(sQuery)
             If rsetQry.RecordCount > 0 Then Location = Trim(rsetQry.Fields.Item("Code").Value)
             If CardCode.Equals("") = False And Location.Trim.Equals("") = False And TaxCode.Equals("") = False Then
@@ -1122,14 +1285,27 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                     oGfun.StatusBarErrorMsg("" & oCompany.GetLastErrorDescription)
                     Dim adda = oCompany.GetLastErrorDescription
                 End If
-                sQuery = "SELECT IFNULL(MAX(""DocEntry""),1) ""DocEntry"" FROM ""OPOR"" "
+                'sQuery = "SELECT IFNULL(MAX(""DocEntry""),1) ""DocEntry"" FROM ""OPOR"" "
                 'sQuery = "SELECT ISNULL(MAX(DocEntry),1) DocEntry FROM OPOR "
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    sQuery = "SELECT IFNULL(MAX(""DocEntry""),1) ""DocEntry"" FROM ""OPOR"""
+                Else
+                    sQuery = "SELECT ISNULL(MAX(DocEntry),1) AS DocEntry FROM OPOR"
+                End If
                 rsetQry.DoQuery(sQuery)
                 DocEntry = rsetQry.Fields.Item("DocEntry").Value
                 oPurOrd.GetByKey(DocEntry)
                 GetTaxAmount_NonVatable = oPurOrd.Lines.TaxTotal
-                sQuery = " SELECT ROUND(SUM(""TaxSum"" *(""NonDdctPrc""/100)),4) ""NonDeductable"" FROM ""POR4"" WHERE ""DocEntry"" = '" & Trim(DocEntry) & "'"
+                ' sQuery = " SELECT ROUND(SUM(""TaxSum"" *(""NonDdctPrc""/100)),4) ""NonDeductable"" FROM ""POR4"" WHERE ""DocEntry"" = '" & Trim(DocEntry) & "'"
                 'sQuery = " SELECT ROUND(SUM(TaxSum *(NonDdctPrc/100)),4) NonDeductable FROM POR4 WHERE DocEntry = '" & Trim(DocEntry) & "'"
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    sQuery = "SELECT ROUND(SUM(""TaxSum"" * (""NonDdctPrc""/100)),4) ""NonDeductable"" FROM ""POR4"" WHERE ""DocEntry"" = '" & Trim(DocEntry) & "'"
+                Else
+                    sQuery = "SELECT ROUND(SUM(TaxSum * (NonDdctPrc/100.0)),4) AS NonDeductable FROM POR4 WHERE DocEntry = '" & Trim(DocEntry) & "'"
+                End If
+
                 rsetQry.DoQuery(sQuery)
                 Dim dblNonDeducableAmt As Double = 0
                 If rsetQry.RecordCount > 0 Then dblNonDeducableAmt = CDbl(rsetQry.Fields.Item("NonDeductable").Value)
@@ -1249,8 +1425,14 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                 Dim oAttchLines As SAPbobsCOM.Attachments2_Lines
                 oAttchLines = oAttachment.Lines
                 oMatAttach.FlushToDataSource()
-                rsetAttCount.DoQuery("Select Count(*) From ""ATC1"" Where ""AbsEntry"" = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "'")
+                ' rsetAttCount.DoQuery("Select Count(*) From ""ATC1"" Where ""AbsEntry"" = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "'")
                 'rsetAttCount.DoQuery("Select Count(*) From ATC1 Where AbsEntry = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "'")
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    rsetAttCount.DoQuery("SELECT COUNT(*) FROM ""ATC1"" WHERE ""AbsEntry"" = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "'")
+                Else
+                    rsetAttCount.DoQuery("SELECT COUNT(*) FROM ATC1 WHERE AbsEntry = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "'")
+                End If
 
                 If Trim(rsetAttCount.Fields.Item(0).Value).Equals("0") Then
                     For i As Integer = 1 To oMatAttach.VisualRowCount
@@ -1263,8 +1445,14 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                     Next
                     oAttachment.Add()
                     Dim rsetAttch As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
-                    rsetAttch.DoQuery("Select Case When Count(*) > 0 Then Max(""AbsEntry"") Else 0 End ""AbsEntry"" From ""ATC1""")
+                    ' rsetAttch.DoQuery("Select Case When Count(*) > 0 Then Max(""AbsEntry"") Else 0 End ""AbsEntry"" From ""ATC1""")
                     'rsetAttch.DoQuery("Select Case When Count(*) > 0 Then Max(AbsEntry) Else 0 End AbsEntry From ATC1")
+
+                    If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        rsetAttch.DoQuery("SELECT CASE WHEN COUNT(*) > 0 THEN MAX(""AbsEntry"") ELSE 0 END ""AbsEntry"" FROM ""ATC1""")
+                    Else
+                        rsetAttch.DoQuery("SELECT CASE WHEN COUNT(*) > 0 THEN MAX(AbsEntry) ELSE 0 END AS AbsEntry FROM ATC1")
+                    End If
                     oDBDSHeader.SetValue("U_AtcEntry", 0, rsetAttch.Fields.Item(0).Value)
 
                 Else
@@ -1283,8 +1471,14 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
             End If
             'Delete the Attachment Rows ...
             Dim rsetDelete As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
-            rsetDelete.DoQuery("Delete From ""ATC1"" Where ""AbsEntry"" = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "' And ""Line"" >'" & oMatAttach.VisualRowCount & "' ")
+            'rsetDelete.DoQuery("Delete From ""ATC1"" Where ""AbsEntry"" = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "' And ""Line"" >'" & oMatAttach.VisualRowCount & "' ")
             'rsetDelete.DoQuery("Delete From ATC1 Where AbsEntry = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "' And Line >'" & oMatAttach.VisualRowCount & "' ")
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                rsetDelete.DoQuery("DELETE FROM ""ATC1"" WHERE ""AbsEntry"" = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "' AND ""Line"" > '" & oMatAttach.VisualRowCount & "'")
+            Else
+                rsetDelete.DoQuery("DELETE FROM ATC1 WHERE AbsEntry = '" & Trim(oDBDSHeader.GetValue("U_AtcEntry", 0)) & "' AND Line > '" & oMatAttach.VisualRowCount & "'")
+            End If
 
         Catch ex As Exception
             oApplication.StatusBar.SetText("AddAttachment Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
@@ -1453,7 +1647,14 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
         Try
             oMatSubGrid.Clear()
             oDBDSSubGrid.Clear()
-            Dim strGetColUID As String = "Select ""AliasID"" From CUFD Where ""AliasID"" <> 'UniqID' AND ""TableID"" ='" & oDBDSSubGrid.TableName & "' "
+            'Dim strGetColUID As String = "Select ""AliasID"" From CUFD Where ""AliasID"" <> 'UniqID' AND ""TableID"" ='" & oDBDSSubGrid.TableName & "' "
+            Dim strGetColUID As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strGetColUID = "SELECT ""AliasID"" FROM ""CUFD"" WHERE ""AliasID"" <> 'UniqID' AND ""TableID"" = '" & oDBDSSubGrid.TableName & "'"
+            Else
+                strGetColUID = "SELECT AliasID FROM CUFD WHERE AliasID <> 'UniqID' AND TableID = '" & oDBDSSubGrid.TableName & "'"
+            End If
             Dim rsetGetColUID As SAPbobsCOM.Recordset = Me.DoQuery(strGetColUID)
             Dim strColUID As String = ""
 
@@ -1508,8 +1709,17 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
         Try
             oMatSubGrid.Clear()
             oDBDSSubGrid.Clear()
-            Dim strGetColUID As String = "Select ""AliasID"" From ""CUFD"" Where ""AliasID"" <> 'UniqID' and ""AliasID"" <> 'Basenum' AND ""TableID"" ='" & oDBDSSubGrid.TableName & "' "
+            'Dim strGetColUID As String = "Select ""AliasID"" From ""CUFD"" Where ""AliasID"" <> 'UniqID' and ""AliasID"" <> 'Basenum' AND ""TableID"" ='" & oDBDSSubGrid.TableName & "' "
             'Dim strGetColUID As String = "Select AliasID From CUFD Where AliasID <> 'UniqID' and AliasID <> 'Basenum' AND TableID ='" & oDBDSSubGrid.TableName & "' "
+
+            Dim strGetColUID As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strGetColUID = "SELECT ""AliasID"" FROM ""CUFD"" WHERE ""AliasID"" <> 'UniqID' AND ""AliasID"" <> 'Basenum' AND ""TableID"" = '" & oDBDSSubGrid.TableName & "'"
+            Else
+                strGetColUID = "SELECT AliasID FROM CUFD WHERE AliasID <> 'UniqID' AND AliasID <> 'Basenum' AND TableID = '" & oDBDSSubGrid.TableName & "'"
+            End If
+
             Dim rsetGetColUID As SAPbobsCOM.Recordset = Me.DoQuery(strGetColUID)
             Dim strColUID As String = ""
 
@@ -1563,8 +1773,17 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
     End Function
     Function SaveSubGrid(ByVal oMatMainGrid As SAPbouiCOM.Matrix, ByVal oDBDSMainSubGrid As SAPbouiCOM.DBDataSource, ByVal oMatSubGrid As SAPbouiCOM.Matrix, ByVal oDBDsSubGrid As SAPbouiCOM.DBDataSource, ByVal RowID As Integer) As Boolean
         Try
-            Dim strGetColUID As String = "Select ""AliasID"" From ""CUFD"" Where ""AliasID"" <> 'UniqID' AND ""TableID"" ='" & oDBDsSubGrid.TableName & "' "
+            'Dim strGetColUID As String = "Select ""AliasID"" From ""CUFD"" Where ""AliasID"" <> 'UniqID' AND ""TableID"" ='" & oDBDsSubGrid.TableName & "' "
             'Dim strGetColUID As String = "Select AliasID From CUFD Where AliasID <> 'UniqID' AND TableID ='" & oDBDsSubGrid.TableName & "' "
+
+            Dim strGetColUID As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strGetColUID = "SELECT ""AliasID"" FROM ""CUFD"" WHERE ""AliasID"" <> 'UniqID' AND ""TableID"" = '" & oDBDsSubGrid.TableName & "'"
+            Else
+                strGetColUID = "SELECT AliasID FROM CUFD WHERE AliasID <> 'UniqID' AND TableID = '" & oDBDsSubGrid.TableName & "'"
+            End If
+
             Dim rsetGetColUID As SAPbobsCOM.Recordset = Me.DoQuery(strGetColUID)
             Dim strColUID As String = ""
             Dim intInitSize As Integer = oDBDSMainSubGrid.Size
@@ -1639,8 +1858,17 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
     Function SaveSubGrid1(ByVal oMatMainGrid As SAPbouiCOM.Matrix, ByVal oDBDSMainSubGrid As SAPbouiCOM.DBDataSource, ByVal oMatSubGrid As SAPbouiCOM.Matrix, ByVal oDBDsSubGrid As SAPbouiCOM.DBDataSource, ByVal RowID As Integer, ByVal Row As Integer) As Boolean
         Try
 
-            Dim strGetColUID As String = "Select ""AliasID"" From ""CUFD"" Where ""AliasID"" <> 'UniqID' and ""AliasID"" <> 'Basenum' AND ""TableID"" ='" & oDBDsSubGrid.TableName & "' "
+            'Dim strGetColUID As String = "Select ""AliasID"" From ""CUFD"" Where ""AliasID"" <> 'UniqID' and ""AliasID"" <> 'Basenum' AND ""TableID"" ='" & oDBDsSubGrid.TableName & "' "
             'Dim strGetColUID As String = "Select AliasID From CUFD Where AliasID <> 'UniqID' and AliasID <> 'Basenum' AND TableID ='" & oDBDsSubGrid.TableName & "' "
+
+            Dim strGetColUID As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                strGetColUID = "SELECT ""AliasID"" FROM ""CUFD"" WHERE ""AliasID"" <> 'UniqID' AND ""AliasID"" <> 'Basenum' AND ""TableID"" = '" & oDBDsSubGrid.TableName & "'"
+            Else
+                strGetColUID = "SELECT AliasID FROM CUFD WHERE AliasID <> 'UniqID' AND AliasID <> 'Basenum' AND TableID = '" & oDBDsSubGrid.TableName & "'"
+            End If
+
             Dim rsetGetColUID As SAPbobsCOM.Recordset = Me.DoQuery(strGetColUID)
             Dim strColUID As String = ""
             Dim intInitSize As Integer = oDBDSMainSubGrid.Size
@@ -1816,7 +2044,12 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                     If oColPriceUID.Equals("") = False Then
                         dblPrice = CDbl(oMatrix.Columns.Item(oColPriceUID).Cells.Item(i).Specific.value)
                     Else
-                        dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' and ""WhsCode""='" & strWhsCode & "'")
+                        'dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' and ""WhsCode""='" & strWhsCode & "'")
+                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' AND ""WhsCode""='" & strWhsCode & "'")
+                        Else
+                            dblPrice = oGfun.getSingleValue("OITW", "StockValue", " ItemCode='" & strItemCode & "' AND WhsCode='" & strWhsCode & "'")
+                        End If
                     End If
                     v_StockEntry.Lines.Price = dblPrice
                 End If
@@ -1859,7 +2092,12 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                     If oColPriceUID.Equals("") = False Then
                         dblPrice = CDbl(oMatrix.Columns.Item(oColPriceUID).Cells.Item(i).Specific.value)
                     Else
-                        dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' and ""WhsCode""='" & strWhsCode & "'")
+                        'dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' and ""WhsCode""='" & strWhsCode & "'")
+                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' AND ""WhsCode""='" & strWhsCode & "'")
+                        Else
+                            dblPrice = oGfun.getSingleValue("OITW", "StockValue", " ItemCode='" & strItemCode & "' AND WhsCode='" & strWhsCode & "'")
+                        End If
                     End If
                     v_StockExit.Lines.Price = dblPrice
                 End If
@@ -1912,7 +2150,12 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
                         If oColPriceUID.Equals("") = False Then
                             dblPrice = CDbl(oMatrix.Columns.Item(oColPriceUID).Cells.Item(j).Specific.value)
                         Else
-                            dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' and ""WhsCode""='" & strfromwhs & "'")
+                            ' dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' and ""WhsCode""='" & strfromwhs & "'")
+                            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                dblPrice = oGfun.getSingleValue("OITW", """StockValue""", " ""ItemCode""='" & strItemCode & "' AND ""WhsCode""='" & strfromwhs & "'")
+                            Else
+                                dblPrice = oGfun.getSingleValue("OITW", "StockValue", " ItemCode='" & strItemCode & "' AND WhsCode='" & strfromwhs & "'")
+                            End If
                         End If
                         oStockTransfer.Lines.Price = dblPrice
                         oStockTransfer.Lines.Add()
@@ -1988,8 +2231,14 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
         Dim str As String = "DOC-"
         Dim i As Integer
         rs = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
-        Qry = "SELECT MAX(CAST(""Code"" AS INTEGER)) ""code"" FROM ""@" & TableName & """"
+        'Qry = "SELECT MAX(CAST(""Code"" AS INTEGER)) ""code"" FROM ""@" & TableName & """"
         'Qry = "SELECT MAX(CAST(Code AS int)) code FROM [@" & TableName & "]"
+
+        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            Qry = "SELECT MAX(CAST(""Code"" AS INTEGER)) ""code"" FROM ""@" & TableName & """"
+        Else
+            Qry = "SELECT MAX(CAST(Code AS INT)) AS code FROM [@" & TableName & "]"
+        End If
         rs.DoQuery(Qry)
         If rs.RecordCount <> 0 Then
             For i = 5 To Len(CStr(rs.Fields.Item("Code").Value)) Step -1

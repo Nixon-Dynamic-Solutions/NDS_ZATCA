@@ -434,7 +434,12 @@ Public Class ARInvoice
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
             'oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC [ TaxType] ''")
-            oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
+            'oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
+            Else
+                oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC TaxType ''")
+            End If
             frmARInvoice.Items.Item("t_HASH").Enabled = False
             frmARInvoice.Items.Item("t_QRCode").Enabled = False
             frmARInvoice.Items.Item("t_PIH").Enabled = False
@@ -595,7 +600,12 @@ Public Class ARInvoice
                                         Dim type As SAPbouiCOM.ComboBox = oMatrix.Columns.Item("18").Cells.Item(1).Specific
                                         Dim tax As String = type.Selected.Value
                                         'oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "Exec [TaxType]'" & tax & "'")
-                                        oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
+                                        'oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
+                                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                            oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
+                                        Else
+                                            oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC TaxType '" & tax & "'")
+                                        End If
                                     End If
                             End Select
                         Catch ex As Exception
@@ -634,7 +644,15 @@ Public Class ARInvoice
                                             If pVal.BeforeAction = False Then
                                                 Dim Val As SAPbouiCOM.ComboBox = oMatrix.Columns.Item("18").Cells.Item(pVal.Row).Specific
                                                 Dim tax As String = Val.Selected.Value
-                                                Dim str As String = "Select * from OVTG where ""Code""='" & tax & "'"
+                                                ' Dim str As String = "Select * from OVTG where ""Code""='" & tax & "'"
+                                                Dim str As String = ""
+
+                                                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                                    str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & tax.ToString().Replace("'", "''") & "'"
+                                                Else
+                                                    str = "SELECT * FROM OVTG WHERE Code='" & tax.ToString().Replace("'", "''") & "'"
+                                                End If
+
                                                 Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                                 Dim Rate As Integer = rset.Fields.Item("Rate").Value
                                                 If Rate <> 0.0 Then
@@ -684,7 +702,15 @@ Public Class ARInvoice
                                                 'Me.InitForm()
 
                                             End If
-                                            Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
+                                            ' Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
+                                            Dim str As String = ""
+
+                                            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                                str = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
+                                            Else
+                                                str = "SELECT ISNULL(MAX(DocNum),0) FROM OINV A INNER JOIN OUSR B ON A.UserSign = B.USERID WHERE A.UserSign = '" & oCompany.UserSignature & "' AND ISNULL(B.U_XMLGen, 'N') = 'Y'"
+                                            End If
+
                                             Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                             If rset.RecordCount > 0 And rset.Fields.Item(0).Value <> 0 Then
                                                 'frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_FIND_MODE
@@ -786,7 +812,14 @@ Public Class ARInvoice
             'frmARInvoice. Freeze( True)
             write_log("XML creation Started")
             'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            'Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Dim str11 As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Else
+                str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            End If
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
@@ -1021,7 +1054,14 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
                 'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Dim str112 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Else
+                    str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                End If
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
@@ -1036,7 +1076,15 @@ Public Class ARInvoice
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value)).Replace(",", "")
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value)).Replace(",", "")
                         Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value))).Replace(",", "")
-                        Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        Dim str As String = ""
+
+                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
+                        Else
+                            str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
+                        End If
+
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
                         xmlstring += vbCrLf & "<cac:InvoiceLine>"
@@ -1075,7 +1123,14 @@ Public Class ARInvoice
                 End If
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
-                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                ' Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim STRr1 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Else
+                    STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                End If
                 Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
                 Return xmlstring
             End If
@@ -1092,7 +1147,14 @@ Public Class ARInvoice
             'frmARInvoice. Freeze( True)
             write_log("XML creation Started")
             'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            ' Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Dim str11 As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Else
+                str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            End If
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
@@ -1331,7 +1393,14 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
                 'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Dim str112 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Else
+                    str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                End If
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
@@ -1345,7 +1414,14 @@ Public Class ARInvoice
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
                         Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
-                        Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        Dim str As String = ""
+
+                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
+                        Else
+                            str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
+                        End If
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
                         xmlstring += vbCrLf & "<cac:InvoiceLine>"
@@ -1384,7 +1460,15 @@ Public Class ARInvoice
                 End If
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
-                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                'Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim STRr1 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Else
+                    STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                End If
+
                 Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
                 Return xmlstring
             End If
@@ -1400,8 +1484,16 @@ Public Class ARInvoice
             'frmARInvoice. Freeze( True)
             write_log("XML creation Started")
             'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            'Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+
+            Dim str11 As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Else
+                str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            End If
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
@@ -1635,7 +1727,15 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
                 'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Dim str112 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Else
+                    str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                End If
+
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
@@ -1650,7 +1750,14 @@ Public Class ARInvoice
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
                         Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
-                        Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        Dim str As String = ""
+
+                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
+                        Else
+                            str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
+                        End If
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
                         xmlstring += vbCrLf & "<cac:InvoiceLine>"
@@ -1689,7 +1796,14 @@ Public Class ARInvoice
                 End If
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
-                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                'Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim STRr1 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Else
+                    STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                End If
                 Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
                 Return xmlstring
             End If
@@ -1707,7 +1821,14 @@ Public Class ARInvoice
             write_log("XML creation Started")
             'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
             'Dim str11 As String = "EXEC [@EINVOICE_HEADER]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-            Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            'Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Dim str11 As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+            Else
+                str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            End If
             Dim rset11 As SAPbobsCOM.Recordset = oGfun.DoQuery(str11)
             If rset11.RecordCount > 0 Then
                 Dim xmlstring As String = ""
@@ -1941,7 +2062,15 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
                 'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Dim str112 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
+                Else
+                    str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                End If
+
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
@@ -1956,7 +2085,15 @@ Public Class ARInvoice
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
                         Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
-                        Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        Dim str As String = ""
+
+                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        Else
+                            str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value & "'"
+                        End If
+
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
                         xmlstring += vbCrLf & "<cac:InvoiceLine>"
@@ -1995,7 +2132,14 @@ Public Class ARInvoice
                 End If
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
-                Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                'Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Dim STRr1 As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                Else
+                    STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
+                End If
                 Dim rsett1 As SAPbobsCOM.Recordset = oGfun.DoQuery(STRr1)
                 Return xmlstring
             End If
@@ -2006,9 +2150,6 @@ Public Class ARInvoice
             write_log(ex.Message)
         End Try
     End Function
-
-
-
 
     Sub xml()
         Try
@@ -2025,7 +2166,14 @@ Public Class ARInvoice
             If Value <> "" Then
 
                 If Value <> "--" Then
-                    Dim sty As String = " select ""U_I_Tax_Ex_Type_Code"" from ""@I_ZATCA_TAXCODE"" where ""U_I_Tax_Ex_Code""='" & Value & "'"
+                    'Dim sty As String = " select ""U_I_Tax_Ex_Type_Code"" from ""@I_ZATCA_TAXCODE"" where ""U_I_Tax_Ex_Code""='" & Value & "'"
+                    Dim sty As String = ""
+
+                    If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        sty = "SELECT ""U_I_Tax_Ex_Type_Code"" FROM ""@I_ZATCA_TAXCODE"" WHERE ""U_I_Tax_Ex_Code""='" & Value & "'"
+                    Else
+                        sty = "SELECT U_I_Tax_Ex_Type_Code FROM [@I_ZATCA_TAXCODE] WHERE U_I_Tax_Ex_Code='" & Value & "'"
+                    End If
                     Dim rsy As SAPbobsCOM.Recordset = oGfun.DoQuery(sty)
                     If rsy.RecordCount > 0 Then
                         If rsy.Fields.Item(0).Value = "Z" Then
@@ -2067,7 +2215,15 @@ Public Class ARInvoice
                 frmARInvoice.Items.Item("b_Load").Enabled = False
                 'frmARInvoice. Items. Item("b_delete"). Enabled = False
                 'Dim Str As String = "Update OINV set U_XMLGen='Y' , U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName=(Select top 1 U_Name from OUSR where USERID='" & oCompany.UserSignature.ToString().Trim() & "' ) , U_GenDate=getdate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                Dim Str As String = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+                'Dim Str As String = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+
+                Dim Str As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    Str = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+                Else
+                    Str = "UPDATE OINV SET U_XMLGen='Y', U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName""=(SELECT TOP 1 U_NAME FROM OUSR WHERE USERID=" & oCompany.UserSignature.ToString().Trim() & "), U_GenDate=GETDATE() WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+                End If
                 oGfun.DoQuery(Str)
 
                 Dim psi As New ProcessStartInfo()
@@ -2084,7 +2240,14 @@ Public Class ARInvoice
                     p.WaitForExit()
                 End If
                 oApplication.StatusBar.SetSystemMessage("E-Invoice Posting Ended...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
-                Dim QrCode As String = $"Select ""U_QRCode"" from OINV where ""DocEntry""={oDBDSHeader.GetValue("DocEntry", 0).Trim()} and cast(ifnull(""U_QRCode"",'') as varchar(254))!=''"
+                'Dim QrCode As String = $"Select ""U_QRCode"" from OINV where ""DocEntry""={oDBDSHeader.GetValue("DocEntry", 0).Trim()} and cast(ifnull(""U_QRCode"",'') as varchar(254))!=''"
+                Dim QrCode As String = ""
+
+                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    QrCode = "SELECT ""U_QRCode"" FROM ""OINV"" WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & " AND CAST(IFNULL(""U_QRCode"", '') AS VARCHAR(254)) <> ''"
+                Else
+                    QrCode = "SELECT U_QRCode FROM OINV WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & " AND ISNULL(CAST(U_QRCode AS VARCHAR(254)), '') <> ''"
+                End If
                 'Dim Str As String = "Update ORIN set ""U_XMLGen""='Y',""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(Select top 1 ""U_Name"" from OUSR where ""USERID""='" & oCompany.UserSignature.ToString().Trim() & "' ), U_GenDate=GetDate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & "'"
                 Dim rsetQR As SAPbobsCOM.Recordset = oGfun.DoQuery(QrCode)
                 If rsetQR.RecordCount > 0 Then
@@ -2115,7 +2278,14 @@ Public Class ARInvoice
         Catch ex As Exception
             frmARInvoice.Freeze(False)
             oApplication.StatusBar.SetText("GenerateXML Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
-            Dim str As String = "Update OINV set ""U_XMLGen""='N' ,""U_APIStatus""='" & ex.Message & "' ,""U_APIPOST""='0' where ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            'Dim str As String = "Update OINV set ""U_XMLGen""='N' ,""U_APIStatus""='" & ex.Message & "' ,""U_APIPOST""='0' where ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+            Dim str As String = ""
+
+            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                str = "UPDATE ""OINV"" SET ""U_XMLGen""='N', ""U_APIStatus""='" & ex.Message.Replace("'", "''") & "', ""U_APIPOST""='0' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+            Else
+                str = "UPDATE OINV SET U_XMLGen='N', U_APIStatus='" & ex.Message.Replace("'", "''") & "', U_APIPOST='0' WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+            End If
             Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
         End Try
     End Sub
@@ -2195,7 +2365,14 @@ Public Class ARInvoice
 
                             ''Me. Jsonstring( )
                             If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
-                                Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                                'Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                                Dim str As String = ""
+
+                                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                    str = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                                Else
+                                    str = "UPDATE OINV SET U_APIStatus='', U_APIPOST=' ', U_PIH=' ', U_HASH='', U_CERTIFICATE=' ', U_XMLGENERATION=' ', U_CLEARANCESTATUS=' ', U_CSID=' ', U_Barcode=' ', U_QRCode=' ', U_XMLGen=' ', U_GenUId=' ', U_GenUName=' ', U_GenDate='' WHERE DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                                End If
                                 Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                             End If
 
@@ -2268,7 +2445,16 @@ Public Class ARInvoice
                             frmARInvoice.Items.Item("t_APITime").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             frmARInvoice.Items.Item("t_APITime").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                             'Dim Strprj As String = "Select isnull(U_XMLGen, 'N') XMLAproved from OUSR where USERID='" & oCompany.UserSignature & "'"
-                            Dim Strprj As String = "SELECT IFNULL(""U_XMLGen"", 'N') ""XMLAproved"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature
+                            'Dim Strprj As String = "SELECT IFNULL(""U_XMLGen"", 'N') ""XMLAproved"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature
+
+                            Dim Strprj As String = ""
+
+                            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                Strprj = "SELECT IFNULL(""U_XMLGen"", 'N') ""XMLAproved"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature
+                            Else
+                                Strprj = "SELECT ISNULL(U_XMLGen, 'N') AS XMLAproved FROM OUSR WHERE USERID=" & oCompany.UserSignature
+                            End If
+
                             Dim rsetPrjt1 As SAPbobsCOM.Recordset = oGfun.DoQuery(Strprj)
                             If (rsetPrjt1.Fields.Item("XMLAproved").Value = "Y") Then
 
@@ -2299,7 +2485,14 @@ Public Class ARInvoice
                                         'frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
 
                                     Else
-                                        Dim str As String = "Select ""U_XMLGENERATION"" from OINV where ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and ""U_XMLGen""='Y'"
+                                        'Dim str As String = "Select ""U_XMLGENERATION"" from OINV where ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and ""U_XMLGen""='Y'"
+                                        Dim str As String = ""
+
+                                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                            str = "SELECT ""U_XMLGENERATION"" FROM ""OINV"" WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' AND ""U_XMLGen""='Y'"
+                                        Else
+                                            str = "SELECT U_XMLGENERATION FROM OINV WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' AND U_XMLGen='Y'"
+                                        End If
                                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                         If rset.RecordCount > 0 Then
                                             Dim val As String = rset.Fields.Item(0).Value

@@ -26,3 +26,18 @@ C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.CoreCompileInp
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.exe
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.xml
 C:\Nixon Dynamic\New Project\NDS_ZATCA\obj\Debug\NDS_ZATCA.pdb
+C:\Reshmee\NDS_ZATCA\bin\Debug\NDS_ZATCA.exe.config
+C:\Reshmee\NDS_ZATCA\bin\Debug\NDS_ZATCA.exe
+C:\Reshmee\NDS_ZATCA\bin\Debug\NDS_ZATCA.pdb
+C:\Reshmee\NDS_ZATCA\bin\Debug\NDS_ZATCA.xml
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.AssemblyReference.cache
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.exe.config
+C:\Reshmee\NDS_ZATCA\obj\Debug\Interop.SAPbobsCOM.dll
+C:\Reshmee\NDS_ZATCA\obj\Debug\Interop.SAPbouiCOM.dll
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.ResolveComReference.cache
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.Resources.resources
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.GenerateResource.cache
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.vbproj.CoreCompileInputs.cache
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.exe
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.xml
+C:\Reshmee\NDS_ZATCA\obj\Debug\NDS_ZATCA.pdb

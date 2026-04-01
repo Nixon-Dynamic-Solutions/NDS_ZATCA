@@ -268,7 +268,7 @@ END;
 
 -----------------------------------------------------------
 
-ZATCA Tax Code VALUES
+--ZATCA Tax Code VALUES
 
 INSERT INTO "@I_ZATCA_TAXCODE"
 ("Code", "Name", "U_I_Tax_Ex_Code", "U_I_Tax_Ex_Desc", "U_I_Tax_Ex_Type", "U_I_Tax_Ex_Type_Code")
@@ -327,7 +327,7 @@ INSERT INTO "@I_ZATCA_TAXCODE"
 VALUES ('9', '9', 'VATEX-SA-36', 'Qualifying metals', 'zero rated goods', 'Z');
 
 ------------------------------------------------------
-Credit Note HEADER
+--Credit Note HEADER
 ---------------------------------------------------------
 CREATE PROCEDURE "@ECREDITMEMO_HEADER"
 (
@@ -465,7 +465,7 @@ AND c."AdresType" = 'B';
 
 END;
 --------------------------------------------------------
-Credit Note Line
+--Credit Note Line
 -----------------------------------
 CREATE OR REPLACE PROCEDURE "@ECREDITMEMO_DETAIL"
 (
