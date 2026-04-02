@@ -741,7 +741,7 @@ Public Class CreditMemo
                                             'frmARInvoice.Items.Item("b_Load").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
                                             Dim Post As String = oDBDSHeader.GetValue("U_APIPOST", 0).Trim
                                             If Post <> "1" Then
-                                                Me.xml()
+                                                'Me.xml()
                                             End If
                                         End If
                                     End If
@@ -2137,9 +2137,14 @@ Public Class CreditMemo
 
                 End If
                 'Threading.Thread.Sleep(5000)
-                oApplication.ActivateMenuItem("1304")
+                Try
+                    oApplication.ActivateMenuItem("1304")
+                Catch ex As Exception
 
-                End If
+                End Try
+
+
+            End If
                 frmCreditMemo.Freeze(False)
         Catch ex As Exception
             frmCreditMemo.Freeze(False)
@@ -2292,33 +2297,114 @@ Public Class CreditMemo
         End Try
     End Sub
     Sub FormDataEvent(ByRef BusinessObjectInfo As SAPbouiCOM.BusinessObjectInfo, ByRef BubbleEvent As Boolean)
-        Try
+        'Try
 
-            If BusinessObjectInfo.BeforeAction Then
-                If Me.ValidationAll() = False Then
-                    System.Media.SystemSounds.Asterisk.Play()
-                    BubbleEvent = False
-                    Exit Sub
-                End If
-            End If
-            If BusinessObjectInfo.ActionSuccess Then
-                If frmCreditMemo.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
-                    Dim str As String = "UPDATE ""ORIN"" SET ""U_APIStatus""=' ', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""='', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""='', ""U_GenDate""='' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
-                    'Dim str As String = "Update ORIN set U_APIStatus=' ', U_APIPOST=' ' , U_PIH=' ' , U_HASH='', U_CERTIFICATE=' ', U_XMLGENERATION='', U_CLEARANCESTATUS=' ' , U_CSID=' ', U_Barcode=' ', U_QRCode=' ', U_XMLGen=' ',U_GenUId='', U_GenDate='' where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                    Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(Str)
-                End If
-            End If
-        Catch ex As Exception
-            oApplication.StatusBar.SetText("Form Data Add ,Update Event Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
-            BubbleEvent = False
-        Finally
-        End Try
+        '    If BusinessObjectInfo.BeforeAction Then
+        '        If Me.ValidationAll() = False Then
+        '            System.Media.SystemSounds.Asterisk.Play()
+        '            BubbleEvent = False
+        '            Exit Sub
+        '        End If
+        '    End If
+        '    If BusinessObjectInfo.ActionSuccess Then
+        '        If frmCreditMemo.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
+        '            Dim str As String = "UPDATE ""ORIN"" SET ""U_APIStatus""=' ', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""='', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""='', ""U_GenDate""='' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
+        '            'Dim str As String = "Update ORIN set U_APIStatus=' ', U_APIPOST=' ' , U_PIH=' ' , U_HASH='', U_CERTIFICATE=' ', U_XMLGENERATION='', U_CLEARANCESTATUS=' ' , U_CSID=' ', U_Barcode=' ', U_QRCode=' ', U_XMLGen=' ',U_GenUId='', U_GenDate='' where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+        '            Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(Str)
+        '        End If
+        '    End If
+        'Catch ex As Exception
+        '    oApplication.StatusBar.SetText("Form Data Add ,Update Event Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+        '    BubbleEvent = False
+        'Finally
+        'End Try
 
         Try
 
             Select Case BusinessObjectInfo.EventType
                 Case SAPbouiCOM.BoEventTypes.et_FORM_DATA_ADD, SAPbouiCOM.BoEventTypes.et_FORM_DATA_UPDATE
-                    Me.ValidationAll()
+                    'Me.ValidationAll()
+                    Try
+
+                        If BusinessObjectInfo.BeforeAction = True Then
+                            If Me.ValidationAll() = False Then
+                                System.Media.SystemSounds.Asterisk.Play()
+                                BubbleEvent = False
+                                Exit Sub
+                            End If
+                        End If
+
+                        If BusinessObjectInfo.BeforeAction = False And BusinessObjectInfo.ActionSuccess = True Then
+
+                            If BusinessObjectInfo.FormTypeEx = "179" Then
+
+                                Dim docEntryXML As String = BusinessObjectInfo.ObjectKey
+
+                                If Not String.IsNullOrEmpty(docEntryXML) Then
+
+                                    Dim oXml As New System.Xml.XmlDocument()
+                                    oXml.LoadXml(docEntryXML)
+                                    Dim docEntry As String = oXml.SelectSingleNode("//DocEntry").InnerText
+                                    If frmCreditMemo.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
+
+                                        Dim str As String = "UPDATE ""ORIN"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & docEntry & "'"
+
+                                        oGfun.DoQuery(str)
+                                    End If
+                                    Dim post As String = "0"
+                                    Dim docNum As String = ""
+
+                                    Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery("SELECT COALESCE(""U_APIPOST"",'0') AS ""Post"", ""DocNum"" FROM ""OINV"" WHERE ""DocEntry"" = '" & docEntry & "'")
+
+                                    If rset.RecordCount > 0 Then
+                                        post = rset.Fields.Item("Post").Value.ToString()
+                                        docNum = rset.Fields.Item("DocNum").Value.ToString()
+                                    End If
+                                    If post <> "1" Then
+                                        If frmCreditMemo.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
+                                            Dim t As New System.Windows.Forms.Timer()
+                                            t.Interval = 500
+
+                                            AddHandler t.Tick, Sub()
+
+                                                                   t.Stop()
+
+                                                                   Try
+                                                                       frmCreditMemo.Select()
+
+                                                                       frmCreditMemo.Mode = SAPbouiCOM.BoFormMode.fm_FIND_MODE
+
+                                                                       frmCreditMemo.Items.Item("8").Click()
+                                                                       frmCreditMemo.Items.Item("8").Specific.value = docNum
+
+                                                                       System.Windows.Forms.Application.DoEvents()
+
+                                                                       frmCreditMemo.Items.Item("1").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
+
+                                                                   Catch ex As Exception
+                                                                       System.Diagnostics.Debug.WriteLine(ex.Message)
+                                                                   End Try
+
+                                                               End Sub
+
+                                            t.Start()
+                                        End If
+
+                                        Me.xml()
+                                    End If
+
+                                End If
+
+                            End If
+
+                        End If
+
+                    Catch ex As Exception
+                        oApplication.StatusBar.SetText("Form Data Add/Update Failed: " & ex.Message,
+                            SAPbouiCOM.BoMessageTime.bmt_Short,
+                            SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+                        BubbleEvent = False
+                    End Try
                 Case SAPbouiCOM.BoEventTypes.et_FORM_DATA_LOAD
                     Try
 

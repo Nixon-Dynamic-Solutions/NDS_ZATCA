@@ -672,6 +672,7 @@ Public Class ARInvoice
                             End Select
                         Catch ex As Exception
                         End Try
+
                     Case SAPbouiCOM.BoEventTypes.et_ITEM_PRESSED
                         Try
                             Select Case pVal.ItemUID
@@ -693,7 +694,7 @@ Public Class ARInvoice
                                                 'frmARInvoice.Items.Item("b_Load").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
                                                 Dim Post As String = oDBDSHeader.GetValue("U_APIPOST", 0).Trim
                                                 If Post <> "1" Then
-                                                    Me.xml()
+                                                    'Me.xml()
                                                 End If
                                             End If
                                         End If
@@ -2109,7 +2110,12 @@ Public Class ARInvoice
                     End If
 
                 End If
-                oApplication.ActivateMenuItem("1304")
+                Try
+                    oApplication.ActivateMenuItem("1304")
+                Catch ex As Exception
+
+                End Try
+
             End If
             frmARInvoice.Freeze(False)
         Catch ex As Exception
@@ -2119,6 +2125,8 @@ Public Class ARInvoice
             Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
         End Try
     End Sub
+
+
 
 
     Private Sub Encrypt(inputFilePath As String, outputfilePath As String)
@@ -2174,37 +2182,125 @@ Public Class ARInvoice
 
     Sub FormDataEvent(ByRef BusinessObjectInfo As SAPbouiCOM.BusinessObjectInfo, ByRef BubbleEvent As Boolean)
         Try
+            'Dim msg As String = "Event: " & BusinessObjectInfo.EventType.ToString() &
+            '                " | FormType: " & BusinessObjectInfo.FormTypeEx &
+            '                " | BeforeAction: " & BusinessObjectInfo.BeforeAction.ToString() &
+            '                " | ActionSuccess: " & BusinessObjectInfo.ActionSuccess.ToString()
+
+            'System.Diagnostics.Debug.WriteLine(msg)
 
             Select Case BusinessObjectInfo.EventType
+                'Case SAPbouiCOM.BoEventTypes.et_FORM_DATA_ADD, SAPbouiCOM.BoEventTypes.et_FORM_DATA_UPDATE
+                '    Try
+                '        If BusinessObjectInfo.BeforeAction Then
+                '            If Me.ValidationAll() = False Then
+                '                System.Media.SystemSounds.Asterisk.Play()
+                '                BubbleEvent = False
+                '                Exit Sub
+                '            End If
+                '        End If
+                '        If BusinessObjectInfo.ActionSuccess Then
+                '            'Me.xml()
+                '            'Dim Status As String = oDBDSHeader.GetValue("U_APIStatus", 0).Trim
+                '            'Dim Post As String = oDBDSHeader.GetValue("U_APIPOST", 0).Trim
+                '            'If Post <> "1" Then
+                '            '    Me.xml()
+                '            'End If
+
+                '            ''Me. Jsonstring( )
+                '            If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
+                '                Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                '                Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
+                '            End If
+
+
+                '        End If
+                '    Catch ex As Exception
+                '        oApplication.StatusBar.SetText("Form Data Add ,Update Event Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+                '        BubbleEvent = False
+                '    Finally
+                '    End Try
+
                 Case SAPbouiCOM.BoEventTypes.et_FORM_DATA_ADD, SAPbouiCOM.BoEventTypes.et_FORM_DATA_UPDATE
                     Try
-                        If BusinessObjectInfo.BeforeAction Then
+
+                        If BusinessObjectInfo.BeforeAction = True Then
                             If Me.ValidationAll() = False Then
                                 System.Media.SystemSounds.Asterisk.Play()
                                 BubbleEvent = False
                                 Exit Sub
                             End If
                         End If
-                        If BusinessObjectInfo.ActionSuccess Then
-                            'Me.xml()
-                            'Dim Status As String = oDBDSHeader.GetValue("U_APIStatus", 0).Trim
-                            'Dim Post As String = oDBDSHeader.GetValue("U_APIPOST", 0).Trim
-                            'If Post <> "1" Then
-                            '    Me.xml()
-                            'End If
 
-                            ''Me. Jsonstring( )
-                            If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
-                                Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
-                                Dim strupdate As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
+                        If BusinessObjectInfo.BeforeAction = False And BusinessObjectInfo.ActionSuccess = True Then
+
+                            If BusinessObjectInfo.FormTypeEx = "133" Then
+
+                                Dim docEntryXML As String = BusinessObjectInfo.ObjectKey
+
+                                If Not String.IsNullOrEmpty(docEntryXML) Then
+
+                                    Dim oXml As New System.Xml.XmlDocument()
+                                    oXml.LoadXml(docEntryXML)
+                                    Dim docEntry As String = oXml.SelectSingleNode("//DocEntry").InnerText
+                                    If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
+                                        Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & docEntry & "'"
+
+                                        oGfun.DoQuery(str)
+                                    End If
+                                    Dim post As String = "0"
+                                    Dim docNum As String = ""
+
+                                    Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery("SELECT COALESCE(""U_APIPOST"",'0') AS ""Post"", ""DocNum"" FROM ""OINV"" WHERE ""DocEntry"" = '" & docEntry & "'")
+
+                                    If rset.RecordCount > 0 Then
+                                        post = rset.Fields.Item("Post").Value.ToString()
+                                        docNum = rset.Fields.Item("DocNum").Value.ToString()
+                                    End If
+                                    If post <> "1" Then
+                                        If frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_ADD_MODE Then
+                                            Dim t As New System.Windows.Forms.Timer()
+                                            t.Interval = 500
+
+                                            AddHandler t.Tick, Sub()
+
+                                                                   t.Stop()
+
+                                                                   Try
+                                                                       frmARInvoice.Select()
+
+                                                                       frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_FIND_MODE
+
+                                                                       frmARInvoice.Items.Item("8").Click()
+                                                                       frmARInvoice.Items.Item("8").Specific.value = docNum
+
+                                                                       System.Windows.Forms.Application.DoEvents()
+
+                                                                       frmARInvoice.Items.Item("1").Click(SAPbouiCOM.BoCellClickType.ct_Regular)
+
+                                                                   Catch ex As Exception
+                                                                       System.Diagnostics.Debug.WriteLine(ex.Message)
+                                                                   End Try
+
+                                                               End Sub
+
+                                            t.Start()
+                                        End If
+
+                                        Me.xml()
+                                    End If
+
+                                End If
+
                             End If
 
-
                         End If
+
                     Catch ex As Exception
-                        oApplication.StatusBar.SetText("Form Data Add ,Update Event Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+                        oApplication.StatusBar.SetText("Form Data Add/Update Failed: " & ex.Message,
+                            SAPbouiCOM.BoMessageTime.bmt_Short,
+                            SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
                         BubbleEvent = False
-                    Finally
                     End Try
                 Case SAPbouiCOM.BoEventTypes.et_FORM_DATA_LOAD
                     Try
