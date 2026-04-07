@@ -435,7 +435,7 @@ Public Class ARInvoice
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
             'oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC [ TaxType] ''")
             'oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
             Else
                 oGfun.setComboBoxValue(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC TaxType ''")
@@ -601,7 +601,7 @@ Public Class ARInvoice
                                         Dim tax As String = type.Selected.Value
                                         'oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "Exec [TaxType]'" & tax & "'")
                                         'oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
-                                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                             oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
                                         Else
                                             oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "EXEC TaxType '" & tax & "'")
@@ -647,7 +647,7 @@ Public Class ARInvoice
                                                 ' Dim str As String = "Select * from OVTG where ""Code""='" & tax & "'"
                                                 Dim str As String = ""
 
-                                                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                                     str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & tax.ToString().Replace("'", "''") & "'"
                                                 Else
                                                     str = "SELECT * FROM OVTG WHERE Code='" & tax.ToString().Replace("'", "''") & "'"
@@ -705,7 +705,7 @@ Public Class ARInvoice
                                             ' Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
                                             Dim str As String = ""
 
-                                            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                                 str = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
                                             Else
                                                 str = "SELECT ISNULL(MAX(DocNum),0) FROM OINV A INNER JOIN OUSR B ON A.UserSign = B.USERID WHERE A.UserSign = '" & oCompany.UserSignature & "' AND ISNULL(B.U_XMLGen, 'N') = 'Y'"
@@ -815,7 +815,7 @@ Public Class ARInvoice
             'Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1057,7 +1057,7 @@ Public Class ARInvoice
                 'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Else
                     str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1079,7 +1079,7 @@ Public Class ARInvoice
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
@@ -1126,7 +1126,7 @@ Public Class ARInvoice
                 ' Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -1150,7 +1150,7 @@ Public Class ARInvoice
             ' Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1396,7 +1396,7 @@ Public Class ARInvoice
                 'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Else
                     str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1417,7 +1417,7 @@ Public Class ARInvoice
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
@@ -1463,7 +1463,7 @@ Public Class ARInvoice
                 'Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -1489,7 +1489,7 @@ Public Class ARInvoice
 
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1730,7 +1730,7 @@ Public Class ARInvoice
                 'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Else
                     str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1753,7 +1753,7 @@ Public Class ARInvoice
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
@@ -1799,7 +1799,7 @@ Public Class ARInvoice
                 'Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -1824,7 +1824,7 @@ Public Class ARInvoice
             'Dim str11 As String = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@EINVOICE_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@EINVOICE_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -2065,7 +2065,7 @@ Public Class ARInvoice
                 'Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Else
                     str112 = "EXEC [@EINVOICE_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -2088,7 +2088,7 @@ Public Class ARInvoice
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value & "'"
@@ -2135,7 +2135,7 @@ Public Class ARInvoice
                 'Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""OINV"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE OINV SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -2169,7 +2169,7 @@ Public Class ARInvoice
                     'Dim sty As String = " select ""U_I_Tax_Ex_Type_Code"" from ""@I_ZATCA_TAXCODE"" where ""U_I_Tax_Ex_Code""='" & Value & "'"
                     Dim sty As String = ""
 
-                    If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                         sty = "SELECT ""U_I_Tax_Ex_Type_Code"" FROM ""@I_ZATCA_TAXCODE"" WHERE ""U_I_Tax_Ex_Code""='" & Value & "'"
                     Else
                         sty = "SELECT U_I_Tax_Ex_Type_Code FROM [@I_ZATCA_TAXCODE] WHERE U_I_Tax_Ex_Code='" & Value & "'"
@@ -2219,7 +2219,7 @@ Public Class ARInvoice
 
                 Dim Str As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     Str = "UPDATE ""OINV"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
                 Else
                     Str = "UPDATE OINV SET U_XMLGen='Y', U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName""=(SELECT TOP 1 U_NAME FROM OUSR WHERE USERID=" & oCompany.UserSignature.ToString().Trim() & "), U_GenDate=GETDATE() WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
@@ -2243,7 +2243,7 @@ Public Class ARInvoice
                 'Dim QrCode As String = $"Select ""U_QRCode"" from OINV where ""DocEntry""={oDBDSHeader.GetValue("DocEntry", 0).Trim()} and cast(ifnull(""U_QRCode"",'') as varchar(254))!=''"
                 Dim QrCode As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     QrCode = "SELECT ""U_QRCode"" FROM ""OINV"" WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & " AND CAST(IFNULL(""U_QRCode"", '') AS VARCHAR(254)) <> ''"
                 Else
                     QrCode = "SELECT U_QRCode FROM OINV WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & " AND ISNULL(CAST(U_QRCode AS VARCHAR(254)), '') <> ''"
@@ -2281,7 +2281,7 @@ Public Class ARInvoice
             'Dim str As String = "Update OINV set ""U_XMLGen""='N' ,""U_APIStatus""='" & ex.Message & "' ,""U_APIPOST""='0' where ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
             Dim str As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str = "UPDATE ""OINV"" SET ""U_XMLGen""='N', ""U_APIStatus""='" & ex.Message.Replace("'", "''") & "', ""U_APIPOST""='0' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
             Else
                 str = "UPDATE OINV SET U_XMLGen='N', U_APIStatus='" & ex.Message.Replace("'", "''") & "', U_APIPOST='0' WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
@@ -2368,7 +2368,7 @@ Public Class ARInvoice
                                 'Dim str As String = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
                                 Dim str As String = ""
 
-                                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                     str = "UPDATE ""OINV"" SET ""U_APIStatus""='', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""=' ', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""=' ', ""U_GenUName""=' ', ""U_GenDate""='' WHERE ""DocEntry""='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
                                 Else
                                     str = "UPDATE OINV SET U_APIStatus='', U_APIPOST=' ', U_PIH=' ', U_HASH='', U_CERTIFICATE=' ', U_XMLGENERATION=' ', U_CLEARANCESTATUS=' ', U_CSID=' ', U_Barcode=' ', U_QRCode=' ', U_XMLGen=' ', U_GenUId=' ', U_GenUName=' ', U_GenDate='' WHERE DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -2449,7 +2449,7 @@ Public Class ARInvoice
 
                             Dim Strprj As String = ""
 
-                            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                 Strprj = "SELECT IFNULL(""U_XMLGen"", 'N') ""XMLAproved"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature
                             Else
                                 Strprj = "SELECT ISNULL(U_XMLGen, 'N') AS XMLAproved FROM OUSR WHERE USERID=" & oCompany.UserSignature
@@ -2488,7 +2488,7 @@ Public Class ARInvoice
                                         'Dim str As String = "Select ""U_XMLGENERATION"" from OINV where ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and ""U_XMLGen""='Y'"
                                         Dim str As String = ""
 
-                                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                             str = "SELECT ""U_XMLGENERATION"" FROM ""OINV"" WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' AND ""U_XMLGen""='Y'"
                                         Else
                                             str = "SELECT U_XMLGENERATION FROM OINV WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' AND U_XMLGen='Y'"

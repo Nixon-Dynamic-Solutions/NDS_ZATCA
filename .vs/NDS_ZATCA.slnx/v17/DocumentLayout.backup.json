@@ -1,0 +1,62 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Reshmee\\NDS_ZATCA\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|c:\\reshmee\\nds_zatca\\business\\globalfunctions.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\globalfunctions.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Reshmee\\NDS_ZATCA\\business\\globalvariables.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\globalvariables.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GlobalFunctions.vb",
+              "DocumentMoniker": "C:\\Reshmee\\NDS_ZATCA\\Business\\GlobalFunctions.vb",
+              "RelativeDocumentMoniker": "Business\\GlobalFunctions.vb",
+              "ToolTip": "C:\\Reshmee\\NDS_ZATCA\\Business\\GlobalFunctions.vb",
+              "RelativeToolTip": "Business\\GlobalFunctions.vb",
+              "ViewState": "AgIAACAAAAAAAAAAAAAawDEAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2026-03-31T08:30:40.65Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GlobalVariables.vb",
+              "DocumentMoniker": "C:\\Reshmee\\NDS_ZATCA\\Business\\GlobalVariables.vb",
+              "RelativeDocumentMoniker": "Business\\GlobalVariables.vb",
+              "ToolTip": "C:\\Reshmee\\NDS_ZATCA\\Business\\GlobalVariables.vb",
+              "RelativeToolTip": "Business\\GlobalVariables.vb",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2026-03-31T08:29:48.135Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -448,7 +448,7 @@ Public Class CreditMemo
             frmCreditMemo.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 1, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
             'oGfun.setComboBoxValue(frmCreditMemo.Items.Item("t_TaxType").Specific, "EXEC [TaxType] ''")
             'oGfun.setComboBoxValue(frmCreditMemo.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 oGfun.setComboBoxValue(frmCreditMemo.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('')")
             Else
                 oGfun.setComboBoxValue(frmCreditMemo.Items.Item("t_TaxType").Specific, "EXEC TaxType ''")
@@ -664,7 +664,7 @@ Public Class CreditMemo
                                                 'Dim str As String = "Select * from OVTG where ""Code""='" & tax & "' "
                                                 Dim str As String = ""
 
-                                                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                                     str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & tax.ToString().Replace("'", "''") & "'"
                                                 Else
                                                     str = "SELECT * FROM OVTG WHERE Code='" & tax.ToString().Replace("'", "''") & "'"
@@ -696,7 +696,7 @@ Public Class CreditMemo
                                         Dim type As SAPbouiCOM.ComboBox = oMatrix.Columns.Item("18").Cells.Item(1).Specific
                                         Dim tax As String = type.Selected.Value
                                         'oGfun.SetComboBoxValueRefresh(frmCreditMemo.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
-                                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                             oGfun.SetComboBoxValueRefresh(frmCreditMemo.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
                                         Else
                                             oGfun.SetComboBoxValueRefresh(frmCreditMemo.Items.Item("t_TaxType").Specific, "EXEC TaxType '" & tax & "'")
@@ -752,7 +752,7 @@ Public Class CreditMemo
                                         'Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
                                         Dim str As String = ""
 
-                                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                             str = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
                                         Else
                                             str = "SELECT ISNULL(MAX(DocNum),0) FROM OINV A INNER JOIN OUSR B ON A.UserSign = B.USERID WHERE A.UserSign = '" & oCompany.UserSignature & "' AND ISNULL(B.U_XMLGen, 'N') = 'Y'"
@@ -868,7 +868,7 @@ Public Class CreditMemo
             ' Dim str11 As String = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@ECREDITMEMO_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1118,7 +1118,7 @@ Public Class CreditMemo
                 'Dim str112 As String = "CALL ""@ECREDITMEMO_DETAIL""(" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ")"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@ECREDITMEMO_DETAIL""(" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ")"
                 Else
                     str112 = "EXEC [@ECREDITMEMO_DETAIL] " & oDBDSHeader.GetValue("DocEntry", 0).Trim
@@ -1140,7 +1140,7 @@ Public Class CreditMemo
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
@@ -1186,7 +1186,7 @@ Public Class CreditMemo
                 'Dim STRr1 As String = "UPDATE ORIN SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""ORIN"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE ORIN SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -1207,7 +1207,7 @@ Public Class CreditMemo
             'Dim str11 As String = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@ECREDITMEMO_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1454,7 +1454,7 @@ Public Class CreditMemo
                 'Dim str112 As String = "CALL ""@ECREDITMEMO_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@ECREDITMEMO_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Else
                     str112 = "EXEC [@ECREDITMEMO_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1477,7 +1477,7 @@ Public Class CreditMemo
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
@@ -1523,7 +1523,7 @@ Public Class CreditMemo
                 'Dim STRr1 As String = "UPDATE ORIN SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""ORIN"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE ORIN SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -1544,7 +1544,7 @@ Public Class CreditMemo
             'Dim str11 As String = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@ECREDITMEMO_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1792,7 +1792,7 @@ Public Class CreditMemo
                 'Dim str112 As String = "CALL ""@ECREDITMEMO_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@ECREDITMEMO_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Else
                     str112 = "EXEC [@ECREDITMEMO_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -1815,7 +1815,7 @@ Public Class CreditMemo
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
@@ -1862,7 +1862,7 @@ Public Class CreditMemo
                 'Dim STRr1 As String = "UPDATE ORIN SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""ORIN"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE ORIN SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -1882,7 +1882,7 @@ Public Class CreditMemo
             'Dim str11 As String = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Dim str11 As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str11 = "CALL ""@ECREDITMEMO_HEADER""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
             Else
                 str11 = "EXEC [@ECREDITMEMO_HEADER] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -2108,7 +2108,7 @@ Public Class CreditMemo
                 'Dim str112 As String = "CALL ""@ECREDITMEMO_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim str112 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     str112 = "CALL ""@ECREDITMEMO_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Else
                     str112 = "EXEC [@ECREDITMEMO_DETAIL] '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
@@ -2129,7 +2129,7 @@ Public Class CreditMemo
                         'Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim str As String = ""
 
-                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                             str = "SELECT * FROM ""OVTG"" WHERE ""Code""='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
                         Else
                             str = "SELECT * FROM OVTG WHERE Code='" & rset112.Fields.Item("VatGroup").Value.ToString().Replace("'", "''") & "'"
@@ -2172,7 +2172,7 @@ Public Class CreditMemo
                 'Dim STRr1 As String = "UPDATE ORIN SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Dim STRr1 As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     STRr1 = "UPDATE ""ORIN"" SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
                 Else
                     STRr1 = "UPDATE ORIN SET U_XMLGENERATION='XML FILE CREATED SUCCESSFULLY' WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -2200,7 +2200,7 @@ Public Class CreditMemo
                     'Dim sty As String = "SELECT ""U_I_Tax_Ex_Type_Code"" FROM ""@I_ZATCA_TAXCODE"" WHERE ""U_I_Tax_Ex_Code""='" & Value & "'"
                     Dim sty As String = ""
 
-                    If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                         sty = "SELECT ""U_I_Tax_Ex_Type_Code"" FROM ""@I_ZATCA_TAXCODE"" WHERE ""U_I_Tax_Ex_Code""='" & Value & "'"
                     Else
                         sty = "SELECT U_I_Tax_Ex_Type_Code FROM [@I_ZATCA_TAXCODE] WHERE U_I_Tax_Ex_Code='" & Value & "'"
@@ -2247,7 +2247,7 @@ Public Class CreditMemo
                 'Dim Str As String = "Update ORIN set ""U_XMLGen""='Y',""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(Select top 1 ""U_Name"" from OUSR where ""USERID""='" & oCompany.UserSignature.ToString().Trim() & "' ), U_GenDate=GetDate() where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim() & "'"
                 Dim Str As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     Str = "UPDATE ""ORIN"" SET ""U_XMLGen""='Y', ""U_GenUId""='" + oCompany.UserSignature.ToString().Trim() + "', ""U_GenUName""=(SELECT ""U_NAME"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature.ToString().Trim() & " LIMIT 1), ""U_GenDate""=CURRENT_TIMESTAMP WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim()
                 Else
                     Str = "UPDATE ORIN SET U_XMLGen='Y', U_GenUId='" + oCompany.UserSignature.ToString().Trim() + "', U_GenUName=(SELECT TOP 1 U_NAME FROM OUSR WHERE USERID=" & oCompany.UserSignature.ToString().Trim() & "), U_GenDate=GETDATE() WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim()
@@ -2272,7 +2272,7 @@ Public Class CreditMemo
 
                 Dim QrCode As String = ""
 
-                If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                     QrCode = "SELECT ""U_QRCode"" FROM ""ORIN"" WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim & " AND CAST(IFNULL(""U_QRCode"", '') AS VARCHAR(254)) <> ''"
                 Else
                     QrCode = "SELECT U_QRCode FROM ORIN WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim & " AND ISNULL(CAST(U_QRCode AS VARCHAR(254)), '') <> ''"
@@ -2312,7 +2312,7 @@ Public Class CreditMemo
             'Dim str As String = "UPDATE ""ORIN"" SET ""U_XMLGen""='N', ""U_APIStatus""='" & ex.Message & "', ""U_APIPOST""='0' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
             Dim str As String = ""
 
-            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                 str = "UPDATE ""ORIN"" SET ""U_XMLGen""='N', ""U_APIStatus""='" & ex.Message.Replace("'", "''") & "', ""U_APIPOST""='0' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
             Else
                 str = "UPDATE ORIN SET U_XMLGen='N', U_APIStatus='" & ex.Message.Replace("'", "''") & "', U_APIPOST='0' WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
@@ -2478,7 +2478,7 @@ Public Class CreditMemo
                     'Dim str As String = "Update ORIN set U_APIStatus=' ', U_APIPOST=' ' , U_PIH=' ' , U_HASH='', U_CERTIFICATE=' ', U_XMLGENERATION='', U_CLEARANCESTATUS=' ' , U_CSID=' ', U_Barcode=' ', U_QRCode=' ', U_XMLGen=' ',U_GenUId='', U_GenDate='' where DocEntry='" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
                     Dim str As String = ""
 
-                    If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                    If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                         str = "UPDATE ""ORIN"" SET ""U_APIStatus""=' ', ""U_APIPOST""=' ', ""U_PIH""=' ', ""U_HASH""='', ""U_CERTIFICATE""=' ', ""U_XMLGENERATION""='', ""U_CLEARANCESTATUS""=' ', ""U_CSID""=' ', ""U_Barcode""=' ', ""U_QRCode""=' ', ""U_XMLGen""=' ', ""U_GenUId""='', ""U_GenDate""='' WHERE ""DocEntry""=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
                     Else
                         str = "UPDATE ORIN SET U_APIStatus=' ', U_APIPOST=' ', U_PIH=' ', U_HASH='', U_CERTIFICATE=' ', U_XMLGENERATION='', U_CLEARANCESTATUS=' ', U_CSID=' ', U_Barcode=' ', U_QRCode=' ', U_XMLGen=' ', U_GenUId='', U_GenDate='' WHERE DocEntry=" & oDBDSHeader.GetValue("DocEntry", 0).Trim
@@ -2591,7 +2591,7 @@ Public Class CreditMemo
                             ' Dim Strprj As String = "SELECT IFNULL(""U_XMLGen"",'N') ""XMLAproved"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature
                             Dim Strprj As String = ""
 
-                            If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                            If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                 Strprj = "SELECT IFNULL(""U_XMLGen"",'N') ""XMLAproved"" FROM ""OUSR"" WHERE ""USERID""=" & oCompany.UserSignature
                             Else
                                 Strprj = "SELECT ISNULL(U_XMLGen,'N') AS XMLAproved FROM OUSR WHERE USERID=" & oCompany.UserSignature
@@ -2627,7 +2627,7 @@ Public Class CreditMemo
                                         ' Dim str As String = "Select ""U_XMLGENERATION"" from ORIN where ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' and ""U_XMLGen""='Y'"
                                         Dim str As String = ""
 
-                                        If oApplication.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
+                                        If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
                                             str = "SELECT ""U_XMLGENERATION"" FROM ""ORIN"" WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' AND ""U_XMLGen""='Y'"
                                         Else
                                             str = "SELECT U_XMLGENERATION FROM ORIN WHERE DocNum='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "' AND U_XMLGen='Y'"
