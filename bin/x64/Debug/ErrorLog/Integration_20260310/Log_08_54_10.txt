@@ -1,9 +1,0 @@
-10.03.2026 08:54:39  Integration Start
-10.03.2026 08:55:14  Integration Start
-10.03.2026 08:55:16  XML creation Started
-10.03.2026 08:55:16  Invalid field name
-10.03.2026 08:55:58  Integration Start
-10.03.2026 08:56:01  XML creation Started
-10.03.2026 08:56:01  Invalid field name
-10.03.2026 08:56:17  Integration Start
-10.03.2026 08:56:27  XML creation Started

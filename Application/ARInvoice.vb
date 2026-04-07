@@ -402,8 +402,8 @@ Public Class ARInvoice
             oItem.Width = frmARInvoice.Items.Item("2").Width + 50
             oItem.Height = frmARInvoice.Items.Item("2").Height
             oItem.Top = frmARInvoice.Items.Item("2").Top
-            oItem.Visible = False
-            oItem.Enabled = False
+            oItem.Visible = True
+            oItem.Enabled = True
             oButton = oItem.Specific
             oButton.Caption = "Generate E-Invoice"
 
@@ -428,7 +428,7 @@ Public Class ARInvoice
     Sub InitForm()
         Try
             frmARInvoice.Freeze(True)
-            frmARInvoice.Items.Item("b_Load").Visible = False
+            frmARInvoice.Items.Item("b_Load").Visible = True
             frmARInvoice.Items.Item("b_Load1").Visible = False
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
             frmARInvoice.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_True)
@@ -598,7 +598,14 @@ Public Class ARInvoice
                                 Case "t_TaxType"
                                     If pVal.BeforeAction = False Then
                                         Dim type As SAPbouiCOM.ComboBox = oMatrix.Columns.Item("18").Cells.Item(1).Specific
-                                        Dim tax As String = type.Selected.Value
+                                        Dim tax As String = ""
+
+                                        If type.Selected IsNot Nothing Then
+                                            tax = type.Selected.Value
+                                        Else
+                                            Exit Sub
+                                        End If
+                                        'Dim tax As String = type.Selected.Value
                                         'oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "Exec [TaxType]'" & tax & "'")
                                         'oGfun.SetComboBoxValueRefresh(frmARInvoice.Items.Item("t_TaxType").Specific, "CALL ""TaxType""('" & tax & "')")
                                         If oCompany.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB Then
@@ -2156,6 +2163,7 @@ Public Class ARInvoice
 
             write_log("Integration Start")
             'xmlstring = xmlstring. Replace("&", "&amp;")
+            'Dim PIH As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings("PIH"))
             Dim PIH As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(7))
             write_log(PIH)
             Dim ICV As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(8))

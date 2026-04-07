@@ -66,7 +66,7 @@ Public Class GlobalFunctions
             oCompany = New SAPbobsCOM.Company
             Debug.Print(oCompany.CompanyDB)
             strCkie = oCompany.GetContextCookie()
-            strContext = oCompany.GetConnectionContext(strCkie)
+            strContext = oApplication.Company.GetConnectionContext(strCkie)
             CookieConnect = oCompany.SetSboLoginContext(strContext)
         Catch ex As Exception
             oApplication.StatusBar.SetText(ex.Message)
@@ -121,8 +121,9 @@ Public Class GlobalFunctions
             If Not Me.TableExists(TableName) Then
                 Dim v_UserTableMD As SAPbobsCOM.UserTablesMD
                 oApplication.StatusBar.SetText("Creating Table " + TableName + "...................", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
-                Dim rs As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
+                'Dim rs As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
                 Dim oFlag As Boolean = True
+
                 v_UserTableMD = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserTables)
                 v_UserTableMD.TableName = TableName
                 v_UserTableMD.TableDescription = TableDesc

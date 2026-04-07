@@ -441,7 +441,7 @@ Public Class CreditMemo
 
             frmCreditMemo.Freeze(True)
 
-            frmCreditMemo.Items.Item("b_Load").Visible = False
+            frmCreditMemo.Items.Item("b_Load").Visible = True
             frmCreditMemo.Items.Item("b_Load1").Visible = False
             frmCreditMemo.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
             frmCreditMemo.Items.Item("t_TaxType").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)

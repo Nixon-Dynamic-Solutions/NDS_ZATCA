@@ -1,5 +1,0 @@
-11.03.2026 12:30:41  Integration Start
-11.03.2026 12:30:41  10
-11.03.2026 12:30:41  XML creation Started
-11.03.2026 12:30:42  XML creation finished
-11.03.2026 12:30:42  XML completion finished

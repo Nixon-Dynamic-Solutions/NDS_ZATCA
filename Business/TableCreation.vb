@@ -19,6 +19,7 @@ Public Class TableCreation
 
     Sub UDFCreation()
         Try
+
             oGFun.CreateUserFields("OINV", "APIStatus", "APIStatus", SAPbobsCOM.BoFieldTypes.db_Memo)
             oGFun.CreateUserFields("OINV", "APIPOST", "APIPOST", SAPbobsCOM.BoFieldTypes.db_Alpha, 25, SAPbobsCOM.BoFldSubTypes.st_None)
             oGFun.CreateUserFields("OINV", "PIH", "PIH", SAPbobsCOM.BoFieldTypes.db_Alpha, 200, SAPbobsCOM.BoFldSubTypes.st_None)
@@ -52,6 +53,7 @@ Public Class TableCreation
 
             oGFun.CreateUserFields("CRD1", "District", "District", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("CRD1", "AddNo", "Address No", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
+
 
             oGFun.CreateTable("I_ZATCA_TAXCODE", "Zatca Tax Codes", SAPbobsCOM.BoUTBTableType.bott_NoObject)
             oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Code", "I_Tax_Ex_Code", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
