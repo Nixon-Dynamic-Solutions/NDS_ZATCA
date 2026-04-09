@@ -53,8 +53,8 @@ Public Class TableCreation
 
             oGFun.CreateUserFields("CRD1", "District", "District", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
             oGFun.CreateUserFields("CRD1", "AddNo", "Address No", SAPbobsCOM.BoFieldTypes.db_Alpha, 50)
-
-
+            oGFun.CreateUserFields("OINV", "SIGNATURE", "SIGNATURE", SAPbobsCOM.BoFieldTypes.db_Alpha, 200, SAPbobsCOM.BoFldSubTypes.st_None)
+            oGFun.CreateUserFields("OINV", "Barcode", "Barcode", SAPbobsCOM.BoFieldTypes.db_Memo)
             oGFun.CreateTable("I_ZATCA_TAXCODE", "Zatca Tax Codes", SAPbobsCOM.BoUTBTableType.bott_NoObject)
             oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Code", "I_Tax_Ex_Code", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
             oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Desc", "I_Tax_Ex_Desc", SAPbobsCOM.BoFieldTypes.db_Alpha, 254)
