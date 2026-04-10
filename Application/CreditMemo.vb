@@ -732,7 +732,7 @@ Public Class CreditMemo
                                 Case "1"
                                     If pVal.ActionSuccess And frmCreditMemo.Mode = SAPbouiCOM.BoFormMode.fm_OK_MODE Then
                                         Me.InitForm()
-                                        Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""OINV"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
+                                        Dim str As String = "SELECT COALESCE(MAX(""DocNum""),0) FROM ""ORIN"" A INNER JOIN ""OUSR"" B ON A.""UserSign"" = B.""USERID"" WHERE A.""UserSign"" = '" & oCompany.UserSignature & "' AND COALESCE(B.""U_XMLGen"", 'N') = 'Y'"
                                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                                         If rset.RecordCount > 0 And rset.Fields.Item(0).Value <> 0 Then
                                             'frmARInvoice.Mode = SAPbouiCOM.BoFormMode.fm_FIND_MODE
@@ -2354,7 +2354,7 @@ Public Class CreditMemo
                                     Dim post As String = "0"
                                     Dim docNum As String = ""
 
-                                    Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery("SELECT COALESCE(""U_APIPOST"",'0') AS ""Post"", ""DocNum"" FROM ""OINV"" WHERE ""DocEntry"" = '" & docEntry & "'")
+                                    Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery("SELECT COALESCE(""U_APIPOST"",'0') AS ""Post"", ""DocNum"" FROM ""ORIN"" WHERE ""DocEntry"" = '" & docEntry & "'")
 
                                     If rset.RecordCount > 0 Then
                                         post = rset.Fields.Item("Post").Value.ToString()

@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\application\\arinvoice.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:application\\arinvoice.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\application\\creditmemo.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|c:\\nixon dynamic\\new project\\nds_zatca\\application\\creditmemo.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
       "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:application\\creditmemo.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|c:\\nixon dynamic\\new project\\nds_zatca\\application\\arinvoicepayment.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:application\\arinvoicepayment.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\application\\arinvoice.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:application\\arinvoice.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\application\\arinvoicereserve.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
@@ -23,23 +19,27 @@
       "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|NDS_ZATCA||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\eventhandler.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\eventhandler.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\globalvariables.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\globalvariables.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\globalfunctions.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\globalfunctions.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\menu.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
       "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\menu.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\globalfunctions.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\globalfunctions.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\globalvariables.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\globalvariables.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|NDS_ZATCA||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\application\\arinvoicepayment.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:application\\arinvoicepayment.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\eventhandler.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|solutionrelative:business\\eventhandler.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{31FEA268-A3AE-4D63-94FB-052276759596}|NDS_ZATCA.vbproj|C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\business\\tablecreation.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
@@ -64,46 +64,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ArInvoicePayment.vb",
-              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ArInvoicePayment.vb",
-              "RelativeDocumentMoniker": "Application\\ArInvoicePayment.vb",
-              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ArInvoicePayment.vb",
-              "RelativeToolTip": "Application\\ArInvoicePayment.vb",
-              "ViewState": "AgIAAKkIAAAA//////8ZwLAIAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2026-03-20T06:31:27.876Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ARInvoice.vb",
-              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ARInvoice.vb",
-              "RelativeDocumentMoniker": "Application\\ARInvoice.vb",
-              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ARInvoice.vb",
-              "RelativeToolTip": "Application\\ARInvoice.vb",
-              "ViewState": "AgIAAMsIAAAAmZmZmVkowNUIAABVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2026-03-20T06:28:30.74Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "GlobalVariables.vb",
-              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalVariables.vb",
-              "RelativeDocumentMoniker": "Business\\GlobalVariables.vb",
-              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalVariables.vb",
-              "RelativeToolTip": "Business\\GlobalVariables.vb",
-              "ViewState": "AgIAABIAAAAAZmZmZuYbwCMAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2026-03-20T06:28:30.742Z"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 12,
@@ -129,70 +91,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "CreditMemo.vb",
               "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\CreditMemo.vb",
               "RelativeDocumentMoniker": "Application\\CreditMemo.vb",
               "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\CreditMemo.vb",
               "RelativeToolTip": "Application\\CreditMemo.vb",
-              "ViewState": "AgIAABEJAAAAy8zMzIwhwCIJAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAA0JAACAMzMzMzMDwGgJAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
               "WhenOpened": "2026-03-20T06:28:30.775Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "ArInvoiceReserve.vb",
               "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ArInvoiceReserve.vb",
               "RelativeDocumentMoniker": "Application\\ArInvoiceReserve.vb",
               "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ArInvoiceReserve.vb",
               "RelativeToolTip": "Application\\ArInvoiceReserve.vb",
-              "ViewState": "AgIAAJ8IAAAAAgAAAAAPwLAIAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAJ0IAAAQNDMzMzMRwLAIAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
               "WhenOpened": "2026-03-20T06:39:13.474Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 5,
               "Title": "Menu.vb",
               "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\Menu.vb",
               "RelativeDocumentMoniker": "Business\\Menu.vb",
               "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\Menu.vb",
               "RelativeToolTip": "Business\\Menu.vb",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAsAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2026-03-20T06:28:30.776Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "GlobalFunctions.vb",
-              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalFunctions.vb",
-              "RelativeDocumentMoniker": "Business\\GlobalFunctions.vb",
-              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalFunctions.vb",
-              "RelativeToolTip": "Business\\GlobalFunctions.vb",
-              "ViewState": "AgIAAAwAAAAAAAAAAABRwA8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2026-03-20T06:28:30.785Z",
+              "WhenOpened": "2026-03-20T06:28:30.776Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "NDS_ZATCA",
-              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\NDS_ZATCA.vbproj",
-              "RelativeDocumentMoniker": "NDS_ZATCA.vbproj",
-              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\NDS_ZATCA.vbproj",
-              "RelativeToolTip": "NDS_ZATCA.vbproj",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-03-20T06:28:30.794Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "App.config",
               "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\App.config",
               "RelativeDocumentMoniker": "App.config",
@@ -206,6 +144,69 @@
             {
               "$type": "Document",
               "DocumentIndex": 6,
+              "Title": "GlobalVariables.vb",
+              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalVariables.vb",
+              "RelativeDocumentMoniker": "Business\\GlobalVariables.vb",
+              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalVariables.vb",
+              "RelativeToolTip": "Business\\GlobalVariables.vb",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2026-03-20T06:28:30.742Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ARInvoice.vb",
+              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ARInvoice.vb",
+              "RelativeDocumentMoniker": "Application\\ARInvoice.vb",
+              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ARInvoice.vb",
+              "RelativeToolTip": "Application\\ARInvoice.vb",
+              "ViewState": "AgIAADwIAAAAMzMzMzMgwEEIAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2026-03-20T06:28:30.74Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GlobalFunctions.vb",
+              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalFunctions.vb",
+              "RelativeDocumentMoniker": "Business\\GlobalFunctions.vb",
+              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\GlobalFunctions.vb",
+              "RelativeToolTip": "Business\\GlobalFunctions.vb",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEAAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2026-03-20T06:28:30.785Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "NDS_ZATCA",
+              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\NDS_ZATCA.vbproj",
+              "RelativeDocumentMoniker": "NDS_ZATCA.vbproj",
+              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\NDS_ZATCA.vbproj",
+              "RelativeToolTip": "NDS_ZATCA.vbproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-03-20T06:28:30.794Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ArInvoicePayment.vb",
+              "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ArInvoicePayment.vb",
+              "RelativeDocumentMoniker": "Application\\ArInvoicePayment.vb",
+              "ToolTip": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Application\\ArInvoicePayment.vb",
+              "RelativeToolTip": "Application\\ArInvoicePayment.vb",
+              "ViewState": "AgIAAKkIAAAA//////8ZwLAIAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2026-03-20T06:31:27.876Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "EventHandler.vb",
               "DocumentMoniker": "C:\\Nixon Dynamic\\New Project\\NDS_ZATCA\\Business\\EventHandler.vb",
               "RelativeDocumentMoniker": "Business\\EventHandler.vb",
