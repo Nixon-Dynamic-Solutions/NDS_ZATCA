@@ -1289,6 +1289,7 @@ Public Class ARInvoice
                 Dim TaxexAmnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("Taxexamnt").Value))
                 Dim TaxinAmnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("Taxinamnt").Value))
                 Dim DiscPrncnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("DiscPrcnt").Value))
+                Dim DPMAmnt As String = Me.StringtoDouble(CDbl(rset11.Fields.Item("DpmAmnt").Value))
                 xmlstring += vbCrLf & "<cac:AllowanceCharge>"
                 xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
                 xmlstring += vbCrLf & "<cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
@@ -1308,7 +1309,7 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cac:TaxTotal>"
                 xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & TaxCurrency & """>" & Vatsum & "</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxSubtotal>"
-                xmlstring += vbCrLf & "<cbc:TaxableAmount currencyID= """ & Currency & """>" & Total & "</cbc:TaxableAmount>"
+                xmlstring += vbCrLf & "<cbc:TaxableAmount currencyID= """ & Currency & """>" & DocTotal & "</cbc:TaxableAmount>"
                 xmlstring += vbCrLf & "<cbc:TaxAmount currencyID= """ & TaxCurrency & """>" & Vatsum & "</cbc:TaxAmount>"
                 xmlstring += vbCrLf & "<cac:TaxCategory>"
                 xmlstring += vbCrLf & "<cbc:ID schemeID=""UN/ECE 5305"" schemeAgencyID=""6"">S</cbc:ID>"
@@ -1327,13 +1328,14 @@ Public Class ARInvoice
                 xmlstring += vbCrLf & "<cbc:TaxExclusiveAmount currencyID=""" & Currency & """>" & TaxexAmnt & "</cbc:TaxExclusiveAmount>"
                 xmlstring += vbCrLf & "<cbc:TaxInclusiveAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:TaxInclusiveAmount>"
                 xmlstring += vbCrLf & "<cbc:AllowanceTotalAmount currencyID=""" & Currency & """>" & Discsum & "</cbc:AllowanceTotalAmount>"
-                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>0.00</cbc:PrepaidAmount>"
-                xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & TaxinAmnt & "</cbc:PayableAmount>"
+                xmlstring += vbCrLf & "<cbc:PrepaidAmount currencyID=""" & Currency & """>" & DPMAmnt & "</cbc:PrepaidAmount>"
+                xmlstring += vbCrLf & "<cbc:PayableAmount currencyID=""" & Currency & """>" & DocTotal & "</cbc:PayableAmount>"
                 xmlstring += vbCrLf & "</cac:LegalMonetaryTotal>"
 
                 'Dim str112 As String = "EXEC [@EINVOICE_DETAIL]'" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
                 Dim str112 As String = "CALL ""@EINVOICE_DETAIL""('" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "')"
                 Dim rset112 As SAPbobsCOM.Recordset = oGfun.DoQuery(str112)
+                Dim invLineCount = 0
                 If rset112.RecordCount > 0 Then
                     rset112.MoveFirst()
                     For j As Integer = 1 To rset112.RecordCount
@@ -1380,9 +1382,69 @@ Public Class ARInvoice
                         xmlstring += vbCrLf & "</cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "</cac:Price>"
                         xmlstring += vbCrLf & "</cac:InvoiceLine>"
+                        invLineCount = j
                         rset112.MoveNext()
                     Next
                 End If
+                Dim str113 As String = "select T0.""BaseDocNum"",T0.""DrawnSum"",T0.""BsDocDate"",T0.""Vat"",T1.""Dscription"",T1.""VatPrcnt"" from INV9 T0 inner join DPI1 T1 on T0.""BaseAbs""=T1.""DocEntry"" where T0.""DocEntry"" = '" & oDBDSHeader.GetValue("DocEntry", 0).Trim & "'"
+                Dim rset113 As SAPbobsCOM.Recordset = oGfun.DoQuery(str113)
+
+                If rset113.RecordCount > 0 Then
+                    rset113.MoveFirst()
+                    For j As Integer = 1 To rset113.RecordCount
+                        Dim DrwanSum As String = Me.StringtoDouble(rset113.Fields.Item("DrawnSum").Value)
+                        Dim Vat As String = Me.StringtoDouble(rset113.Fields.Item("Vat").Value)
+                        Dim VatPrcnt As String = Me.StringtoDouble(rset113.Fields.Item("VatPrcnt").Value)
+                        Dim BaseDocDate1 As Date = rset113.Fields.Item("BsDocDate").Value
+                        Dim BaseDocDate As String = BaseDocDate1.ToString("yyyy-MM-dd")
+                        xmlstring += vbCrLf & "<cac:InvoiceLine>"
+                        xmlstring += vbCrLf & "<cbc:ID>" & ++invLineCount & "</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:InvoicedQuantity unitCode=""PCE"">0.00</cbc:InvoicedQuantity>"
+                        xmlstring += vbCrLf & "<cbc:LineExtensionAmount currencyID=""" & Currency & """>0.00</cbc:LineExtensionAmount>"
+                        xmlstring += vbCrLf & "<cac:DocumentReference>"
+                        xmlstring += vbCrLf & "<cbc:ID>" & rset113.Fields.Item("BaseDocNum").Value & "</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:IssueDate>" & BaseDocDate & "</cbc:IssueDate>"
+                        xmlstring += vbCrLf & "<cbc:IssueTime>12:29:37</cbc:IssueTime>"
+                        xmlstring += vbCrLf & "<cbc:DocumentTypeCode>386</cbc:DocumentTypeCode>"
+                        xmlstring += vbCrLf & "</cac:DocumentReference>"
+                        xmlstring += vbCrLf & "<cac:TaxTotal>"
+                        xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & TaxCurrency & """>0.00</cbc:TaxAmount>"
+                        xmlstring += vbCrLf & "<cbc:RoundingAmount currencyID=""" & Currency & """>0.00</cbc:RoundingAmount>"
+                        xmlstring += vbCrLf & "<cac:TaxSubtotal>"
+                        xmlstring += vbCrLf & "<cbc:TaxableAmount currencyID=""" & TaxCurrency & """>" & DrwanSum & "</cbc:TaxableAmount>"
+                        xmlstring += vbCrLf & "<cbc:TaxAmount currencyID=""" & TaxCurrency & """>" & Vat & "</cbc:TaxAmount>"
+                        xmlstring += vbCrLf & "<cac:TaxCategory>"
+                        xmlstring += vbCrLf & "<cbc:ID>S</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:Percent>" & VatPrcnt & "</cbc:Percent>"
+                        xmlstring += vbCrLf & "<cac:TaxScheme>"
+                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                        xmlstring += vbCrLf & "</cac:TaxScheme>"
+                        xmlstring += vbCrLf & "</cac:TaxCategory>"
+                        xmlstring += vbCrLf & "</cac:TaxSubtotal>"
+
+                        xmlstring += vbCrLf & "</cac:TaxTotal>"
+
+                        xmlstring += vbCrLf & "<cac:Item>"
+                        xmlstring += vbCrLf & "<cbc:Name>" & rset113.Fields.Item("Dscription").Value & "</cbc:Name>"
+                        xmlstring += vbCrLf & "<cac:ClassifiedTaxCategory>"
+                        xmlstring += vbCrLf & "<cbc:ID>S</cbc:ID>"
+                        xmlstring += vbCrLf & "<cbc:Percent>" & VatPrcnt & "</cbc:Percent>"
+                        xmlstring += vbCrLf & "<cac:TaxScheme>"
+                        xmlstring += vbCrLf & "<cbc:ID>VAT</cbc:ID>"
+                        xmlstring += vbCrLf & "</cac:TaxScheme>"
+                        xmlstring += vbCrLf & "</cac:ClassifiedTaxCategory>"
+                        xmlstring += vbCrLf & "</cac:Item>"
+                        xmlstring += vbCrLf & "<cac:Price>"
+                        xmlstring += vbCrLf & "<cbc:PriceAmount currencyID=""" & Currency & """>0.00</cbc:PriceAmount>"
+
+                        xmlstring += vbCrLf & "</cac:Price>"
+                        xmlstring += vbCrLf & "</cac:InvoiceLine>"
+
+                        rset113.MoveNext()
+                    Next
+                End If
+
+
                 xmlstring += vbCrLf & "</Invoice>"
                 write_log("XML creation finished")
                 Dim STRr1 As String = "UPDATE OINV SET ""U_XMLGENERATION""='XML FILE CREATED SUCCESSFULLY' WHERE ""DocNum""='" & oDBDSHeader.GetValue("DocNum", 0).Trim & "'"
@@ -2016,9 +2078,11 @@ Public Class ARInvoice
 
             write_log("Integration Start")
             'xmlstring = xmlstring. Replace("&", "&amp;")
-            Dim PIH As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(7))
+            'Dim PIH As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(7))
+            Dim PIH As String = File.ReadAllText(PIHPath)
             write_log(PIH)
-            Dim ICV As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(8))
+            'Dim ICV As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(8))
+            Dim ICV As String = File.ReadAllText(ICVPath)
             write_log(ICV)
             Dim Value As String = oDBDSHeader.GetValue("U_ZATCA_TaxCode", 0).Trim
             write_log(Value)
@@ -2049,8 +2113,10 @@ Public Class ARInvoice
                 ''Dim As String = Me. XMLCreation12
                 Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                 Dim s As String = System.Configuration.ConfigurationSettings.AppSettings(0)
-                Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(5), Name)
-                Dim path2 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
+                'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(5), Name)
+                'Dim path2 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
+                Dim path1 As String = Path.Combine(XMLPath, Name)
+                Dim path2 As String = Path.Combine(XMLPath1, Name)
                 If System.IO.File.Exists(path1) Then
                     System.IO.File.Delete(path1)
                 End If
@@ -2062,7 +2128,8 @@ Public Class ARInvoice
                 fs.Write(info, 0, info.Length)
                 fs.Close()
                 Encrypt(path1, path2)
-                File.WriteAllText(System.Configuration.ConfigurationSettings.AppSettings(8), CInt(ICV) + 1)
+                'File.WriteAllText(System.Configuration.ConfigurationSettings.AppSettings(8), CInt(ICV) + 1)
+                File.WriteAllText(ICVPath, CInt(ICV) + 1)
                 write_log("XML completion finished")
                 oApplication.StatusBar.SetSystemMessage("E-Invoice XML generated successfully", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
                 frmARInvoice.Items.Item("b_Load").Enabled = False
@@ -2072,10 +2139,12 @@ Public Class ARInvoice
                 oGfun.DoQuery(Str)
 
                 Dim psi As New ProcessStartInfo()
-                psi.FileName = System.Configuration.ConfigurationSettings.AppSettings(9)
+                'psi.FileName = System.Configuration.ConfigurationSettings.AppSettings(9)
+                psi.FileName = EXEPath
                 psi.CreateNoWindow = True
                 psi.WindowStyle = ProcessWindowStyle.Hidden
                 psi.UseShellExecute = False
+                psi.Arguments = """" & BasePath & """"
 
                 oApplication.StatusBar.SetSystemMessage("Posting E-Invoice to Zatca Please Wait...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
 
@@ -2371,8 +2440,8 @@ Public Class ARInvoice
                                 frmARInvoice.Items.Item("b_Load").Visible = True
                                 frmARInvoice.Items.Item("b_Load1").Visible = False
                                 Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
-                                Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
-
+                                'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
+                                Dim path1 As String = Path.Combine(XMLPath1, Name)
                                 If oDBDSHeader.GetValue("U_CLEARANCESTATUS", 0).Trim = "CLEARED" Then
                                     frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)
                                     frmARInvoice.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 4, SAPbouiCOM.BoModeVisualBehavior.mvb_False)

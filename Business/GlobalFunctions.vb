@@ -1,6 +1,7 @@
-﻿Imports System.IO
+﻿Imports System.Drawing.Drawing2D
+Imports System.IO
+Imports SAPbobsCOM
 Imports SAPbouiCOM
-Imports System.Drawing.Drawing2D
 
 ' <summary>
 ''' Globally whatever Function and method do you want define here
@@ -612,20 +613,20 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
         Try
 
-                If oEditFromDate.Value.Equals("") = False And oEditToDate.Value.Equals("") = False Then
-                    Dim dtFromDate As Date = DateTime.ParseExact(oEditFromDate.Value, "yyyyMMdd", Nothing)
-                    Dim dtToDate As Date = DateTime.ParseExact(oEditToDate.Value, "yyyyMMdd", Nothing)
-                    If dtFromDate > dtToDate Then
-                        oApplication.StatusBar.SetText(ErrorMsg & " ... ", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error)
-                        Return False
-                    End If
+            If oEditFromDate.Value.Equals("") = False And oEditToDate.Value.Equals("") = False Then
+                Dim dtFromDate As Date = DateTime.ParseExact(oEditFromDate.Value, "yyyyMMdd", Nothing)
+                Dim dtToDate As Date = DateTime.ParseExact(oEditToDate.Value, "yyyyMMdd", Nothing)
+                If dtFromDate > dtToDate Then
+                    oApplication.StatusBar.SetText(ErrorMsg & " ... ", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error)
+                    Return False
                 End If
-                Return True
-            Catch ex As Exception
-                oApplication.StatusBar.SetText("DateValidate Function Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
-                Return False
-            Finally
-            End Try
+            End If
+            Return True
+        Catch ex As Exception
+            oApplication.StatusBar.SetText("DateValidate Function Failed:" & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
+            Return False
+        Finally
+        End Try
 
     End Function
     Function LoadComboBoxSeries(ByVal oComboBox As SAPbouiCOM.ComboBox, ByVal UDOID As String) As Boolean
@@ -2006,6 +2007,186 @@ Optional ByVal LogOption As SAPbobsCOM.BoYesNoEnum = SAPbobsCOM.BoYesNoEnum.tNO)
 
         Return documentid
     End Function
+    Private Sub ExitAddon()
+        Try
+            If oCompany IsNot Nothing Then
+                If oCompany.Connected Then
+                    oCompany.Disconnect()
+                End If
+            End If
+        Catch
+        End Try
+
+        Try
+            System.Windows.Forms.Application.ExitThread()
+        Catch
+        End Try
+
+        Try
+            End
+        Catch
+        End Try
+    End Sub
+
+    Private Function BasePathAvailable() As Boolean
+        Try
+            Dim rs As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
+
+            rs.DoQuery("SELECT ""U_BasePath"" FROM ""OADM""")
+
+            If Not rs.EoF AndAlso Not IsDBNull(rs.Fields.Item("U_BasePath").Value) Then
+                BasePath = rs.Fields.Item("U_BasePath").Value.ToString().Trim()
+
+            End If
+            If String.IsNullOrEmpty(BasePath) Then
+                oApplication.MessageBox("Base Path missing in udf")
+                ExitAddon()
+                Return False
+            End If
+            Return True
+
+        Catch ex As Exception
+            Try
+                oApplication.StatusBar.SetText("Base Path check failed : " & ex.Message,
+                                              SAPbouiCOM.BoMessageTime.bmt_Short,
+                                              SAPbouiCOM.BoStatusBarMessageType.smt_Error)
+            Catch
+            End Try
+            Return False
+        End Try
+    End Function
+#Region "All Path "
+    Public Sub InitializeZatcaPaths()
+        Try
+
+            If BasePathAvailable() Then
+
+                ValidatePath(BasePath)
+
+                XMLPath = CombinePath("XMLPath") '5
+                EnsureDirectory(XMLPath)
+
+                XMLPath1 = CombinePath("XMLPath1") '6
+                EnsureDirectory(XMLPath1)
+
+                PIHPath = CombinePath("PIH") '7
+                EnsureDirectory(Path.GetDirectoryName(PIHPath))
+                EnsureFile(PIHPath)
+
+                ICVPath = CombinePath("ICV") '8
+                EnsureDirectory(Path.GetDirectoryName(ICVPath))
+                EnsureFile(ICVPath)
+
+                EXEPath = CombinePath("EXE") '6
+                EnsureDirectory(Path.GetDirectoryName(EXEPath))
+
+                'EXE ALL PATH
+
+                Dim XML_PATH As String = CombinePath("XMLPath") '10
+                EnsureDirectory(XML_PATH)
+
+                Dim CERTIFICATE_PATH As String = CombinePath("CERTIFICATE_PATH") '11
+                EnsureDirectory(System.IO.Path.GetDirectoryName(CERTIFICATE_PATH))
+                EnsureFile(CERTIFICATE_PATH)
+
+                Dim PRIVATEKEY_PATH As String = CombinePath("PRIVATEKEY_PATH") '12
+                EnsureDirectory(System.IO.Path.GetDirectoryName(PRIVATEKEY_PATH))
+                EnsureFile(PRIVATEKEY_PATH)
+
+                Dim PIH_PATH As String = CombinePath("PIH_PATH") '13
+                EnsureDirectory(System.IO.Path.GetDirectoryName(PIH_PATH))
+                EnsureFile(PIH_PATH)
+
+                Dim SIGNED_PATH As String = CombinePath("SIGNED_PATH") '14
+                EnsureDirectory(SIGNED_PATH)
+
+                Dim BSIGNED_PATH As String = CombinePath("NEWXMLPATH") '15
+                EnsureDirectory(BSIGNED_PATH)
+
+                Dim Log As String = CombinePath("Log") '16
+                EnsureDirectory(Log)
+
+                Dim CLEAREDINVOICE As String = CombinePath("CLEAREDINVOICE") '17
+                EnsureDirectory(CLEAREDINVOICE)
+
+                Dim ZATCARESPONSE As String = CombinePath("ZATCARESPONSE") '18
+                EnsureDirectory(ZATCARESPONSE)
+
+                Dim BinarySecurityToken As String = CombinePath("BinarySecurityToken") '19
+                EnsureDirectory(System.IO.Path.GetDirectoryName(BinarySecurityToken))
+                EnsureFile(BinarySecurityToken)
+
+                Dim SecretKey As String = CombinePath("SecretKey") '20
+                EnsureDirectory(System.IO.Path.GetDirectoryName(SecretKey))
+                EnsureFile(SecretKey)
+
+                Dim DECRYPTXML As String = CombinePath("DECRYPTXML") '21
+                EnsureDirectory(DECRYPTXML)
+
+                Dim ENCRYPTXML As String = CombinePath("ENCRYPTXML") '22
+                EnsureDirectory(ENCRYPTXML)
+
+                Dim ZATCAREQUEST As String = CombinePath("ZATCAREQUEST") '23
+                EnsureDirectory(ZATCAREQUEST)
+
+                Dim QRCODEIMAGE As String = CombinePath("QRCODEIMAGE") '24
+                EnsureDirectory(QRCODEIMAGE)
+
+                Dim QRCODEIMAGE1 As String = CombinePath("QRCODEIMAGE1") '25
+                EnsureDirectory(QRCODEIMAGE1)
+
+                Dim MODIFIED_XML As String = CombinePath("MODIFIED XML") '26
+                EnsureDirectory(MODIFIED_XML)
+            End If
+
+        Catch ex As Exception
+            oApplication.StatusBar.SetText(ex.Message, BoMessageTime.bmt_Long, BoStatusBarMessageType.smt_Error)
+
+        End Try
+    End Sub
+
+
+    Private Function CombinePath(ByVal key As String) As String
+        Dim rel As String = System.Configuration.ConfigurationSettings.AppSettings(key)
+
+        If String.IsNullOrEmpty(rel) Then
+            Throw New Exception("Missing config key: " & key)
+        End If
+        Dim CombinePathName As String = System.IO.Path.Combine(BasePath.Trim(), rel.Trim())
+        Return CombinePathName
+    End Function
+
+
+    Private Sub ValidatePath(ByVal path As String)
+        If Not Directory.Exists(path) Then
+            Throw New Exception("Base path not accessible: " & path)
+        End If
+
+        Try
+            Dim testFile As String = System.IO.Path.Combine(path, "test.tmp")
+            File.WriteAllText(testFile, "test")
+            File.Delete(testFile)
+        Catch
+            Throw New Exception("No write permission on path: " & path)
+        End Try
+    End Sub
+
+
+    Private Sub EnsureDirectory(ByVal path As String)
+        If Not Directory.Exists(path) Then
+            Directory.CreateDirectory(path)
+        End If
+    End Sub
+
+
+    Private Sub EnsureFile(ByVal filePath As String)
+        If Not File.Exists(filePath) Then
+            EnsureDirectory(Path.GetDirectoryName(filePath))
+            File.Create(filePath).Close()
+        End If
+    End Sub
+
+#End Region
 
 End Class
 

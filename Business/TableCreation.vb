@@ -8,6 +8,7 @@ Public Class TableCreation
         Try
 
             Me.UDFCreation()
+            oGFun.InitializeZatcaPaths()
             'Me.UserMaster()
             'Me. ResetPassword()
 
@@ -58,6 +59,7 @@ Public Class TableCreation
             oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Desc", "I_Tax_Ex_Desc", SAPbobsCOM.BoFieldTypes.db_Alpha, 254)
             oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Type", "I_Tax_Ex_Type", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
             oGFun.CreateUserFields("@I_ZATCA_TAXCODE", "I_Tax_Ex_Type_Code", "I_Tax_Ex_Type_Code", SAPbobsCOM.BoFieldTypes.db_Alpha, 30)
+            oGFun.CreateUserFields("OADM", "BasePath", "ZATCA Base Path", SAPbobsCOM.BoFieldTypes.db_Alpha, 254)
 
         Catch ex As Exception
             oApplication.StatusBar.SetText("UDF Creation Failed: " & ex.Message)

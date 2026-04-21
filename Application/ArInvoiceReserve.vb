@@ -2015,9 +2015,11 @@ Public Class ArInvoiceReserve
 
             write_log("Integration Start")
             'xmlstring = xmlstring. Replace("&", "&amp;")
-            Dim PIH As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(7))
+            'Dim PIH As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(7))
+            Dim PIH As String = File.ReadAllText(PIHPath)
             write_log(PIH)
-            Dim ICV As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(8))
+            'Dim ICV As String = File.ReadAllText(System.Configuration.ConfigurationSettings.AppSettings(8))
+            Dim ICV As String = File.ReadAllText(ICVPath)
             write_log(ICV)
             Dim Value As String = oDBDSHeader.GetValue("U_ZATCA_TaxCode", 0).Trim
             write_log(Value)
@@ -2048,8 +2050,10 @@ Public Class ArInvoiceReserve
                 ''Dim As String = Me. XMLCreation12
                 Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                 Dim s As String = System.Configuration.ConfigurationSettings.AppSettings(0)
-                Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(5), Name)
-                Dim path2 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
+                'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(5), Name)
+                'Dim path2 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
+                Dim path1 As String = Path.Combine(XMLPath, Name)
+                Dim path2 As String = Path.Combine(XMLPath1, Name)
                 If System.IO.File.Exists(path1) Then
                     System.IO.File.Delete(path1)
                 End If
@@ -2061,7 +2065,8 @@ Public Class ArInvoiceReserve
                 fs.Write(info, 0, info.Length)
                 fs.Close()
                 Encrypt(path1, path2)
-                File.WriteAllText(System.Configuration.ConfigurationSettings.AppSettings(8), CInt(ICV) + 1)
+                'File.WriteAllText(System.Configuration.ConfigurationSettings.AppSettings(8), CInt(ICV) + 1)
+                File.WriteAllText(ICVPath, CInt(ICV) + 1)
                 write_log("XML completion finished")
                 oApplication.StatusBar.SetSystemMessage("E-Invoice XML generated successfully", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
                 frmARInvoiceReserve.Items.Item("b_Load").Enabled = False
@@ -2071,10 +2076,17 @@ Public Class ArInvoiceReserve
                 oGfun.DoQuery(Str)
 
                 Dim psi As New ProcessStartInfo()
-                psi.FileName = System.Configuration.ConfigurationSettings.AppSettings(9)
+                'psi.FileName = System.Configuration.ConfigurationSettings.AppSettings(9)
+                'psi.CreateNoWindow = True
+                'psi.WindowStyle = ProcessWindowStyle.Hidden
+                'psi.UseShellExecute = False
+                'psi.Arguments = BasePath
+
+                psi.FileName = EXEPath
                 psi.CreateNoWindow = True
                 psi.WindowStyle = ProcessWindowStyle.Hidden
                 psi.UseShellExecute = False
+                psi.Arguments = """" & BasePath & """"
 
                 oApplication.StatusBar.SetSystemMessage("Posting E-Invoice to Zatca Please Wait...", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
 
@@ -2352,7 +2364,8 @@ Public Class ArInvoiceReserve
                                 frmARInvoiceReserve.Items.Item("b_Load").Visible = True
                                 frmARInvoiceReserve.Items.Item("b_Load1").Visible = False
                                 Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
-                                Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
+                                'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
+                                Dim path1 As String = Path.Combine(XMLPath1, Name)
 
                                 If oDBDSHeader.GetValue("U_CLEARANCESTATUS", 0).Trim = "CLEARED" Then
                                     frmARInvoiceReserve.Items.Item("b_Load").SetAutoManagedAttribute(SAPbouiCOM.BoAutoManagedAttr.ama_Editable, 2, SAPbouiCOM.BoModeVisualBehavior.mvb_False)

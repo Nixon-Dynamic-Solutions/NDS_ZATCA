@@ -61,4 +61,17 @@ Module GolabalVariables
 
 #End Region
 
+#Region " ...All Path ..."
+
+    Public BasePath As String = ""
+    Public XMLPath As String = ""
+    Public XMLPath1 As String = ""
+    Public EXEPath As String = ""
+    Public PIHPath As String = ""
+    Public ICVPath As String = ""
+
+#End Region
+
+
+
 End Module
