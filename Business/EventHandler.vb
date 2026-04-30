@@ -43,25 +43,30 @@
                         Case "1282", "1281", "1292", "1293", "1287", "519", "1284", "1286"
                             Select Case oForm.TypeEx
                             'ARInvoice
-                                Case ARInvoiceFormID
-                                    oARInvoice.MenuEvent(pVal, BubbleEvent)
-                             'CreditMemo
-                                Case CreditMemoFormID
-                                    oCreditMemo.MenuEvent(pVal, BubbleEvent)
+                            Case ARInvoiceFormID
+                                oARInvoice.MenuEvent(pVal, BubbleEvent)
 
-                            End Select
+                            'CreditMemo
+                            Case CreditMemoFormID
+                                oCreditMemo.MenuEvent(pVal, BubbleEvent)
+
+                            'ARDownPaymentInvoice
+                            Case ARDownPaymentInvoiceFormID
+                                oARDownPaymentInvoice.MenuEvent(pVal, BubbleEvent)
+
+                        End Select
                     End Select
                     Select Case pVal.MenuUID
                         Case "1282", "1281", "1292", "1293", "1287", "519", "1284", "1286"
                             Select Case oForm.UniqueIDEnd 
                             End Select
                          End Select
-                            If pVal.MenuUID = "526" Then
-                                oCompany.Disconnect()
-                                oApplication.StatusBar.SetText(AddOnName & " AddOn is DisConnected . . .", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
-                                End
-                            End If
-                End If
+                '        If pVal.MenuUID = "526" Then
+                ''oCompany.Disconnect()
+                ''oApplication.StatusBar.SetText(AddOnName & " AddOn is DisConnected . . .", SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Success)
+                'End
+                '        End If
+            End If
             Catch ex As Exception
                 oApplication.StatusBar.SetText("Purchase Menu Event Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
             Finally
@@ -111,6 +116,10 @@
                 Case CreditMemoFormID
                     oCreditMemo.ItemEvent(FormUID, pVal, BubbleEvent)
 
+'ARDownPaymentInvoice
+                Case ARDownPaymentInvoiceFormID
+                    oARDownPaymentInvoice.ItemEvent(FormUID, pVal, BubbleEvent)
+
             End Select
             Catch ex As Exception
             oApplication.StatusBar.SetText("Gate in Ward ItemEvent Failed : " & ex.Message, SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Warning)
@@ -129,6 +138,10 @@
                      'Creditmemo
                 Case CreditMemoFormID
                     oCreditMemo.FormDataEvent(BusinessObjectInfo, BubbleEvent)
+
+                     'ARDownPaymentInvoice
+                Case ARDownPaymentInvoiceFormID
+                    oARDownPaymentInvoice.FormDataEvent(BusinessObjectInfo, BubbleEvent)
 
             End Select
 

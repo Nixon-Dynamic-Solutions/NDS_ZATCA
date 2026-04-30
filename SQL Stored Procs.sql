@@ -517,3 +517,228 @@ BEGIN
     WHERE A.DocEntry = @DocEntry;
 END;
 GO
+
+
+/* =========================================================
+   2. @EINVOICEDWPY_DETAIL
+   ========================================================= */
+IF OBJECT_ID('dbo.[@EINVOICEDWPY_DETAIL]', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.[@EINVOICEDWPY_DETAIL];
+GO
+
+CREATE PROCEDURE dbo.[@EINVOICEDWPY_DETAIL]
+    @DocEntry NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM
+    (
+        SELECT
+            B.ItemCode,
+            B.Dscription,
+            B.VatSum,
+            B.VatGroup,
+
+            ROUND(
+                (B.Price /
+                    CASE
+                        WHEN B.Rate = 0.0 THEN 1.0
+                        ELSE B.Rate
+                    END
+                ), 2
+            ) AS Price,
+
+            B.LineNum,
+
+            CASE
+                WHEN A.DocType = 'I' THEN B.Quantity
+                WHEN A.DocType = 'S' THEN 1
+            END AS Quantity,
+
+            B.U_APIRefNo,
+            B.Currency,
+            'PCE' AS Unitmsr,
+
+            CASE
+                WHEN B.DiscPrcnt > 0
+                THEN B.PriceBefDi * (B.DiscPrcnt / 100.0)
+                ELSE 0
+            END AS Discount,
+
+            B.LineTotal,
+
+            ROUND(B.LineTotal * (C.Rate / 100.0), 2) AS vat,
+
+            B.VatSum AS v,
+
+            ROUND(
+                (B.Price /
+                    CASE
+                        WHEN B.Rate = 0.0 THEN 1.0
+                        ELSE B.Rate
+                    END
+                ), 2
+            ) AS BaseAmount,
+
+            B.DiscPrcnt
+
+        FROM DPI1 B
+        INNER JOIN ODPI A
+            ON A.DocEntry = B.DocEntry
+        INNER JOIN OVTG C
+            ON B.VatGroup = C.Code
+        WHERE A.DocEntry = @DocEntry
+    ) A;
+END;
+GO
+
+
+/* =========================================================
+   3. @EINVOICEDWPY_HEADER
+   ========================================================= */
+IF OBJECT_ID('dbo.[@EINVOICEDWPY_HEADER]', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.[@EINVOICEDWPY_HEADER];
+GO
+
+CREATE PROCEDURE dbo.[@EINVOICEDWPY_HEADER]
+    @DocEntry NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        A.DocNum,
+        A.CardName,
+        A.DocDate,
+
+        RIGHT('000000' + CAST(A.CreateTS AS VARCHAR(6)), 6) AS CreateTSRaw,
+        SUBSTRING(RIGHT('000000' + CAST(A.CreateTS AS VARCHAR(6)), 6), 1, 2) + ':' +
+        SUBSTRING(RIGHT('000000' + CAST(A.CreateTS AS VARCHAR(6)), 6), 3, 2) + ':' +
+        SUBSTRING(RIGHT('000000' + CAST(A.CreateTS AS VARCHAR(6)), 6), 5, 2) AS CreateTime,
+
+        'SAR' AS DocCur,
+
+        C.U_District,
+        D.StreetB,
+        D.CityB,
+        D.CountryB,
+        D.ZipCodeB,
+        D.BuildingB,
+
+        E.TaxPayerRf,
+        E.CompnyName,
+
+        'SAR' AS TaxCur,
+
+        A.Comments,
+
+        C.Building AS CBuilding,
+        C.City AS CCity,
+        C.U_AddNo,
+        C.ZipCode AS CZipCode,
+        C.State AS CState,
+        C.Country AS CCountry,
+
+        B.LicTradNum AS TaxIDNum3,
+
+        CASE
+            WHEN B.RegNum = '-' THEN ''
+            ELSE B.RegNum
+        END AS RegNum,
+
+        C.Street AS CStreet,
+
+        A.NumAtCard,
+        A.U_CustRef,
+        A.U_PS_SDate,
+
+        A.DiscPrcnt,
+
+        A.U_ZATCA_TaxCode AS TaxReasonCode,
+        T.U_I_Tax_Ex_Desc AS TaxReason,
+
+        F.Building,
+        F.Street,
+        F.City,
+        F.ZipCode,
+        F.County,
+        F.Country,
+        F.State,
+
+        '8CC649D2-7802-4BEF-A8B5-CA21C82F70A4' AS UUID,
+
+        G.[Count],
+
+        V.Rate,
+
+        H.LineAmnt,
+        H.LineAmnt - A.DiscSum AS Taxexamnt,
+        (H.LineAmnt - A.DiscSum) + A.VatSum AS Taxinamnt,
+
+        A.DiscSum,
+        A.DiscPrcnt,
+
+        H.LineAmnt - A.DiscSum AS BaseAmount,
+        H.LineAmnt - A.DiscSum AS Total1,
+
+        A.VatSum,
+        A.DocTotal
+
+    FROM ODPI A
+    INNER JOIN OCRD B
+        ON A.CardCode = B.CardCode
+    LEFT JOIN CRD1 C
+        ON B.CardCode = C.CardCode
+    INNER JOIN DPI12 D
+        ON A.DocEntry = D.DocEntry
+    INNER JOIN
+    (
+        SELECT COUNT(*) AS [Count], DocEntry
+        FROM DPI1
+        GROUP BY DocEntry
+    ) G
+        ON A.DocEntry = G.DocEntry
+    INNER JOIN
+    (
+        SELECT
+            SUM(LineTotal) AS LineAmnt,
+            SUM(
+                ROUND(
+                    (B.PriceBefDi *
+                        CASE
+                            WHEN A.DocType = 'I' THEN B.Quantity
+                            WHEN A.DocType = 'S' THEN 1
+                        END
+                    ) /
+                    CASE
+                        WHEN B.Rate = 0.0 THEN 1.0
+                        ELSE B.Rate
+                    END
+                ,2)
+            ) AS Base,
+            B.DocEntry
+        FROM DPI1 B
+        LEFT JOIN ODPI A
+            ON A.DocEntry = B.DocEntry
+        GROUP BY B.DocEntry
+    ) H
+        ON A.DocEntry = H.DocEntry
+    INNER JOIN
+    (
+        SELECT MAX(B.Rate) AS Rate, A.DocEntry
+        FROM DPI1 A
+        INNER JOIN OVTG B
+            ON A.VatGroup = B.Code
+        GROUP BY A.DocEntry
+    ) V
+        ON A.DocEntry = V.DocEntry
+    LEFT JOIN [@I_ZATCA_TAXCODE] T
+        ON A.U_ZATCA_TaxCode = T.U_I_Tax_Ex_Code
+    CROSS JOIN OADM E
+    CROSS JOIN ADM1 F
+    WHERE A.DocEntry = @DocEntry
+      AND C.AdresType = 'B';
+END;
+GO

@@ -109,6 +109,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\ARDownPayment.vb" />
     <Compile Include="Application\ARInvoice.vb" />
     <Compile Include="Application\CreditMemo.vb" />
     <Compile Include="Application\Result.vb" />

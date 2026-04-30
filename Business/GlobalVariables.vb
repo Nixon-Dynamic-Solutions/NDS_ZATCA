@@ -35,6 +35,10 @@ Module GolabalVariables
     Public CreditMemoFormID As String = "179"
     Public oCreditMemo As New CreditMemo
 
+    'ARDownPaymentInvoice
+    Public ARDownPaymentInvoiceFormID As String = "65300"
+    Public oARDownPaymentInvoice As New ARDownPaymentInvoice
+
 #End Region
 
 #Region " ... Gentral Purpose ..."
@@ -49,6 +53,17 @@ Module GolabalVariables
     Public ShouldNotErrorMsg As String = " Should Not be Left Empty"
     Public sQuery As String = ""
     Public boolTripStatusCanceled As Boolean = False
+
+#End Region
+
+#Region " ...All Path ..."
+
+    Public BasePath As String = ""
+    Public XMLPath As String = ""
+    Public XMLPath1 As String = ""
+    Public EXEPath As String = ""
+    Public PIHPath As String = ""
+    Public ICVPath As String = ""
 
 #End Region
 
