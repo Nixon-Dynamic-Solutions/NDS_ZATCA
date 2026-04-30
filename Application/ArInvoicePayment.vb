@@ -1344,7 +1344,8 @@ Public Class ArInvoicePayment
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        'Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -2048,7 +2049,7 @@ Public Class ArInvoicePayment
                 XMLString = XMLString.Replace("&", "&amp;")
                 '' XMLString = System. Web. HttpUtility. HtmlDecode(XMLString)
                 ''Dim As String = Me. XMLCreation12
-                Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
+                Dim Name As String = "OINV" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                 Dim s As String = System.Configuration.ConfigurationSettings.AppSettings(0)
                 'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(5), Name)
                 'Dim path2 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
@@ -2362,7 +2363,7 @@ Public Class ArInvoicePayment
 
                                 frmARInvoicePayment.Items.Item("b_Load").Visible = True
                                 frmARInvoicePayment.Items.Item("b_Load1").Visible = False
-                                Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
+                                Dim Name As String = "OINV" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                                 'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
                                 Dim path1 As String = Path.Combine(XMLPath1, Name)
 

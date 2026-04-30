@@ -1098,7 +1098,8 @@ Public Class CreditMemo
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        'Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -1405,7 +1406,8 @@ Public Class CreditMemo
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        ' Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -1713,7 +1715,8 @@ Public Class CreditMemo
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        'Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -1998,7 +2001,8 @@ Public Class CreditMemo
                         Dim DsSum As String = Me.StringtoDouble(CDbl((rset112.Fields.Item("Discount").Value)))
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         ''Dim disc As String = Me.StringtoDouble(CDbl(oDBDSDetail.GetValue("DiscPrcnt", j - 1).Trim))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        'Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -2076,7 +2080,7 @@ Public Class CreditMemo
             If XMLString <> "" Then
                 XMLString = XMLString.Replace("&", "&amp;")
 
-                Dim Name As String = "CreditMemo" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
+                Dim Name As String = "ORIN" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                 Dim s As String = System.Configuration.ConfigurationSettings.AppSettings(0)
                 'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(5), Name)
                 'Dim path2 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
@@ -2260,7 +2264,7 @@ Public Class CreditMemo
                 xmlstring = xmlstring.Replace("&", "&amp;")
                 Dim doc As New XmlDocument()
                 doc.LoadXml(xmlstring)
-                Dim Name As String = "CreditMemo" & oDBDSHeader.GetValue("DocNum", 0).Trim & "_" & i & Now.ToLongDateString & ".xml"
+                Dim Name As String = "ORIN" & oDBDSHeader.GetValue("DocNum", 0).Trim & "_" & i & Now.ToLongDateString & ".xml"
                 doc.Save(Path.Combine(Environment.CurrentDirectory, Name))
                 Dim d3 As String = "http://192.168.10.95:8081/APIs/SAP_APIs.asmx?op=fnInvoiceAPI"
                 Dim bytes = System.Text.Encoding.UTF8.GetBytes(xmlstring)
@@ -2514,7 +2518,7 @@ Public Class CreditMemo
                             If (rsetPrjt1.Fields.Item("XMLAproved").Value = "Y") Then
                                 frmCreditMemo.Items.Item("b_Load").Visible = True
                                 frmCreditMemo.Items.Item("b_Load1").Visible = False
-                                Dim Name As String = "CreditMemo" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
+                                Dim Name As String = "ORIN" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                                 'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
                                 Dim path1 As String = Path.Combine(XMLPath1, Name)
                                 If oDBDSHeader.GetValue("U_CLEARANCESTATUS", 0).Trim = "CLEARED" Then

@@ -1036,7 +1036,8 @@ Public Class ARInvoice
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value)).Replace(",", "")
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value)).Replace(",", "")
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value)).Replace(",", "")
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value))).Replace(",", "")
+                        ' Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value))).Replace(",", "")
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value))).Replace(",", "")
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -1347,7 +1348,8 @@ Public Class ARInvoice
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        'Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -1382,7 +1384,7 @@ Public Class ARInvoice
                         xmlstring += vbCrLf & "</cac:AllowanceCharge>"
                         xmlstring += vbCrLf & "</cac:Price>"
                         xmlstring += vbCrLf & "</cac:InvoiceLine>"
-                        invLineCount = j
+                        invLineCount = j + 1
                         rset112.MoveNext()
                     Next
                 End If
@@ -1712,7 +1714,8 @@ Public Class ARInvoice
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        'Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -2018,7 +2021,8 @@ Public Class ARInvoice
                         Dim LineTotal As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("LineTotal").Value))
                         Dim BaseAmount As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("BaseAmount").Value))
                         Dim disc As String = Me.StringtoDouble(CDbl(rset112.Fields.Item("DiscPrcnt").Value))
-                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        ' Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)) - CDbl((rset112.Fields.Item("Discount").Value)))
+                        Dim RoundAmnt As String = Me.StringtoDouble((CDbl(rset112.Fields.Item("LineTotal").Value) + CDbl(rset112.Fields.Item("vat").Value)))
                         Dim str As String = "Select * from OVTG where ""Code""='" & rset112.Fields.Item("VatGroup").Value & "'"
                         Dim rset As SAPbobsCOM.Recordset = oGfun.DoQuery(str)
                         Dim Rate As Integer = rset.Fields.Item("Rate").Value
@@ -2111,7 +2115,7 @@ Public Class ARInvoice
                 XMLString = XMLString.Replace("&", "&amp;")
                 '' XMLString = System. Web. HttpUtility. HtmlDecode(XMLString)
                 ''Dim As String = Me. XMLCreation12
-                Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
+                Dim Name As String = "OINV" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                 Dim s As String = System.Configuration.ConfigurationSettings.AppSettings(0)
                 'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(5), Name)
                 'Dim path2 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
@@ -2439,7 +2443,7 @@ Public Class ARInvoice
 
                                 frmARInvoice.Items.Item("b_Load").Visible = True
                                 frmARInvoice.Items.Item("b_Load1").Visible = False
-                                Dim Name As String = "ARInvoice" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
+                                Dim Name As String = "OINV" & oDBDSHeader.GetValue("DocEntry", 0).Trim & ".xml"
                                 'Dim path1 As String = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings(6), Name)
                                 Dim path1 As String = Path.Combine(XMLPath1, Name)
                                 If oDBDSHeader.GetValue("U_CLEARANCESTATUS", 0).Trim = "CLEARED" Then
