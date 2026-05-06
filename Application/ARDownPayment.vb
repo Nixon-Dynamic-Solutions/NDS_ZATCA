@@ -2275,7 +2275,7 @@ Public Class ARDownPaymentInvoice
                 Dim rsetQR As SAPbobsCOM.Recordset = oGfun.DoQuery(QrCode)
                 If rsetQR.RecordCount > 0 Then
                     Dim oInvoice As SAPbobsCOM.Documents = Nothing
-                    oInvoice = CType(oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oInvoices), SAPbobsCOM.Documents)
+                    oInvoice = CType(oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDownPayments), SAPbobsCOM.Documents)
                     If oInvoice.GetByKey(oDBDSHeader.GetValue("DocEntry", 0).Trim()) Then
                         rsetQR.MoveFirst()
                         oInvoice.CreateQRCodeFrom = rsetQR.Fields.Item(0).Value
