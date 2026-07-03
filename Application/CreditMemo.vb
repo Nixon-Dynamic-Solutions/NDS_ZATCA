@@ -2198,12 +2198,12 @@ Public Class CreditMemo
         Dim chatlog As String
         Try
             If time = "" Then time = Today.ToString("yyyyMMdd") & "\Log_" & RunTime 'Now. ToString("HH_mm_ss")
-            Dim di As DirectoryInfo = New DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + "ErrorLog\Integration_" & Today.ToString("yyyyMMdd") & "")
+            Dim di As DirectoryInfo = New DirectoryInfo(BasePath + "\ErrorLog\Integration_" & Today.ToString("yyyyMMdd") & "")
             If di.Exists Then
             Else
                 di.Create()
             End If
-            chatlog = AppDomain.CurrentDomain.BaseDirectory + "ErrorLog\Integration_" & time & ".txt"
+            chatlog = BasePath + "\ErrorLog\Integration_" & time & ".txt"
             If File.Exists(chatlog) Then
             Else
                 fs = New FileStream(chatlog, FileMode.Create, FileAccess.Write)
